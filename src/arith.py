@@ -67,9 +67,11 @@ DefaultEnv = [
     ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
 ]
 
-print (typeof (DefaultEnv,
-               ('S', 'O')))
-print (typeof (DefaultEnv,
-               ('forall', ('=>', 'nat', 'x', ('=', 'x', 'x')))))
-print (typeof (DefaultEnv,
-               ('=>', 'nat', 'x', ('+', 'x', ('S', ('S', 'O'))))))
+if __name__ == '__main__':
+    # Run tests.
+    print (typeof (DefaultEnv,
+                   ('S', 'O')))
+    print (typeof (DefaultEnv,
+                   ('forall', ('=>', 'nat', 'x', ('=', 'x', 'x')))))
+    print (typeof (DefaultEnv,
+                   ('=>', 'nat', 'x', ('+', 'x', ('S', ('S', 'O'))))))
