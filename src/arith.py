@@ -10,6 +10,11 @@
 # builtin
 
 DefaultEnv = [
+    ('builtin', ('->', 'stmt', 'stmt'), 'not', None),
+    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
+    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
+    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'impl', None),
+    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'equiv', None),
     ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
     ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
     ('builtin', 'nat', 'O', None),
