@@ -7,27 +7,26 @@
 # assume stmt B
 # assume nat x
 # assume prop P
-# builtin
 
 DefaultEnv = [
-    ('builtin', ('->', 'stmt', 'stmt'), 'not', None),
-    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
-    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
-    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'impl', None),
-    ('builtin', ('->', 'stmt', 'stmt', 'stmt'), 'equiv', None),
-    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
-    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
-    ('builtin', 'nat', 'O', None),
-    ('builtin', ('->', 'nat', 'nat'), 'S', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '+', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '*', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '^', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '!=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
+    ('assume', ('->', 'stmt', 'stmt'), 'not', None),
+    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
+    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
+    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'impl', None),
+    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'equiv', None),
+    ('assume', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
+    ('assume', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
+    ('assume', 'nat', 'O', None),
+    ('assume', ('->', 'nat', 'nat'), 'S', None),
+    ('assume', ('->', 'nat', 'nat', 'nat'), '+', None),
+    ('assume', ('->', 'nat', 'nat', 'nat'), '*', None),
+    ('assume', ('->', 'nat', 'nat', 'nat'), '^', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '=', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '!=', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '<', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '>', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '<=', None),
+    ('assume', ('->', 'nat', 'nat', 'stmt'), '>=', None),
 ]
 
 def _get (env, expr):
@@ -71,4 +70,7 @@ def typeof (env, expr):
         if inlist != types:
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
+
+# Statement
+# (env, stmt)
 
