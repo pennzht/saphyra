@@ -4,29 +4,28 @@
 # def nat x ...
 # def stmt x ...
 # def (nat,bool) P ...
-# assume stmt B
-# assume nat x
-# assume prop P
+# typesign type name None
+# assume None None prop
 
 DefaultEnv = [
-    ('assume', ('->', 'stmt', 'stmt'), 'not', None),
-    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
-    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
-    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'impl', None),
-    ('assume', ('->', 'stmt', 'stmt', 'stmt'), 'equiv', None),
-    ('assume', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
-    ('assume', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
-    ('assume', 'nat', 'O', None),
-    ('assume', ('->', 'nat', 'nat'), 'S', None),
-    ('assume', ('->', 'nat', 'nat', 'nat'), '+', None),
-    ('assume', ('->', 'nat', 'nat', 'nat'), '*', None),
-    ('assume', ('->', 'nat', 'nat', 'nat'), '^', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '=', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '!=', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '<', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '>', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '<=', None),
-    ('assume', ('->', 'nat', 'nat', 'stmt'), '>=', None),
+    ('typesign', ('->', 'stmt', 'stmt'), 'not', None),
+    ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
+    ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
+    ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'impl', None),
+    ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'equiv', None),
+    ('typesign', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
+    ('typesign', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
+    ('typesign', 'nat', 'O', None),
+    ('typesign', ('->', 'nat', 'nat'), 'S', None),
+    ('typesign', ('->', 'nat', 'nat', 'nat'), '+', None),
+    ('typesign', ('->', 'nat', 'nat', 'nat'), '*', None),
+    ('typesign', ('->', 'nat', 'nat', 'nat'), '^', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '=', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '!=', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '<', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '>', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '<=', None),
+    ('typesign', ('->', 'nat', 'nat', 'stmt'), '>=', None),
 ]
 
 def _get (env, expr):
@@ -53,7 +52,7 @@ def typeof (env, expr):
             [_, typ, ip, op] = expr
             if any (name == ip for (_, _, name, _) in env):
                 raise ValueError (f'Reused name {ip} at {expr} with {env}')
-            typop = typeof (env + [('assume', typ, ip, None)],
+            typop = typeof (env + [('typesign', typ, ip, None)],
                             op)
             return ('->', typ, typop)
         # Application
