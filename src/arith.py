@@ -48,7 +48,7 @@ def typeof (env, expr):
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         [_, *inlist, out] = typ
         if inlist != types:
-            raise ValueError (f'Function type mismatch at {expr} with {inv}')
+            raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
 
 DefaultEnv = [
@@ -67,11 +67,3 @@ DefaultEnv = [
     ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
 ]
 
-if __name__ == '__main__':
-    # Run tests.
-    print (typeof (DefaultEnv,
-                   ('S', 'O')))
-    print (typeof (DefaultEnv,
-                   ('forall', ('=>', 'nat', 'x', ('=', 'x', 'x')))))
-    print (typeof (DefaultEnv,
-                   ('=>', 'nat', 'x', ('+', 'x', ('S', ('S', 'O'))))))
