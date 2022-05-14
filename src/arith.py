@@ -69,4 +69,5 @@ DefaultEnv = [
 
 print (typeof (DefaultEnv,
                ('S', 'O')))
-
+print (typeof (DefaultEnv,
+               ('forall', ('=>', 'nat', 'x', ('=', 'x', 'x')))))
