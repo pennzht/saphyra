@@ -9,6 +9,22 @@
 # assume prop P
 # builtin
 
+DefaultEnv = [
+    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
+    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
+    ('builtin', 'nat', 'O', None),
+    ('builtin', ('->', 'nat', 'nat'), 'S', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '+', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '*', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '^', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '!=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
+]
+
 def _get (env, expr):
     for (envtype, typ, name, value) in env:
         if name == expr:
@@ -50,20 +66,4 @@ def typeof (env, expr):
         if inlist != types:
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
-
-DefaultEnv = [
-    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
-    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
-    ('builtin', 'nat', 'O', None),
-    ('builtin', ('->', 'nat', 'nat'), 'S', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '+', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '*', None),
-    ('builtin', ('->', 'nat', 'nat', 'nat'), '^', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '!=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<=', None),
-    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
-]
 
