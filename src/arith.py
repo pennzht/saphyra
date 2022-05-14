@@ -41,21 +41,32 @@ def typeof (env, expr):
         if ans is None:
             raise ValueError (f'Function {head} at {expr} not found with {env}')
         (envtype, typ, name, value) = ans
-        # pass
-        pass
+        # Check application correctness
+        [_, *params] = expr
+        types = [typeof (env, p) for p in params]
+        if not (isinstance (typ, tuple) and typ[0] == '->'):
+            raise ValueError (f'Function type mismatch at {expr} with {env}')
+        [_, *inlist, out] = typ
+        if inlist != types:
+            raise ValueError (f'Function type mismatch at {expr} with {inv}')
+        return out
 
 DefaultEnv = [
-    ('builtin', 'forall', ('->', ('->', 'nat', 'stmt'), 'stmt'), None),
-    ('builtin', 'exists', ('->', ('->', 'nat', 'stmt'), 'stmt'), None),
-    ('builtin', 'O', 'nat', None),
-    ('builtin', 'S', ('->', 'nat', 'nat'), None),
-    ('builtin', '+', ('->', 'nat', 'nat', 'nat'), None),
-    ('builtin', '*', ('->', 'nat', 'nat', 'nat'), None),
-    ('builtin', '^', ('->', 'nat', 'nat', 'nat'), None),
-    ('builtin', '=', ('->', 'nat', 'nat', 'stmt'), None),
-    ('builtin', '!=', ('->', 'nat', 'nat', 'stmt'), None),
-    ('builtin', '<', ('->', 'nat', 'nat', 'stmt'), None),
-    ('builtin', '>', ('->', 'nat', 'nat', 'stmt'), None),
-    ('builtin', '<=', ('->', 'nat', 'nat', 'stmt'), None),
-    ('builtin', '>=', ('->', 'nat', 'nat', 'stmt'), None),
+    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'forall', None),
+    ('builtin', ('->', ('->', 'nat', 'stmt'), 'stmt'), 'exists', None),
+    ('builtin', 'nat', 'O', None),
+    ('builtin', ('->', 'nat', 'nat'), 'S', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '+', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '*', None),
+    ('builtin', ('->', 'nat', 'nat', 'nat'), '^', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '!=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '<=', None),
+    ('builtin', ('->', 'nat', 'nat', 'stmt'), '>=', None),
 ]
+
+print (typeof (DefaultEnv,
+               ('S', 'O')))
+
