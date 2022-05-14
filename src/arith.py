@@ -70,6 +70,7 @@ def typeof (env, expr):
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
 
-# Statement
-# (env, stmt)
+# Statements
+# (name, (origin-name, origin-parts), stmt)
+# (name, push / pop)
 
