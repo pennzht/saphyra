@@ -71,3 +71,5 @@ print (typeof (DefaultEnv,
                ('S', 'O')))
 print (typeof (DefaultEnv,
                ('forall', ('=>', 'nat', 'x', ('=', 'x', 'x')))))
+print (typeof (DefaultEnv,
+               ('=>', 'nat', 'x', ('+', 'x', ('S', ('S', 'O'))))))
