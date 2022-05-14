@@ -1,11 +1,13 @@
 # Checks an arithmetic theory.
 
 # Env items
-# def nat x ...
-# def (-> nat stmt) P ...
+# def
+#     def nat x <def>
+#     def (-> nat nat) f <def>
+#     def (-> nat stmt) P <def>
 # typesign type name None
 # assume None None prop
-# fresh nat x ...
+# fresh nat x None
 
 DefaultEnv = [
     ('typesign', ('->', 'stmt', 'stmt'), 'not', None),
