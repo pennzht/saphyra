@@ -10,6 +10,8 @@
 # fresh nat x None
 
 DefaultEnv = [
+    ('typesign', 'stmt', 'true', None),
+    ('typesign', 'stmt', 'false', None),
     ('typesign', ('->', 'stmt', 'stmt'), 'not', None),
     ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'and', None),
     ('typesign', ('->', 'stmt', 'stmt', 'stmt'), 'or', None),
@@ -76,3 +78,34 @@ def typeof (env, expr):
 # (name, (origin-name, origin-parts), stmt)
 # (name, push / pop)
 
+def is_valid_derivation (axiom, sentences):
+    if axiom == 'and-i':
+        return match (sentences, ['*a', '*b', ('and', '*a', '*b')])
+    elif axiom == 'and-el':
+        return match (sentences, [('and', '*a', '*b'), '*a'])
+    elif axiom == 'and-er':
+        return match (sentences, [('and', '*a', '*b'), '*b'])
+    elif axiom == 'or-il':
+        return match (sentences, ['*a', ('or', '*a', '*b')])
+    elif axiom == 'or-ir':
+        return match (sentences, ['*b', ('or', '*a', '*b')])
+    elif axiom == 'or-e':
+        return match (sentences, [('or', '*a', '*b'), ('impl', '*a', '*c'), ('impl', '*b', '*c'), '*c'])
+    elif axiom == 'true-i':
+        return match (sentences, ['true'])
+    elif axiom == 'false-e':
+        return match (sentences, [('impl', 'false', '*a')])
+    elif axiom == 'not-i':
+        return match (sentences, [('impl', '*a', 'false'), ('not', '*a')])
+    elif axiom == 'not-e':
+        return match (sentences, [('not', '*a'), ('impl', '*a', 'false')])
+    elif axiom == 'impl-e':
+        return match (sentences, [('impl', '*a', '*b'), '*a', '*b'])
+    elif axiom == 'impl-i':
+        pass # impl-introduction
+    elif axiom == 'equiv-el':
+        return match (sentences, [('equiv', '*a', '*b'), ('impl', '*a', '*b')])
+    elif axiom == 'equiv-er':
+        return match (sentences, [('equiv', '*a', '*b'), ('impl', '*b', '*a')])
+    else:
+        pass
