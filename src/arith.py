@@ -135,5 +135,15 @@ def is_valid_derivation (axiom, sentences):
         return match (sentences, [('=', ('+', '*a', 'O'), '*a')])
     elif axiom == '+-S':
         return match (sentences, [('=', ('+', '*a', ('S', '*b')), ('S', ('+', '*a', '*b')))])
+    elif axiom == '*-0':
+        return match (sentences, [('=', ('*', '*a', 'O'), 'O')])
+    elif axiom == '*-S':
+        return match (sentences, [('=', ('*', '*a', ('S', '*b')),
+                                   ('+', '*a', ('*', '*a', '*b')))])
+    elif axiom == '^-0':
+        return match (sentences, [('=', ('^', '*a', 'O'), ('S', 'O'))])
+    elif axiom == '^-S':
+        return match (sentences, [('=', ('^', '*a', ('S', '*b')),
+                                   ('*', '*a', ('^', '*a', '*b')))])
     else:
         pass
