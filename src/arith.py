@@ -107,5 +107,33 @@ def is_valid_derivation (axiom, sentences):
         return match (sentences, [('equiv', '*a', '*b'), ('impl', '*a', '*b')])
     elif axiom == 'equiv-er':
         return match (sentences, [('equiv', '*a', '*b'), ('impl', '*b', '*a')])
+    elif axiom == 'forall-i':
+        pass
+    elif axiom == 'forall-e':
+        pass
+    elif axiom == 'exists-i':
+        pass
+    elif axiom == 'exists-e':
+        pass
+    elif axiom == '=-i':
+        return match (sentences, [('=', '*a', '*a')])
+    elif axiom == '=-e':
+        return match (sentences, [('=', '*a', '*b'),
+                                  ('_apply', '*p', '*a'),
+                                  ('_apply', '*p', '*b')])
+    elif axiom == 'peano-0':
+        return match (sentences, [('=', ('S', '*a'), ('S', '*b')),
+                                  ('=', '*a', '*b')])
+    elif axiom == 'peano-1':
+        return match (sentences, [('not', ('=', ('S', '*a'), 'O'))])
+    elif axiom == 'peano-2':
+        return match (sentences, [('_apply', '*p', 'O'),
+                                  ('forall', ('=>', 'nat', 'n', ('impl', ('_apply', '*p', 'n'),
+                                                                 ('_apply', '*p', ('S', 'n'))))),
+                                  ('forall', ('=>', 'nat', 'n', ('_apply', '*p', 'n')))])
+    elif axiom == '+-0':
+        return match (sentences, [('=', ('+', '*a', 'O'), '*a')])
+    elif axiom == '+-S':
+        return match (sentences, [('=', ('+', '*a', ('S', '*b')), ('S', ('+', '*a', '*b')))])
     else:
         pass
