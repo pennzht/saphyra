@@ -108,7 +108,7 @@ def is_valid_derivation (axiom, sentences):
     elif axiom == 'equiv-er':
         return match (sentences, [('equiv', '*a', '*b'), ('impl', '*b', '*a')])
     elif axiom == 'forall-i':
-        pass
+        pass # forall-introduction
     elif axiom == 'forall-e':
         return match (sentences, [('forall', ('=>', '*n', ('**p', '*n'))),
                                   ('**p', '*m')])
@@ -152,4 +152,4 @@ def is_valid_derivation (axiom, sentences):
         return match (sentences, [('=', ('^', '*a', ('S', '*b')),
                                    ('*', '*a', ('^', '*a', '*b')))])
     else:
-        pass
+        raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
