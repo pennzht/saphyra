@@ -110,33 +110,33 @@ def is_valid_derivation (axiom, sentences):
     elif axiom == 'forall-i':
         pass
     elif axiom == 'forall-e':
-        return match (sentences, [('forall', ('=>', '*n', ('_apply', '*p', '*n'))),
-                                  ('_apply', '*p', '*m')])
+        return match (sentences, [('forall', ('=>', '*n', ('**p', '*n'))),
+                                  ('**p', '*m')])
     elif axiom == 'exists-i':
-        return match (sentences, [('_apply', '*p', '*m'),
-                                  ('exists', ('=>', '*n', ('_apply', '*p', '*n')))])
+        return match (sentences, [('**p', '*m'),
+                                  ('exists', ('=>', '*n', ('**p', '*n')))])
     elif axiom == 'exists-e':
-        return match (sentences, [('exists', ('=>', '*n', ('_apply', '*p', '*n'))),
+        return match (sentences, [('exists', ('=>', '*n', ('**p', '*n'))),
                                   ('forall', ('=>', '*n', ('impl',
-                                                           ('_apply', '*p', '*n'),
+                                                           ('**p', '*n'),
                                                            '*q'))),
                                   '*q'])
     elif axiom == '=-i':
         return match (sentences, [('=', '*a', '*a')])
     elif axiom == '=-e':
         return match (sentences, [('=', '*a', '*b'),
-                                  ('_apply', '*p', '*a'),
-                                  ('_apply', '*p', '*b')])
+                                  ('**p', '*a'),
+                                  ('**p', '*b')])
     elif axiom == 'peano-0':
         return match (sentences, [('=', ('S', '*a'), ('S', '*b')),
                                   ('=', '*a', '*b')])
     elif axiom == 'peano-1':
         return match (sentences, [('not', ('=', ('S', '*a'), 'O'))])
     elif axiom == 'peano-2':
-        return match (sentences, [('_apply', '*p', 'O'),
-                                  ('forall', ('=>', 'nat', 'n', ('impl', ('_apply', '*p', 'n'),
-                                                                 ('_apply', '*p', ('S', 'n'))))),
-                                  ('forall', ('=>', 'nat', 'n', ('_apply', '*p', 'n')))])
+        return match (sentences, [('**p', 'O'),
+                                  ('forall', ('=>', 'nat', 'n', ('impl', ('**p', 'n'),
+                                                                 ('**p', ('S', 'n'))))),
+                                  ('forall', ('=>', 'nat', 'n', ('**p', 'n')))])
     elif axiom == '+-0':
         return match (sentences, [('=', ('+', '*a', 'O'), '*a')])
     elif axiom == '+-S':
