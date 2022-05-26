@@ -102,13 +102,29 @@ def is_valid_derivation (axiom, sentences):
     elif axiom == 'impl-e':
         return match (sentences, [('impl', '*a', '*b'), '*a', '*b'])
     elif axiom == 'impl-i':
-        pass # impl-introduction
+        # impl introduction
+        if len (sentences) != 2:
+            return False
+        [(env1, stmt1), (env2, stmt2)] = sentences
+        if not (len (env1) == len (env2) + 1 and env1[:-1] == env2):
+            return False
+        return match ([env1[-1], stmt1, stmt2],
+                      ['*a', '*b', ('impl', '*a', '*b')])
     elif axiom == 'equiv-el':
         return match (sentences, [('equiv', '*a', '*b'), ('impl', '*a', '*b')])
     elif axiom == 'equiv-er':
         return match (sentences, [('equiv', '*a', '*b'), ('impl', '*b', '*a')])
     elif axiom == 'forall-i':
-        pass # forall-introduction
+        # forall introduction
+        if len (sentences) != 2:
+            return False
+        [(env1, stmt1), (env2, stmt2)] = sentences
+        if not (len (env1) == len (env2) + 1 and env1[:-1] == env2):
+            return False
+        return match ([env1[-1], stmt1, stmt2],
+                      [('fresh', 'nat', '*a', None),
+                       '*s',
+                       ('forall', ('=>', '*a', '*s'))])
     elif axiom == 'forall-e':
         return match (sentences, [('forall', ('=>', '*n', ('**p', '*n'))),
                                   ('**p', '*m')])
