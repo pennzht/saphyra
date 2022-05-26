@@ -110,11 +110,17 @@ def is_valid_derivation (axiom, sentences):
     elif axiom == 'forall-i':
         pass
     elif axiom == 'forall-e':
-        pass
+        return match (sentences, [('forall', ('=>', '*n', ('_apply', '*p', '*n'))),
+                                  ('_apply', '*p', '*m')])
     elif axiom == 'exists-i':
-        pass
+        return match (sentences, [('_apply', '*p', '*m'),
+                                  ('exists', ('=>', '*n', ('_apply', '*p', '*n')))])
     elif axiom == 'exists-e':
-        pass
+        return match (sentences, [('exists', ('=>', '*n', ('_apply', '*p', '*n'))),
+                                  ('forall', ('=>', '*n', ('impl',
+                                                           ('_apply', '*p', '*n'),
+                                                           '*q'))),
+                                  '*q'])
     elif axiom == '=-i':
         return match (sentences, [('=', '*a', '*a')])
     elif axiom == '=-e':
