@@ -74,6 +74,10 @@ def typeof (env, expr):
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
 
+def match (form, pattern):
+    'Returns whether [form] matches [pattern].'
+    pass
+
 # Statements
 # (name, (origin-name, origin-parts), stmt)
 # (name, push / pop)
