@@ -74,9 +74,31 @@ def typeof (env, expr):
             raise ValueError (f'Function type mismatch at {expr} with {env}')
         return out
 
+def isseq (o):
+    return isinstance (o, tuple) or isinstance (o, list)
+
 def match (form, pattern):
-    'Returns whether [form] matches [pattern].'
-    pass
+    '''Returns whether [form] matches [pattern].
+
+    Returns a nonempty object if match succeeds, and
+    [False] if match fails.'''
+    if isseq (pattern) and len (pattern) == 2 and pattern[0].startswith('**'):
+        # Application pattern
+        pass # TODO
+
+    if isseq (pattern):
+        if not (isseq (form) and len (form) == len (pattern)):
+            return False
+        ans = {1: True}
+        for (subf, subp) in zip (form, pattern):
+            subm = match (subf, subp)
+            ans = mergematch (ans, subm)
+            if not ans:
+                return False
+        return ans
+
+    elif isinstance (pattern, str):
+        pass # TODO
 
 # Statements
 # (name, (origin-name, origin-parts), stmt)
