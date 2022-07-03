@@ -77,6 +77,17 @@ def typeof (env, expr):
 def isseq (o):
     return isinstance (o, tuple) or isinstance (o, list)
 
+def mergematch (m1, m2):
+    ans = {**m1}
+    for (a, b) in m2.items ():
+        if a not in ans:
+            ans[a] = b
+        elif ans[a] == b:
+            pass
+        else:
+            return False
+    return ans
+
 def match (form, pattern):
     '''Returns whether [form] matches [pattern].
 
@@ -84,6 +95,7 @@ def match (form, pattern):
     [False] if match fails.'''
     if isseq (pattern) and len (pattern) == 2 and pattern[0].startswith('**'):
         # Application pattern
+        # TODO: use delayed match; afterprocessing for match
         pass # TODO
 
     if isseq (pattern):
@@ -98,7 +110,13 @@ def match (form, pattern):
         return ans
 
     elif isinstance (pattern, str):
-        pass # TODO
+        if pattern.startswith ('*'):
+            # placeholder
+            return {1: True, pattern: form}
+        elif pattern == form:
+            return {1: True}
+        else:
+            return False
 
 # Statements
 # (name, (origin-name, origin-parts), stmt)
