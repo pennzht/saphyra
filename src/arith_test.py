@@ -22,6 +22,11 @@ class MatchTest (unittest.TestCase):
                                   ('and', ('>', '1', '0'), ('>', '2', '1'))],
                                  ['*a', '*b', ('and', '*a', '*b')]),
                           {1: True, '*a': ('>', '1', '0'), '*b': ('>', '2', '1')})
+        self.assertEqual (match (['P',
+                                  ('->', 'P', 'Q'),
+                                  ('->', 'Q', 'R')],
+                                 ['*a', ('->', '*a', '*b'), ('->', '*b', '*c')]),
+                          {1: True, '*a': 'P', '*b': 'Q', '*c': 'R'})
 
 if __name__ == '__main__':
     unittest.main ()
