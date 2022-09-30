@@ -30,7 +30,7 @@ def _tokens (string):
             # Handle parentheses
             if char in _OPENS:
                 yield _OPEN
-            elif char in CLOSES:
+            elif char in _CLOSES:
                 yield _CLOSE
         else:
             queue.append (char)
