@@ -122,6 +122,10 @@ def match (form, pattern):
 # (name, (origin-name, origin-parts), stmt)
 # (name, push / pop)
 
+# Axioms.
+# The only ones requiring more than `match`
+# are `impl-i` and `forall-i`.
+
 def is_valid_derivation (axiom, sentences):
     if axiom == 'and-i':
         return match (sentences, ['*a', '*b', ('and', '*a', '*b')])
