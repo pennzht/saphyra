@@ -9,6 +9,8 @@
 # assume None None prop
 # fresh nat x None
 
+import expr
+
 DefaultEnv = [
     ('typesign', 'stmt', 'true', None),
     ('typesign', 'stmt', 'false', None),
@@ -125,6 +127,45 @@ def match (form, pattern):
 # Axioms.
 # The only ones requiring more than `match`
 # are `impl-i` and `forall-i`.
+
+AXIOMS = {
+    'and-i':      expr.parseall ('*a *b (and *a *b)'),
+    'and-el':     expr.parseall ('(and *a *b) *a'),
+    'and-er':     expr.parseall ('(and *a *b) *b'),
+
+    'or-il':      expr.parseall ('*a (or *a *b)'),
+    'or-ir':      expr.parseall ('*b (or *a *b)'),
+    'or-e':       expr.parseall ('(or *a *b) (impl *a *c) (impl *b *c) *c'),
+
+    'true-i':     expr.parseall ('true'),
+    'false-e':    expr.parseall ('(impl false *a)'),
+
+    'not-i':      expr.parseall ('(impl *a false) (not *a)'),
+    'not-e':      expr.parseall ('(not *a) (impl *a false)'),
+
+    'impl-e':     expr.parseall ('(impl *a *b) *a *b'),
+
+    'equiv-el':   expr.parseall ('(equiv *a *b) (impl *a *b)'),
+    'equiv-er':   expr.parseall ('(equiv *a *b) (impl *b *a)'),
+
+    'forall-e':   expr.parseall ('(forall (=> *n (**p *n))) (**p *m)'),
+
+    'exists-i':   expr.parseall ('(**p *m) (exists (=> *n (**p *n)))'),
+    'exists-e':   expr.parseall ('(exists (=> *n (**p *n))) (forall (=> *n (impl (**p *n) *q))) *q'),
+
+    '=-i':        expr.parseall ('(= *a *a)'),
+    '=-e':        expr.parseall ('(= *a *b) (**p *a) (**p *b)'),
+
+    'peano-0':    expr.parseall ('(= (S *a) (S *b)) (= *a *b)'),
+    'peano-1':    expr.parseall ('(not (= (S *a) O))'),
+    'peano-2':    expr.parseall ('(**p O) (forall (=> nat n (impl (**p n) (**p (S n))))) (forall (=> nat n (**p n)))'),
+    '+-0':        expr.parseall ('(= (+ *a O) *a)'),
+    '+-S':        expr.parseall ('(= (+ *a (S *b)) (S (+ *a *b)))'),
+    '*-0':        expr.parseall ('(= (* *a O) O)'),
+    '*-S':        expr.parseall ('(= (* *a (S *b)) (+ *a (* *a *b)))'),
+    '^-0':        expr.parseall ('(= (^ *a O) (S O))'),
+    '^-S':        expr.parseall ('(= (^ *a (S *b)) (* *a (^ *a *b)))'),
+}
 
 def is_valid_derivation (axiom, sentences):
     if axiom == 'and-i':
