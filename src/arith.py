@@ -9,6 +9,9 @@
 # assume None None prop
 # fresh nat x None
 
+# Requirements on env:
+# Every variable should be unique
+
 import expr
 
 DefaultEnv = [
@@ -168,6 +171,7 @@ AXIOMS = {
 }
 
 def is_valid_derivation (axiom, sentences):
+    # TODO: Add 'assumption', 'weakening', 'contraction'
     if axiom == 'and-i':
         return match (sentences, ['*a', '*b', ('and', '*a', '*b')])
     elif axiom == 'and-el':
@@ -258,3 +262,4 @@ def is_valid_derivation (axiom, sentences):
                                    ('*', '*a', ('^', '*a', '*b')))])
     else:
         raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
+
