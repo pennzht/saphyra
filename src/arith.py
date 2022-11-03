@@ -251,6 +251,8 @@ def is_valid_derivation (axiom, sentences):
     # TODO: Add 'assumption', 'weakening', 'contraction'
     # Minimally speaking, only 'assumption' is necessary.
 
+    # TODO: Correct logic for sentences with nonempty environment.
+
     # Simplified
     if axiom in AXIOMS:
         pattern = AXIOMS[axiom]
