@@ -198,7 +198,7 @@ def match (form, pattern):
                 return False # No match
         # Successful match!
         resolved[p] = resolution
-    return {*atomic_matches, *resolved}
+    return {1: True, **atomic_matches, **resolved}
 
 # Statements
 # (name, (origin-name, origin-parts), stmt)
@@ -249,29 +249,14 @@ AXIOMS = {
 
 def is_valid_derivation (axiom, sentences):
     # TODO: Add 'assumption', 'weakening', 'contraction'
-    # Actually, only 'assumption' is necessary.
-    if axiom == 'and-i':
-        return match (sentences, ['*a', '*b', ('and', '*a', '*b')])
-    elif axiom == 'and-el':
-        return match (sentences, [('and', '*a', '*b'), '*a'])
-    elif axiom == 'and-er':
-        return match (sentences, [('and', '*a', '*b'), '*b'])
-    elif axiom == 'or-il':
-        return match (sentences, ['*a', ('or', '*a', '*b')])
-    elif axiom == 'or-ir':
-        return match (sentences, ['*b', ('or', '*a', '*b')])
-    elif axiom == 'or-e':
-        return match (sentences, [('or', '*a', '*b'), ('impl', '*a', '*c'), ('impl', '*b', '*c'), '*c'])
-    elif axiom == 'true-i':
-        return match (sentences, ['true'])
-    elif axiom == 'false-e':
-        return match (sentences, [('impl', 'false', '*a')])
-    elif axiom == 'not-i':
-        return match (sentences, [('impl', '*a', 'false'), ('not', '*a')])
-    elif axiom == 'not-e':
-        return match (sentences, [('not', '*a'), ('impl', '*a', 'false')])
-    elif axiom == 'impl-e':
-        return match (sentences, [('impl', '*a', '*b'), '*a', '*b'])
+    # Minimally speaking, only 'assumption' is necessary.
+
+    # Simplified
+    if axiom in AXIOMS:
+        pattern = AXIOMS[axiom]
+        return match (sentences, pattern)
+
+    # Other cases
     elif axiom == 'impl-i':
         # impl introduction
         if len (sentences) != 2:
@@ -281,10 +266,6 @@ def is_valid_derivation (axiom, sentences):
             return False
         return match ([env1[-1], stmt1, stmt2],
                       ['*a', '*b', ('impl', '*a', '*b')])
-    elif axiom == 'equiv-el':
-        return match (sentences, [('equiv', '*a', '*b'), ('impl', '*a', '*b')])
-    elif axiom == 'equiv-er':
-        return match (sentences, [('equiv', '*a', '*b'), ('impl', '*b', '*a')])
     elif axiom == 'forall-i':
         # forall introduction
         if len (sentences) != 2:
@@ -296,48 +277,6 @@ def is_valid_derivation (axiom, sentences):
                       [('fresh', 'nat', '*a', None),
                        '*s',
                        ('forall', ('=>', '*a', '*s'))])
-    elif axiom == 'forall-e':
-        return match (sentences, [('forall', ('=>', '*n', ('**p', '*n'))),
-                                  ('**p', '*m')])
-    elif axiom == 'exists-i':
-        return match (sentences, [('**p', '*m'),
-                                  ('exists', ('=>', '*n', ('**p', '*n')))])
-    elif axiom == 'exists-e':
-        return match (sentences, [('exists', ('=>', '*n', ('**p', '*n'))),
-                                  ('forall', ('=>', '*n', ('impl',
-                                                           ('**p', '*n'),
-                                                           '*q'))),
-                                  '*q'])
-    elif axiom == '=-i':
-        return match (sentences, [('=', '*a', '*a')])
-    elif axiom == '=-e':
-        return match (sentences, [('=', '*a', '*b'),
-                                  ('**p', '*a'),
-                                  ('**p', '*b')])
-    elif axiom == 'peano-0':
-        return match (sentences, [('=', ('S', '*a'), ('S', '*b')),
-                                  ('=', '*a', '*b')])
-    elif axiom == 'peano-1':
-        return match (sentences, [('not', ('=', ('S', '*a'), 'O'))])
-    elif axiom == 'peano-2':
-        return match (sentences, [('**p', 'O'),
-                                  ('forall', ('=>', 'nat', 'n', ('impl', ('**p', 'n'),
-                                                                 ('**p', ('S', 'n'))))),
-                                  ('forall', ('=>', 'nat', 'n', ('**p', 'n')))])
-    elif axiom == '+-O':
-        return match (sentences, [('=', ('+', '*a', 'O'), '*a')])
-    elif axiom == '+-S':
-        return match (sentences, [('=', ('+', '*a', ('S', '*b')), ('S', ('+', '*a', '*b')))])
-    elif axiom == '*-O':
-        return match (sentences, [('=', ('*', '*a', 'O'), 'O')])
-    elif axiom == '*-S':
-        return match (sentences, [('=', ('*', '*a', ('S', '*b')),
-                                   ('+', '*a', ('*', '*a', '*b')))])
-    elif axiom == '^-O':
-        return match (sentences, [('=', ('^', '*a', 'O'), ('S', 'O'))])
-    elif axiom == '^-S':
-        return match (sentences, [('=', ('^', '*a', ('S', '*b')),
-                                   ('*', '*a', ('^', '*a', '*b')))])
     else:
         raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
 
