@@ -14,6 +14,11 @@
 
 # Requirements on env:
 # Every variable should be unique
+#
+# Env items in syntax:
+# (fresh <var-symbol>)
+# (assume <stmt>)
+# (def <type> <def-symbol> <definition>)
 
 import expr
 
@@ -144,6 +149,10 @@ def match (form, pattern):
     pattern = tuple (pattern)
     pm_match = _primitive_match (form, pattern)
 
+    # If match fails, return False
+    if not pm_match:
+        return False
+
     atomic_matches = {} # str -> form
     pattern_matches = {} # **p -> [(str, form) *]
     for p, f in pm_match.items ():
@@ -271,8 +280,6 @@ def is_valid_derivation (axiom, sentences):
 
     # Other cases
     elif axiom == 'impl-i':
-        print ('Carrying out impl-i')
-
         # impl introduction
         if len (sentences) != 2:
             return False
@@ -282,8 +289,6 @@ def is_valid_derivation (axiom, sentences):
         return match ([env1[-1], stmt1, stmt2],
                       ['*a', '*b', ('impl', '*a', '*b')])
     elif axiom == 'forall-i':
-        print ('Carrying out forall-i')
-
         # forall introduction
         if len (sentences) != 2:
             return False
@@ -291,7 +296,7 @@ def is_valid_derivation (axiom, sentences):
         if not (len (env1) == len (env2) + 1 and env1[:-1] == env2):
             return False
         return match ([env1[-1], stmt1, stmt2],
-                      [('fresh', 'nat', '*a', None),
+                      [('fresh', '*a'),
                        '*s',
                        ('forall', ('=>', '*a', '*s'))])
     else:

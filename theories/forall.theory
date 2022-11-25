@@ -1,6 +1,9 @@
 [prove #1 [=-i]
        (fresh a) |- (= a a)]
 
+[prove #2 [forall-i #1]
+       |- (forall (=> a (= a a)))]
+
 (comment need better scoping)
 
 (comment
