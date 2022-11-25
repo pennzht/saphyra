@@ -24,12 +24,15 @@ if __name__ == '__main__':
             assert type (label) is str
             assert type (axiom_invocation) is tuple
             assert label not in claims
+            # Construct statement
+            stmt = (tuple (environment), result)
+
             # Verify statement
             (axiom, *precedents) = axiom_invocation
             precedents = [claims[name] for name in precedents]
-            if arith.is_valid_derivation (axiom, [*precedents, result]):
+            if arith.is_valid_derivation (axiom, [*precedents, stmt]):
                 'success'
-                claims[label] = result
+                claims[label] = stmt
             else:
                 raise ProofError (row)
         except ValueError:

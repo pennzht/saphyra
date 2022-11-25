@@ -258,11 +258,21 @@ def is_valid_derivation (axiom, sentences):
 
     # Simplified
     if axiom in AXIOMS:
+        # Ensure all sentences have the same environment.
+        environments = [env for (env, _) in sentences]
+        if not all (x == environments[-1]
+                    for x in environments):
+            return False
+
+        sentences = [result for (_, result) in sentences]
+
         pattern = AXIOMS[axiom]
         return match (sentences, pattern)
 
     # Other cases
     elif axiom == 'impl-i':
+        print ('Carrying out impl-i')
+
         # impl introduction
         if len (sentences) != 2:
             return False
@@ -272,6 +282,8 @@ def is_valid_derivation (axiom, sentences):
         return match ([env1[-1], stmt1, stmt2],
                       ['*a', '*b', ('impl', '*a', '*b')])
     elif axiom == 'forall-i':
+        print ('Carrying out forall-i')
+
         # forall introduction
         if len (sentences) != 2:
             return False
