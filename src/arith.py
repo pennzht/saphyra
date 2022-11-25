@@ -8,6 +8,9 @@
 # typesign type name None
 # assume None None prop
 # fresh nat x None
+#
+# General form
+# [command] [type] [name] [definition]
 
 # Requirements on env:
 # Every variable should be unique

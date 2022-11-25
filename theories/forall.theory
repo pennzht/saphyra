@@ -1,0 +1,9 @@
+[prove #1 [=-i]
+       (fresh a) |- (= a a)]
+
+(comment need better scoping)
+
+(comment
+Example of an environment:
+    (fresh a) (fresh b) (assume (<= a b))
+)
