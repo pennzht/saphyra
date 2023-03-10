@@ -14,5 +14,6 @@
     (forall (=> nat n
                 (or (= n O)
                     (exists (=> nat m (= n (S m)))))))]
-
 )
+
+(comment - developing in this language is very tiring, especially without templates.)
