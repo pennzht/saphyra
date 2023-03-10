@@ -9,10 +9,20 @@
               (exists (=> nat m (= O (S m)))))]
 
 [prove #succ-is-succ [=-i]
-       (fresh n) |- (= (S n) (S n))]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (= (S n) (S n))]
 
 [prove #succ-has-pred [exists-i #succ-is-succ]
-       (fresh n) |- (exists (=> nat m (= (S n) (S m))))]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (exists (=> nat m (= (S n) (S m))))]
+
+[prove #succ-satisf [or-ir #succ-has-pred]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (or (= (S n) O)
+              (exists (=> nat m (= (S n) (S m)))))]
 
 (comment - to be proven
 [prove #end [peano-2 #zero #succ]
