@@ -24,13 +24,25 @@
        |- (or (= (S n) O)
               (exists (=> nat m (= (S n) (S m)))))]
 
-(comment - to be proven
+[prove #succ-satisf-1 [impl-i #succ-satisf]
+       (fresh n)
+       |- (impl
+              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= (S n) O)
+                  (exists (=> nat m (= (S n) (S m))))))]
+
+[prove #succ [forall-i #succ-satisf-1]
+       |- (forall (=> nat n
+            (impl
+              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= (S n) O)
+                  (exists (=> nat m (= (S n) (S m))))))))]
+
 [prove #end [peano-2 #zero #succ]
     |-
     (forall (=> nat n
                 (or (= n O)
                     (exists (=> nat m (= n (S m)))))))]
-)
 
 (comment - developing in this language is very tiring, especially without templates.)
 (comment using __definitions__ would be really helpful.)
