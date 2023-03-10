@@ -8,6 +8,9 @@
        |- (or (= O O)
               (exists (=> nat m (= O (S m)))))]
 
+[prove #succ-is-succ [=-i]
+       (fresh n) |- (= (S n) (S n))]
+
 (comment - to be proven
 [prove #end [peano-2 #zero #succ]
     |-
