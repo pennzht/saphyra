@@ -198,6 +198,8 @@ def match (form, pattern):
                 return False # No match
         # Otherwise, enter match
         goals = list (unified_goals.items ())
+        if len (goals) <= 1:
+            continue  # Trivial match
         for i in range (1, len (goals)):
             (a, pa) = goals[0]
             (b, pb) = goals[i]
