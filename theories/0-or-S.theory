@@ -11,6 +11,9 @@
 [prove #succ-is-succ [=-i]
        (fresh n) |- (= (S n) (S n))]
 
+[prove #succ-has-pred [exists-i #succ-is-succ]
+       (fresh n) |- (exists (=> nat m (= (S n) (S m))))]
+
 (comment - to be proven
 [prove #end [peano-2 #zero #succ]
     |-
@@ -20,3 +23,5 @@
 )
 
 (comment - developing in this language is very tiring, especially without templates.)
+(comment using __definitions__ would be really helpful.)
+

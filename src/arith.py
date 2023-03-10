@@ -91,6 +91,7 @@ def isseq (o):
     return isinstance (o, tuple) or isinstance (o, list)
 
 def mergematch (m1, m2):
+    if False in [m1, m2]: return False
     ans = {**m1}
     for (a, b) in m2.items ():
         if a not in ans:
@@ -244,7 +245,7 @@ AXIOMS = {
 
     'forall-e':   expr.parseall ('(forall (=> nat *n (**p *n))) (**p *m)'),
 
-    'exists-i':   expr.parseall ('(**p *m) (exists (=> *n (**p *n)))'),
+    'exists-i':   expr.parseall ('(**p *m) (exists (=> nat *n (**p *n)))'),
     'exists-e':   expr.parseall ('(exists (=> nat *n (**p *n))) (forall (=> nat *n (impl (**p *n) *q))) *q'),
 
     '=-i':        expr.parseall ('(= *a *a)'),
