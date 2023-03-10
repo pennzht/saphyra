@@ -242,10 +242,10 @@ AXIOMS = {
     'equiv-el':   expr.parseall ('(equiv *a *b) (impl *a *b)'),
     'equiv-er':   expr.parseall ('(equiv *a *b) (impl *b *a)'),
 
-    'forall-e':   expr.parseall ('(forall (=> *n (**p *n))) (**p *m)'),
+    'forall-e':   expr.parseall ('(forall (=> nat *n (**p *n))) (**p *m)'),
 
     'exists-i':   expr.parseall ('(**p *m) (exists (=> *n (**p *n)))'),
-    'exists-e':   expr.parseall ('(exists (=> *n (**p *n))) (forall (=> *n (impl (**p *n) *q))) *q'),
+    'exists-e':   expr.parseall ('(exists (=> nat *n (**p *n))) (forall (=> nat *n (impl (**p *n) *q))) *q'),
 
     '=-i':        expr.parseall ('(= *a *a)'),
     '=-e':        expr.parseall ('(= *a *b) (**p *a) (**p *b)'),
@@ -300,7 +300,7 @@ def is_valid_derivation (axiom, sentences):
         return match ([env1[-1], stmt1, stmt2],
                       [('fresh', '*a'),
                        '*s',
-                       ('forall', ('=>', '*a', '*s'))])
+                       ('forall', ('=>', 'nat', '*a', '*s'))])
     else:
         raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
 

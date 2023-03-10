@@ -1,0 +1,18 @@
+[comment
+    every natural number is either 0 or a successor]
+
+[prove #zero-0 [=-i]
+       |- (= O O)]
+
+[prove #zero [or-il #zero-0]
+       |- (or (= O O)
+              (exists (=> nat m (= O (S m)))))]
+
+(comment - to be proven
+[prove #end [peano-2 #zero #succ]
+    |-
+    (forall (=> nat n
+                (or (= n O)
+                    (exists (=> nat m (= n (S m)))))))]
+
+)
