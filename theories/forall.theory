@@ -1,0 +1,15 @@
+[prove #1 [=-i]
+       (fresh a) |- (= a a)]
+
+[prove #2 [forall-i #1]
+       |- (forall (=> nat a (= a a)))]
+
+[prove #3 [forall-e #2]
+       |- (= (S O) (S O))]
+
+(comment need better scoping)
+
+(comment
+Example of an environment:
+    (fresh a) (fresh b) (assume (<= a b))
+)

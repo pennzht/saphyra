@@ -1,0 +1,5 @@
+[prove #1 [peano-1]
+       |-
+       (not (= (S (S O))
+             O))]
+

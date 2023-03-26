@@ -1,0 +1,49 @@
+[comment
+    every natural number is either 0 or a successor]
+
+[prove #zero-0 [=-i]
+       |- (= O O)]
+
+[prove #zero [or-il #zero-0]
+       |- (or (= O O)
+              (exists (=> nat m (= O (S m)))))]
+
+[prove #succ-is-succ [=-i]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (= (S n) (S n))]
+
+[prove #succ-has-pred [exists-i #succ-is-succ]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (exists (=> nat m (= (S n) (S m))))]
+
+[prove #succ-satisf [or-ir #succ-has-pred]
+       (fresh n)
+       (or (= n O) (exists (=> nat m (= n (S m)))))
+       |- (or (= (S n) O)
+              (exists (=> nat m (= (S n) (S m)))))]
+
+[prove #succ-satisf-1 [impl-i #succ-satisf]
+       (fresh n)
+       |- (impl
+              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= (S n) O)
+                  (exists (=> nat m (= (S n) (S m))))))]
+
+[prove #succ [forall-i #succ-satisf-1]
+       |- (forall (=> nat n
+            (impl
+              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= (S n) O)
+                  (exists (=> nat m (= (S n) (S m))))))))]
+
+[prove #end [peano-2 #zero #succ]
+    |-
+    (forall (=> nat n
+                (or (= n O)
+                    (exists (=> nat m (= n (S m)))))))]
+
+(comment - developing in this language is very tiring, especially without templates.)
+(comment using __definitions__ would be really helpful.)
+

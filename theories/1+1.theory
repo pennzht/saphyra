@@ -1,0 +1,15 @@
+(comment
+ structure
+ ("prove" label (axiom axiom-param*) environment* |- result))
+
+[prove #1 [+-S]
+       |- (= (+ (S O) (S O))
+             (S (+ (S O) O)))]
+
+[prove #2 [+-O]
+       |- (= (+ (S O) O)
+             (S O))]
+
+[prove #3 [=-e #2 #1]
+       |- (= (+ (S O) (S O))
+             (S (S O)))]
