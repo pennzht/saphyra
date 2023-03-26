@@ -203,7 +203,7 @@ def is_valid_derivation (axiom, sentences):
         pattern = AXIOMS[axiom]
         return match (sentences, pattern)
 
-    # Other cases
+    # Impl-i, Forall-i
     elif axiom == 'impl-i':
         # impl introduction
         if len (sentences) != 2:
@@ -224,6 +224,7 @@ def is_valid_derivation (axiom, sentences):
                       [('fresh', '*a'),
                        '*s',
                        ('forall', ('=>', 'nat', '*a', '*s'))])
+
     else:
         raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
 
