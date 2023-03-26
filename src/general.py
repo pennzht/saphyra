@@ -168,6 +168,22 @@ def match (form, pattern):
         resolved[p] = resolution
     return {1: True, **atomic_matches, **resolved}
 
+def match_defs (lhs, rhs, form1, form2):
+    if form1 == form2: return {1: True}
+    x = match ([form1, form2], [lhs, rhs])
+    if x: return x
+
+    if len (form1) == len (form2):
+        ans = {1: True}
+        for (p1, p2) in zip (form1, form2):
+            new_match = match_defs (lhs, rhs, p1, p2)
+            ans = mergematch (ans,
+                              new_match)
+            if not ans: return False
+        return ans
+    else:
+        return False
+
 # Statements
 # (name, (origin-name, origin-parts), stmt)
 # (name, push / pop)
@@ -226,6 +242,16 @@ def is_valid_derivation (axiom, sentences):
                        '*s',
                        ('forall', ('=>', 'nat', '*a', '*s'))])
 
+    # Def-unfold
+    elif axiom == 'def-fold':
+        [(env1, stmt1), equiv, (env2, stmt2)] = sentences
+        [_arrow, _simple, _complex] = equiv
+        return match_defs (_complex, _simple, stmt1, stmt2)
+    elif axiom == 'def-unfold':
+        [(env1, stmt1), equiv, (env2, stmt2)] = sentences
+        [_arrow, _simple, _complex] = equiv
+        return match_defs (_simple, _complex, stmt1, stmt2)
+
     else:
         raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
 
@@ -241,9 +267,20 @@ if __name__ == '__main__':
     source = sys.stdin.read ()
     parsed = expr.parseall (source)
     claims = {}
+    definitions = {}
     for row in parsed:
         if type (row) is tuple and row and row[0] == 'comment':
             continue # Just a comment.
+
+        if type (row) is tuple and row and row[0] == 'define':
+            # Run a definition.
+            (_define, name, nametype, form1, form2) = row
+            if name in definitions:
+                raise ProofError (f'Redefinition of name {name}')
+            definitions[name] = ['<->', form1, form2]
+            claims[name] = definitions[name]
+            continue
+
         try:
             (_prove, label, axiom_invocation, *environment, _turnstile, result) = row
             assert _prove == 'prove'
