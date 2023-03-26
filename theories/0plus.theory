@@ -1,0 +1,13 @@
+[comment
+ 0 + x = x]
+
+[define 0+x=x (=> nat stmt)
+    (0+x=x *x)
+    (= (+ O *x) *x)]
+
+[prove #for-0-1 [+-O]
+    |- (= (+ O O) O)]
+
+[prove #for-0-2 [def-fold #for-0-1 0+x=x]
+    |- (0+x=x O)]
+
