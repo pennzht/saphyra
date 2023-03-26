@@ -192,8 +192,6 @@ def match_defs (lhs, rhs, form1, form2):
 # The only ones requiring more than `match`
 # are `impl-i` and `forall-i`.
 
-# TODO: extract axioms!
-
 _axioms_arith = expr.data ('arith.blue')
 
 AXIOMS = {
