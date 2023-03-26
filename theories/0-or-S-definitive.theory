@@ -2,12 +2,25 @@
     every natural number is either 0 or a successor
     written in a style with definitions!]
 
+[comment
+    format for a definition
+    [define <name> <type> <lambda>]
+]
+
+[define zero-or-succ [=> nat stmt]
+    (=> n
+        (or (= n O)
+            (exists (=> nat x (= n (S x))))))]
+
 [prove #zero-0 [=-i]
        |- (= O O)]
 
-[prove #zero [or-il #zero-0]
+[prove #zero-1 [or-il #zero-0]
        |- (or (= O O)
               (exists (=> nat m (= O (S m)))))]
+
+[prove #zero [def #zero-1 zero-or-succ]
+       |- (zero-or-succ O)]
 
 [prove #succ-is-succ [=-i]
        (fresh n)
@@ -32,19 +45,20 @@
               (or (= (S n) O)
                   (exists (=> nat m (= (S n) (S m))))))]
 
-[prove #succ [forall-i #succ-satisf-1]
+[prove #succ-satisf-2 [forall-i #succ-satisf-1]
        |- (forall (=> nat n
             (impl
               (or (= n O) (exists (=> nat m (= n (S m)))))
               (or (= (S n) O)
                   (exists (=> nat m (= (S n) (S m))))))))]
 
+[prove #succ [def #succ-satisf-2 zero-or-succ]
+       |- (forall (=> nat n
+            (impl
+              (zero-or-succ n)
+              (zero-or-succ (S n)))))]
+
 [prove #end [peano-2 #zero #succ]
     |-
-    (forall (=> nat n
-                (or (= n O)
-                    (exists (=> nat m (= n (S m)))))))]
-
-(comment - developing in this language is very tiring, especially without templates.)
-(comment using __definitions__ would be really helpful.)
+    (forall (=> nat n (zero-or-succ n)))]
 
