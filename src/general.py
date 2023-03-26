@@ -240,6 +240,12 @@ def is_valid_derivation (axiom, sentences):
                        '*s',
                        ('forall', ('=>', 'nat', '*a', '*s'))])
 
+    # Assumption
+    elif axiom == 'assu':
+        [(env, stmt)] = sentences
+        env = [s for s in env if not match (s, ['fresh', '*x'])]
+        return stmt in env
+
     # Def-unfold
     elif axiom == 'def-fold':
         [(env1, stmt1), equiv, (env2, stmt2)] = sentences

@@ -11,3 +11,8 @@
 [prove #for-0-2 [def-fold #for-0-1 0+x=x]
     |- (0+x=x O)]
 
+[prove #for-S-1 [assu]
+    (fresh n)
+    (0+x=x n)
+    |- (0+x=x n)]
+
