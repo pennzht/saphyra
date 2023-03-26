@@ -1,0 +1,36 @@
+    and-i       [*a *b (and *a *b)]
+    and-el      [(and *a *b) *a]
+    and-er      [(and *a *b) *b]
+
+    or-il       [*a (or *a *b)]
+    or-ir       [*b (or *a *b)]
+    or-e        [(or *a *b) (impl *a *c) (impl *b *c) *c]
+
+    true-i      [true]
+    false-e     [(impl false *a)]
+
+    not-i       [(impl *a false) (not *a)]
+    not-e       [(not *a) (impl *a false)]
+
+    impl-e      [(impl *a *b) *a *b]
+
+    equiv-el    [(equiv *a *b) (impl *a *b)]
+    equiv-er    [(equiv *a *b) (impl *b *a)]
+
+    forall-e    [(forall (=> nat *n (**p *n))) (**p *m)]
+
+    exists-i    [(**p *m) (exists (=> nat *n (**p *n)))]
+    exists-e    [(exists (=> nat *n (**p *n))) (forall (=> nat *n (impl (**p *n) *q))) *q]
+
+    =-i         [(= *a *a)]
+    =-e         [(= *a *b) (**p *a) (**p *b)]
+
+    peano-0     [(= (S *a) (S *b)) (= *a *b)]
+    peano-1     [(not (= (S *a) O))]
+    peano-2     [(**p O) (forall (=> nat n (impl (**p n) (**p (S n))))) (forall (=> nat n (**p n)))]
+    +-O         [(= (+ *a O) *a)]
+    +-S         [(= (+ *a (S *b)) (S (+ *a *b)))]
+    *-O         [(= (* *a O) O)]
+    *-S         [(= (* *a (S *b)) (+ *a (* *a *b)))]
+    ^-O         [(= (^ *a O) (S O))]
+    ^-S         [(= (^ *a (S *b)) (* *a (^ *a *b)))]
