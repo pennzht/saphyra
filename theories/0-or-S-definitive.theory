@@ -4,13 +4,14 @@
 
 [comment
     format for a definition
-    [define <name> <type> <lambda>]
+    [define <name> <type> <form1> <form2>]
+    <form1> = <form2> or <form1> equiv <form2>
 ]
 
 [define zero-or-succ [=> nat stmt]
-    (=> n
-        (or (= n O)
-            (exists (=> nat x (= n (S x))))))]
+    (zero-or-succ var1)
+    (or (= var1 O)
+        (exists (=> nat var2 (= var1 (S var2)))))]
 
 [prove #zero-0 [=-i]
        |- (= O O)]
