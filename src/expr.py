@@ -66,3 +66,9 @@ def parse (string):
     else:
         raise ParseError ('Too many expressions')
 
+def data (filename):
+    with open (filename, 'r') as f:
+        ans = f.read ()
+        return parseall (ans)
+
+

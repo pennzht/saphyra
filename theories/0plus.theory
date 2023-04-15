@@ -1,0 +1,45 @@
+[comment
+ This document proves that 0 + x = x holds for all natural numbers x,
+ using definitions to simplify the process.]
+
+[define P (=> nat stmt)
+    (P *x)
+    (= (+ O *x) *x)]
+
+[prove #for-0-1 [+-O]
+    |- (= (+ O O) O)]
+
+[prove #for-0-2 [def-fold #for-0-1 P]
+    |- (P O)]
+
+[prove #for-S-1 [assu]
+    (fresh n)
+    (P n)
+    |- (P n)]
+
+[prove #for-S-2 [def-unfold #for-S-1 P]
+    (fresh n)
+    (P n)
+    |- (= (+ O n) n)]
+
+[prove #for-S-3 [+-S]
+    (fresh n) (P n) |- (= (+ O (S n)) (S (+ O n)))]
+
+[prove #for-S-4 [=-e #for-S-2 #for-S-3]
+    (fresh n) (P n) |- (= (+ O (S n)) (S n))]
+
+[prove #for-S-5 [def-fold #for-S-4 P]
+    (fresh n) (P n) |- (P (S n))]
+
+[prove #for-S-6 [impl-i #for-S-5]
+    (fresh n) |- (impl (P n) (P (S n)))]
+
+[prove #for-S-7 [forall-i #for-S-6]
+    |- (forall (=> nat n (impl (P n) (P (S n)))))]
+
+[prove #for-all [peano-2 #for-0-2 #for-S-7]
+    |- (forall (=> nat n (P n)))]
+
+[prove #for-all-end [def-unfold #for-all P]
+    |- (forall (=> nat n (= (+ O n) n)))]
+
