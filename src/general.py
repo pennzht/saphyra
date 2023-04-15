@@ -267,9 +267,8 @@ class ProofSyntaxError (Exception):
     def __init__ (self, claim): self.claim = claim
     def __repl__ (self): return f'ProofSyntaxError: {self.claim}'
 
-if __name__ == '__main__':
-    source = sys.stdin.read ()
-    parsed = expr.parseall (source)
+def verify (theory_text, file_name='(unnamed)'):
+    parsed = expr.parseall (theory_text)
     claims = {}
     definitions = {}
     for row in parsed:
@@ -308,6 +307,14 @@ if __name__ == '__main__':
         except AssertionError:
             raise ProofSyntaxError (row)
     # Success!
-    print (f'{len (claims)} claims verified.')
+    print (f'{len (claims)} claims verified from {file_name}')
+    return True
 
+if __name__ == '__main__':
+    source = sys.stdin.read ()
+    ans = verify (source)
+    if ans:
+        exit (0)
+    else:
+        exit (111)
 
