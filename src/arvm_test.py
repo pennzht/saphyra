@@ -7,6 +7,14 @@ expressions = [
     '(if (> 2 1) 12 34)',
     '(globals [(x) 3] (x))',
     '(globals [(f n) (* n n n)] (f 5))',
+
+    # Complex operation
+    '''
+    (globals [(fib n)
+              (if (> n 1) (+ (fib (- n 1)) (fib (- n 2)))
+                  n)]
+     (fib 6))
+    ''',
 ]
 
 for e in expressions:

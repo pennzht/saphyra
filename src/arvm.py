@@ -36,13 +36,12 @@ def replace_args (args, value_list, body):
 def expand_function (fn, value_list, stack):
     if fn == '+':
         return sum (value_list)
+    elif fn == '-':
+        return value_list[0] - value_list[1]
     elif fn == '*':
         return functools.reduce (operator.mul, value_list, 1)
     elif fn == '>':
         return value_list[0] > value_list[1]
-    elif fn == 'if':
-        a, b, c = value_list
-        return b if a else c
     else:
         # User-defined function
         for elem in stack:
@@ -77,11 +76,22 @@ def step (stack):
         else: pass
     elif tail_type == 'F':
         _, fn, value_list, active_index = stack[-1]
-        if active_index < len (value_list):
-            stack.append (('E', value_list[active_index]))
+        # Special case: if
+        if fn == 'if':
+            if active_index == 0:
+                stack.append (('E', value_list[0]))
+            else:
+                stack.pop ()
+                if value_list[0]:
+                    stack.append (('E', value_list[1]))
+                else:
+                    stack.append (('E', value_list[2]))
         else:
-            stack.pop ()
-            stack.append (('E', expand_function (fn, value_list, stack)))
+            if active_index < len (value_list):
+                stack.append (('E', value_list[active_index]))
+            else:
+                stack.pop ()
+                stack.append (('E', expand_function (fn, value_list, stack)))
     elif tail_type == 'E':
         _, expr = stack.pop ()
         if isinstance (expr, tuple):
