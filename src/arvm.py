@@ -16,10 +16,24 @@ Composed types
 
 Stack structure
 [frame0 frame1 ...... active-frame]
-each frame is: ["F" function value-list active-value-index] or ["V" value] or ["E" expression]
+each frame is one of:
+    ["D" function args-list body]
+    ["F" function value-list active-value-index]
+    ["V" value]
+    ["E" expression]
 '''
 
-def expand_function (fn, value_list):
+def replace_args (args, value_list, body):
+    if type (body) in {list, tuple}:
+        return tuple (replace_args (args, value_list, x)
+                      for x in body)
+    else:
+        for (a, b) in zip (args, value_list):
+            if a == body:
+                return b
+        return body
+
+def expand_function (fn, value_list, stack):
     if fn == '+':
         return sum (value_list)
     elif fn == '*':
@@ -29,7 +43,18 @@ def expand_function (fn, value_list):
     elif fn == 'if':
         a, b, c = value_list
         return b if a else c
-    raise Exception (f'Unidentified function {fn}')
+    else:
+        # User-defined function
+        for elem in stack:
+            if type (elem) is tuple and elem[0] == 'G':
+                # global
+                (_g, name, args, body) = elem
+                if fn == name and len (args) == len (value_list):
+                    # Good, replace
+                    return replace_args (args, value_list, body)
+            else:
+                break
+    return f'Unidentified function {fn}'
 
 def replace_index (l, ind, value):
     l = list (l)
@@ -37,11 +62,14 @@ def replace_index (l, ind, value):
     return tuple (l)
 
 def step (stack):
+    if type (stack) not in {tuple, list}:
+        return stack  # Error
+
     stack = list (stack)
     tail = stack[-1]
     tail_type = tail[0]
     if tail_type == 'V':
-        if len (stack) > 1:
+        if len (stack) > 1 and stack[-2][0] == 'F':
             value = tail[1]
             stack.pop ()
             _f, fn_name, value_list, active_index = stack.pop ()
@@ -53,7 +81,7 @@ def step (stack):
             stack.append (('E', value_list[active_index]))
         else:
             stack.pop ()
-            stack.append (('E', expand_function (fn, value_list)))
+            stack.append (('E', expand_function (fn, value_list, stack)))
     elif tail_type == 'E':
         _, expr = stack.pop ()
         if isinstance (expr, tuple):
@@ -64,4 +92,14 @@ def step (stack):
     return tuple (stack)
 
 def initstack (value):
-    return (('E', value),)
+    ans = []
+    if isinstance (value, tuple) and value and value[0] == 'globals':
+        # Define globals
+        if len (value) >= 2:
+            for (a, b) in value[1:-1]:
+                ans.append (('G', a[0], a[1:], b))
+        ans.append (('E', value[-1]))
+    else:
+        ans.append (('E', value))
+    return tuple (ans)
+
