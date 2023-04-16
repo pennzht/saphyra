@@ -40,8 +40,16 @@ def expand_function (fn, value_list, stack):
         return value_list[0] - value_list[1]
     elif fn == '*':
         return functools.reduce (operator.mul, value_list, 1)
+    elif fn == 'div':
+        return value_list[0] // value_list[1] if value_list[1] else None
+    elif fn == 'mod':
+        return value_list[0] % value_list[1] if value_list[1] else None
+    elif fn == '^':
+        return value_list[0] ** value_list[1] if value_list[1] >= 0 else 0
     elif fn == '>':
         return value_list[0] > value_list[1]
+    elif fn == '>=':
+        return value_list[0] >= value_list[1]
     else:
         # User-defined function
         for elem in stack:
