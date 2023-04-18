@@ -17,17 +17,17 @@
     equiv-el    [(equiv *a *b) (impl *a *b)]
     equiv-er    [(equiv *a *b) (impl *b *a)]
 
-    forall-e    [(forall (=> nat *n (**p *n))) (**p *m)]
+    forall-e    [(forall *n (**p *n)) (**p *m)]
 
-    exists-i    [(**p *m) (exists (=> nat *n (**p *n)))]
-    exists-e    [(exists (=> nat *n (**p *n))) (forall (=> nat *n (impl (**p *n) *q))) *q]
+    exists-i    [(**p *m) (exists *n (**p *n))]
+    exists-e    [(exists *n (**p *n)) (forall *n (impl (**p *n) *q)) *q]
 
     =-i         [(= *a *a)]
     =-e         [(= *a *b) (**p *a) (**p *b)]
 
     peano-0     [(= (S *a) (S *b)) (= *a *b)]
     peano-1     [(not (= (S *a) O))]
-    peano-2     [(**p O) (forall (=> nat n (impl (**p n) (**p (S n))))) (forall (=> nat n (**p n)))]
+    peano-2     [(**p O) (forall n (impl (**p n) (**p (S n)))) (forall n (**p n))]
     +-O         [(= (+ *a O) *a)]
     +-S         [(= (+ *a (S *b)) (S (+ *a *b)))]
     *-O         [(= (* *a O) O)]

@@ -11,61 +11,61 @@
 [define zero-or-succ [=> nat stmt]
     (zero-or-succ *var1)
     (or (= *var1 O)
-        (exists (=> nat *var2 (= *var1 (S *var2)))))]
+        (exists *var2 (= *var1 (S *var2))))]
 
 [prove #zero-0 [=-i]
        |- (= O O)]
 
 [prove #zero-1 [or-il #zero-0]
        |- (or (= O O)
-              (exists (=> nat m (= O (S m)))))]
+              (exists m (= O (S m))))]
 
 [prove #zero [def-fold #zero-1 zero-or-succ]
        |- (zero-or-succ O)]
 
 [prove #succ-is-succ [=-i]
        (fresh n)
-       (or (= n O) (exists (=> nat m (= n (S m)))))
+       (or (= n O) (exists m (= n (S m))))
        |- (= (S n) (S n))]
 
 [prove #succ-has-pred [exists-i #succ-is-succ]
        (fresh n)
-       (or (= n O) (exists (=> nat m (= n (S m)))))
-       |- (exists (=> nat m (= (S n) (S m))))]
+       (or (= n O) (exists m (= n (S m))))
+       |- (exists m (= (S n) (S m)))]
 
 [prove #succ-satisf [or-ir #succ-has-pred]
        (fresh n)
-       (or (= n O) (exists (=> nat m (= n (S m)))))
+       (or (= n O) (exists m (= n (S m))))
        |- (or (= (S n) O)
-              (exists (=> nat m (= (S n) (S m)))))]
+              (exists m (= (S n) (S m))))]
 
 [prove #succ-satisf-1 [impl-i #succ-satisf]
        (fresh n)
        |- (impl
-              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= n O) (exists m (= n (S m))))
               (or (= (S n) O)
-                  (exists (=> nat m (= (S n) (S m))))))]
+                  (exists m (= (S n) (S m)))))]
 
 [prove #succ-satisf-2 [forall-i #succ-satisf-1]
-       |- (forall (=> nat n
+       |- (forall n
             (impl
-              (or (= n O) (exists (=> nat m (= n (S m)))))
+              (or (= n O) (exists m (= n (S m))))
               (or (= (S n) O)
-                  (exists (=> nat m (= (S n) (S m))))))))]
+                  (exists m (= (S n) (S m))))))]
 
 [prove #succ-min1 [def-fold #succ-satisf-2 zero-or-succ]
-       |- (forall (=> nat n
+       |- (forall n
             (impl
-              (or (= n O) (exists (=> nat m (= n (S m)))))
-              (zero-or-succ (S n)))))]
+              (or (= n O) (exists m (= n (S m))))
+              (zero-or-succ (S n))))]
 
 [prove #succ [def-fold #succ-min1 zero-or-succ]
-       |- (forall (=> nat n
+       |- (forall n
             (impl
               (zero-or-succ n)
-              (zero-or-succ (S n)))))]
+              (zero-or-succ (S n))))]
 
 [prove #end [peano-2 #zero #succ]
     |-
-    (forall (=> nat n (zero-or-succ n)))]
+    (forall n (zero-or-succ n))]
 

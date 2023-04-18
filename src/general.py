@@ -238,7 +238,7 @@ def is_valid_derivation (axiom, sentences):
         return match ([env1[-1], stmt1, stmt2],
                       [('fresh', '*a'),
                        '*s',
-                       ('forall', ('=>', 'nat', '*a', '*s'))])
+                       ('forall', '*a', '*s')])
 
     # Assumption
     elif axiom == 'assu':
