@@ -1,0 +1,93 @@
+[comment
+ This document proves that addition is commutative. In other words:
+     a + b = b + a]
+
+[comment
+================
+Part 1 - 0 + x = x]
+
+[define P (=> nat stmt)
+    (P *x)
+    (= (+ O *x) *x)]
+
+[prove #for-0-1 [+-O]
+    |- (= (+ O O) O)]
+
+[prove #for-0-2 [def-fold #for-0-1 P]
+    |- (P O)]
+
+[prove #for-S-1 [assu]
+    (fresh n)
+    (P n)
+    |- (P n)]
+
+[prove #for-S-2 [def-unfold #for-S-1 P]
+    (fresh n)
+    (P n)
+    |- (= (+ O n) n)]
+
+[prove #for-S-3 [+-S]
+    (fresh n) (P n) |- (= (+ O (S n)) (S (+ O n)))]
+
+[prove #for-S-4 [=-e #for-S-2 #for-S-3]
+    (fresh n) (P n) |- (= (+ O (S n)) (S n))]
+
+[prove #for-S-5 [def-fold #for-S-4 P]
+    (fresh n) (P n) |- (P (S n))]
+
+[prove #for-S-6 [impl-i #for-S-5]
+    (fresh n) |- (impl (P n) (P (S n)))]
+
+[prove #for-S-7 [forall-i #for-S-6]
+    |- (forall n (impl (P n) (P (S n))))]
+
+[prove #for-all [peano-2 #for-0-2 #for-S-7]
+    |- (forall n (P n))]
+
+[prove #for-all-end [def-unfold #for-all P]
+    |- (forall n (= (+ O n) n))]
+
+[comment
+================
+Part 2 - x + Sy = Sx + y
+x + S0 = S(x + 0) = Sx = Sx + 0
+x + SSy = S(x + Sy) = S(Sx + y) = Sx + Sy
+]
+
+[prove #p2-0 [+-S]
+    (fresh x) |- (= (+ x (S O))
+                    (S (+ x O)))]
+
+[prove #p2-1 [+-O]
+    (fresh x) |- (= (+ x O) x)]
+
+[prove #p2-2 [=-e #p2-1 #p2-0]
+    (fresh x) |- (= (+ x (S O))
+                    (S x))]
+
+[prove #p2-3 [+-O]
+    (fresh x) |- (= (+ (S x) O) (S x))]
+
+[prove #p2-3.5 [=-i]
+    (fresh x) |- (= (+ (S x) O) (+ (S x) O))]
+
+[prove #p2-3.7 [=-e #p2-3 #p2-3.5]
+    (fresh x) |- (= (S x) (+ (S x) O))]
+
+[prove #p2-4 [=-e #p2-3.7 #p2-2]
+    (fresh x) |- (= (+ x (S O))
+                    (+ (S x) O))]
+
+[prove #p2-5 [forall-i #p2-4]
+    |- (forall x (= (+ x (S O))
+                    (+ (S x) O)))]
+
+[comment
+================
+Part 3 - a + b = b + a
+a + 0 = 0 + a
+a + Sb = S(a + b) = S(b + a) = Sb + a
+]
+
+[comment proof incomplete; this is difficult without using tactics.]
+
