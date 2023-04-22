@@ -16,6 +16,7 @@
 
     equiv-el    [(equiv *a *b) (impl *a *b)]
     equiv-er    [(equiv *a *b) (impl *b *a)]
+    equiv-i     [(impl *a *b) (impl *b *a) (equiv *a *b)]
 
     forall-e    [(forall *n (**p *n)) (**p *m)]
 
