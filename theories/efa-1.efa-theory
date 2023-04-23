@@ -1,0 +1,29 @@
+[define True (S O)]
+
+[prove #1 [if-repl [__f (_n : (_n = _b))]
+                   [_x (S O)]]
+       ((if (_a = _b) (_a = _b) (S O))
+        =
+        (if (_a = _b) (_b = _b) (S O)))]
+
+[prove #2 [eq-1 [_a _b]
+                [source #1]
+                [path 2 2]]
+       ((if (_a = _b) (_a = _b) (S O))
+        =
+        (if (_a = _b) (S O) (S O)))]
+
+[prove #3 [if-eq [_c (_a = _b)]
+                 [_a (S O)]
+                 [source #2]
+                 [path 2]]
+       ((if (_a = _b) (_a = _b) (S O))
+        =
+        (S O))]
+
+[prove #4 [unpack [source #4]]
+       (if (_a = _b) (_a = _b) (S O))]
+
+[prove #5 [True [reverse] [source #4] [path 3]]
+       (if (_a = _b) (_a = _b) True)]
+

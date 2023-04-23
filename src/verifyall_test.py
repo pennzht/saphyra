@@ -5,6 +5,8 @@ from general import verify
 class VerifyAllTest (unittest.TestCase):
     def test_verify_all (self):
         for file_name in os.listdir ('../theories'):
+            if not file_name.endswith ('.theory'): continue
+
             with open (os.path.join ('../theories', file_name)) as f:
                 data = f.read ()
             self.assertTrue (verify (data, file_name = file_name))

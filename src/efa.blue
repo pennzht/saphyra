@@ -1,14 +1,24 @@
     truth   (S O)
-    eq-1    ((_a = _a) = (S O))
+    eq-1    (_a = _a)
     eq-2    ((_a = _b) = (_b = _a))
 
     [comment
      replacement axiom:
      If (_a = _b) is proven, replace _a by _b anywhere
 
-     induction axiom:
+     [axiom [source ...] <- omitted if instantiating
+            [path ...] <- path in source to replace; omitted if ()
+            [reverse] <- apply the axiom in reverse
+            [replace-a by-b] ... <- replacements
+            ]
+
+     `induction` axiom:
      Given (__f O) and (if (__f _n) (__f (S _n)) (S O)),
      prove (__f _n)
+
+     `pack` / `unpack` axiom:
+     Given _a, prove (_a = (S O))
+     Given (_a = (S O)), prove _a
     ]
 
     succ-1  ((O = (S _a)) = O)
