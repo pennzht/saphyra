@@ -71,4 +71,8 @@ def data (filename):
         ans = f.read ()
         return parseall (ans)
 
+import pprint
+
+def pr (*args, **kwargs):
+    return pprint.PrettyPrinter (indent=4).pprint (*args, **kwargs)
 
