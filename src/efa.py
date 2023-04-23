@@ -1,14 +1,9 @@
 # Checks an arithmetic theory, generalized.
 
 # Env items
-# stmt
 #     def/axiom/theorem (statement)
 #     hastype (identifier) (type)
-#
-# Env items in syntax:
-# (fresh <var-symbol>)
-# (assume <stmt>)
-# (def <type> <def-symbol> <definition>)
+#         ... for type checking
 
 import expr
 import sys
@@ -28,6 +23,28 @@ for key in Types:
     type_signature = expr.parse (key)
     for obj in Types[key]:
         _typemap[obj] = type_signature
+
+def calc_type (term, env):
+    if type (term) is str:
+        if isvar (term): return 'nat'
+        if ispat (term): return ('->', 'nat', 'nat')
+        return env.get (term, 'error')
+    if islambda (term):
+        return ('->', 'nat', calc_type (term[2], env))
+    if term[1] in {'+', '*', '^', '='}:
+        if calc_type (term[0]) == 'nat' and calc_type (term[2]) == 'nat':
+            return 'nat'
+        else:
+            return 'error'
+    # General function
+    fntype = env.get (term[0], 'error')
+    if fntype == 'error' or not isseq (fntype): return 'error'
+    args = term[1:]
+    argtypes = tuple (calc_type (subterm, env) for subterm in term[1:])
+    if fntype[:-1] == ('->',) + argtypes:
+        return fntype[-1]
+    else:
+        return 'error'
 
 def isseq (o):
     return isinstance (o, tuple) or isinstance (o, list)
@@ -56,6 +73,22 @@ def all_vars (o):
     else:
         return {o}
 
+def free_vars (o):
+    if islambda (o):
+        return free_vars (o[2]) - {o[0]}
+    elif isseq (o):
+        return {var for subo in o for var in free_vars (subo)}
+    else:
+        return {o} if isvar (o) else set ()
+
+def free_vars_and_pats (o):
+    if islambda (o):
+        return free_vars_and_pats (o[2]) - {o[0]}
+    elif isseq (o):
+        return {var for subo in o for var in free_vars_and_pats (subo)}
+    else:
+        return {o} if isvar (o) or ispat (o) else set ()
+
 def genvar (original, avoid):
     while original in avoid:
         original = original + "+"
@@ -72,12 +105,6 @@ def _extract_axioms ():
             ans[axioms[i]] = axioms[i+1]
             i += 2
     return ans
-
-def is_valid_derivation (axiom, sentences):
-    if True:
-        ...
-    else:
-        raise SyntaxError (f'Invalid axiom: {axiom} @ {sentences}')
 
 class ProofError (Exception):
     def __init__ (self, claim): self.claim = claim
@@ -161,13 +188,10 @@ def lambda_valid (lam, avoid = ()):
 def verify (theory_text, file_name='(unnamed)'):
     parsed = expr.parseall (theory_text)
     claims = {**_extract_axioms ()}
-    definitions = {}
     types = {**_typemap}
 
     pr (claims)
     pr (types)
-
-    return True
 
     try:
         for row in parsed:
@@ -177,11 +201,41 @@ def verify (theory_text, file_name='(unnamed)'):
             if hashead (row, 'define'):
                 # Run a definition.
                 (_define, lhs, rhs) = row
-                if name in definitions:
-                    raise ProofError (f'Redefinition of name {name}')
-                definitions[name] = ['<->', form1, form2]
-                claims[name] = definitions[name]
-                continue
+                if isseq (lhs):
+                    if (lhs and not isvar (lhs[0]) and not ispat (lhs[0]) and
+                        all (isvar(x) or ispat(x) for x in lhs[1:]) and
+                        len (set (lhs[1:])) == len (lhs[1:])):
+                        # Well-defined lhs
+                        head = lhs[0]
+                        args = tuple (lhs[1:])
+                    else:
+                        raise ProofError (f'Bad LHS {lhs} in definition.')
+                elif type (lhs) is str and not lhs.startswith ('_'):
+                    head = lhs
+                    args = None
+                else:
+                    raise ProofError (f'Bad LHS {lhs} in definition.')
+
+                if head in claims or head in types:
+                    raise ProofError (f'Redefining symbol {head}.')
+
+                # Process definition.
+                if calc_type (rhs, types) == 'nat':
+                    if free_vars_and_pats (rhs).issubset (set (args) if args else set ()):
+                        # Valid definition.
+                        if args is None:
+                            result_type = 'nat'
+                        else:
+                            result_type = tuple (['nat' if isvar (x) else ('->', 'nat', 'nat')
+                                                  for x in args]
+                                                 + ['->', 'nat'])
+                        types[head] = result_type
+                        claims[head] = (lhs, '=', rhs)
+                        continue  # Successful definition.
+                    else:
+                        raise ProofError (f'RHS {rhs} has free variables not bound in {lhs}.')
+                else:
+                    raise ProofError (f'RHS {rhs} is not of type "nat".')
 
             if hashead (row, 'prove'):
                 (_prove, label, axiom_invocation, stmt) = row
