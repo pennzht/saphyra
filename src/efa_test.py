@@ -19,3 +19,17 @@ tests = [
 
 for x in tests:
     print (efa.lambda_normal (expr.parse(x)))
+
+assert efa.lambda_eq (
+    expr.parse ('(_x : (_y : (_x + _y)))'),
+    expr.parse ('(_left : (_right : (_left + _right)))'),
+)
+
+assert not efa.lambda_eq (
+    expr.parse ('(_x : (_y : (_x + _y + _z)))'),
+    expr.parse ('(_left : (_right : (_left + _right + _x)))'),
+)
+
+assert efa.lambda_valid (expr.parse ('(_x : (_y : _x))'))
+
+assert not efa.lambda_valid (expr.parse ('(_x : (_x : _x))'))

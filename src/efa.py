@@ -139,9 +139,17 @@ def _lambda_normal (lam, countfrom, varmap):
         # Atomic.
         return varmap.get (lam, lam)
 
-def lambda_valid (lam):
+def lambda_valid (lam, avoid = ()):
     # Returns if `lam` is a valid lambda expression.
-    ...
+    if islambda (lam):
+        (var, _, sub) = lam
+        return var not in avoid and lambda_valid (sub, avoid + (var,))
+    elif isseq (lam):
+        return all (lambda_valid (sub, avoid)
+                    for sub in lam)
+    else:
+        # Atomic.
+        return True
 
 def verify (theory_text, file_name='(unnamed)'):
     parsed = expr.parseall (theory_text)
