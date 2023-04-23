@@ -17,9 +17,13 @@
     if-O    ((if O _a _b) = _b)
     if-S    ((if (S _c) _a _b) = _a)
     if-eq   ((if _c _a _a) = _a)
-    if-bool ((if _c (__f ((_c = O) = O)) (__g _c))
+    if-repl ((if (_a = _b) (__f _a) _x)
              =
-             (if _c (__f (S O)) (__g O)))
+             (if (_a = _b) (__f _b) _x))
+    [comment removed
+     if-bool ((if _c (__f ((_c = O) = O)) (__g _c))
+             =
+             (if _c (__f (S O)) (__g O)))]
 
     find-O  ((find O __cond __found _unfound) = _unfound)
     find-S  ((find (S _n) __cond __found _unfound) =
