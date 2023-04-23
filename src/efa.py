@@ -93,6 +93,13 @@ def lambda_b_reduce (lam, arg, avoid_binding = ()):
     var = lam[0]
     return lambda_replace (lam[2], var, arg, avoid_binding)
 
+# A note on variable capture.
+# For EFA, the usual replacement process is safe
+#     and capture detection may generally be unnecessary,
+#     save for the cases where `arg` contains a bound variable
+#     that conflicts with a free variable.
+# Another possible case exists when a pattern of the form
+#     (__f _x) is realized, which invokes replacement.
 def lambda_replace (exp, var, arg, avoid_binding = ()):
     if islambda (exp):
         # Lambda. Beware of variable capture.
