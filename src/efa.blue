@@ -1,0 +1,36 @@
+    truth   (S O)
+    eq-1    ((_a = _a) = (S O))
+    eq-2    ((_a = _b) = (_b = _a))
+
+    [comment
+     replacement axiom:
+     If (_a = _b) is proven, replace _a by _b anywhere
+
+     induction axiom:
+     Given (__f O) and (if (__f _n) (__f (S _n)) (S O)),
+     prove (__f _n)
+    ]
+
+    succ-1  ((O = (S _a)) = O)
+    succ-2  ((_a = _b) = ((S _a) = (S _b)))
+
+    if-O    ((if O _a _b) = _b)
+    if-S    ((if (S _c) _a _b) = _a)
+    if-eq   ((if _c _a _a) = _a)
+    if-bool ((if _c (__f ((_c = O) = O)) (__g _c))
+             =
+             (if _c (__f (S O)) (__g O)))
+
+    find-O  ((find O __cond __found _unfound) = _unfound)
+    find-S  ((find (S _n) __cond __found _unfound) =
+             (if (__cond _n)
+                 (__found _n)
+                 (find _n __cond __found _unfound)))
+
+    +-O     ((_a + O) = _a)
+    +-S     ((_a + (S _b)) = (S (_a + _b)))
+    *-O     ((_a * O) = O)
+    *-S     ((_a * (S _b)) = ((_a * _b) + _a))
+    ^-O     ((_a ^ O) = (S O))
+    ^-S     ((_a ^ (S _b)) = ((_a ^ _b) * _a))
+
