@@ -101,7 +101,7 @@ def lambda_replace (exp, var, arg, avoid_binding = ()):
         if innervar in all_vars (arg):
             newvar = genvar (original = innervar,
                                avoid = all_symbols (arg) .union (all_symbols (exp)) .union (set (avoid_binding)))
-            innerexp = lambda_replace (innerexp, innervar, newvar)
+            innerexp = lambda_replace (innerexp, innervar, newvar, ())
             innervar = newvar
         new_innerexp = lambda_replace (innerexp, var, arg, avoid_binding)
         return (innervar, ':', new_innerexp)
@@ -121,7 +121,23 @@ def lambda_eq (a, b):
 
 def lambda_normal (lam):
     # Returns the "normal form" of a lambda expression.
-    ...
+    return _lambda_normal (lam, countfrom = 0, varmap = {})
+
+def _lambda_normal (lam, countfrom, varmap):
+    if islambda (lam):
+        (var, _, sub) = lam
+        rname = '_!R' + str (countfrom)
+        assert var not in varmap
+        varmap[var] = rname
+        ans = (rname, ':', _lambda_normal (sub, countfrom + 1, varmap))
+        del varmap[var]
+        return ans
+    elif isseq (lam):
+        return tuple (_lambda_normal (sub, countfrom, varmap)
+                      for sub in lam)
+    else:
+        # Atomic.
+        return varmap.get (lam, lam)
 
 def lambda_valid (lam):
     # Returns if `lam` is a valid lambda expression.
