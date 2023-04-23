@@ -95,6 +95,7 @@ def _attempt_resolve (a, b, pa, pb):
         return tuple (partial_matches)
     return None
 
+'''TODO: pattern match (**-match) should be in tactics, not verifier.'''
 def match (form, pattern):
     form = tuple (form)
     pattern = tuple (pattern)
