@@ -15,6 +15,15 @@ expressions = [
                   n)]
      (fib 6))
     ''',
+
+    # Exponentiation
+    '''
+    (globals
+        [(expt a b)
+         (if (= b 0) 1 (* a (expt a (- b 1))))]
+     (expt 3 5)
+    )
+    '''
 ]
 
 for e in expressions:

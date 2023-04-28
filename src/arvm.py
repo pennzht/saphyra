@@ -50,6 +50,27 @@ def expand_function (fn, value_list, stack):
         return value_list[0] > value_list[1]
     elif fn == '>=':
         return value_list[0] >= value_list[1]
+    elif fn == '<':
+        return value_list[0] < value_list[1]
+    elif fn == '<=':
+        return value_list[0] <= value_list[1]
+    elif fn == '!=':
+        return value_list[0] != value_list[1]
+    elif fn == '=':
+        return value_list[0] == value_list[1]
+    elif fn == 'not':
+        return 0 if value_list[0] else 1
+    # elif fn == 'list':
+    #     return tuple (value_list)
+    # elif fn == 'getitem':
+    #     return value_list[0][value_list[1]]
+    # elif fn == 'setitem':
+    #     ans = list(value_list[0])
+    #     if 0 <= value_list[1] < len (ans):
+    #         ans[value_list[1]] = value_list[2]
+    #     return tuple (ans)
+    # elif fn == 'len':
+    #     return len (value_list[0])
     else:
         # User-defined function
         for elem in stack:

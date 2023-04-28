@@ -76,3 +76,36 @@ import pprint
 def pr (*args, **kwargs):
     return pprint.PrettyPrinter (indent=4).pprint (*args, **kwargs)
 
+### Custom pretty-printer
+
+# returns list of (indent, line)
+def format_lines (obj, depth, wlimit):
+    if type (obj) in {tuple, list}:
+        subs = [format_lines (subobj, depth + 1, wlimit)
+                for subobj in obj]
+        if all (len (sub) == 1 for sub in subs):
+            current_size = (sum (len (l) for [(_, l)] in subs) +
+                            max (0, len (subs) - 1) + 2)
+            if current_size <= wlimit:
+                line = ' '.join (line for [(_, line)] in subs)
+                return [(0, '(' + line + ')')]
+        # Normal structure of broken lines
+        ans = []
+        for sub in subs:
+            for (indent, line) in sub:
+                ans.append ((indent+1, line))
+        # Add parentheses
+        indent, line = ans[0]
+        ans[0] = indent-1, '(' + line
+        ans[-1] = ans[-1][0], ans[-1][1]+')'
+        return ans
+    else:
+        return [(0, str (obj))]
+            
+def purr (obj):
+    lines = format_lines (obj, 0, 40)
+    return ''.join (' ' * indent + line + '\n' for (indent, line) in lines)
+
+print (purr (parse ('(+ a b c)')))
+
+print (purr (data ('arith.blue')))
