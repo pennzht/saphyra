@@ -78,20 +78,6 @@ def get (dictionary, key, default='__error__'):
     if default == '__error__': raise Exception (f'{key} not found in {dictionary}')
     else: return default
 
-def sub_by_path (term, path):
-    if not path:
-        return term
-    else:
-        return sub_by_path (term[path[0]], path[1:])
-
-def replace_by_path (term, path, target):
-    if not path:
-        return target
-    else:
-        ans = list (term)
-        ans[path[0]] = replace_by_path (ans[path[0]], path[1:], target)
-        return tuple (ans)
-
 def verify (theory, file_name='(unnamed)'):
     claims = {**_extract_axioms ()}
     types = {**_typemap}

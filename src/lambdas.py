@@ -1,3 +1,5 @@
+import expr
+
 def isseq (o):
     return isinstance (o, tuple) or isinstance (o, list)
 
@@ -9,6 +11,31 @@ def ispat (o):
 
 def islambda (o):
     return isseq (o) and len (o) == 3 and isvar (o[0]) and o[1] == ':'
+
+def walk (o, prefix=()):
+    if islambda (o):
+        yield (o, prefix)
+        yield from walk (o[2], prefix + (2,))
+    elif isseq (o):
+        yield (o, prefix)
+        for i, sub in enumerate (o):
+            yield from walk (sub, prefix + (i,))
+    else:
+        yield (o, prefix)
+
+def sub_by_path (term, path):
+    if not path:
+        return term
+    else:
+        return sub_by_path (term[path[0]], path[1:])
+
+def replace_by_path (term, path, target):
+    if not path:
+        return target
+    else:
+        ans = list (term)
+        ans[path[0]] = replace_by_path (ans[path[0]], path[1:], target)
+        return tuple (ans)
 
 def hashead (obj, head):
     return isseq (obj) and obj and obj[0] == head
@@ -106,25 +133,28 @@ def lambda_eq (a, b):
     # Judges if `a` and `b` are the same lambda expression.
     return lambda_normal (a) == lambda_normal (b)
 
-def lambda_normal (lam):
+def lambda_normal (lam, reserved_prefix='_!R'):
     # Returns the "normal form" of a lambda expression.
-    return _lambda_normal (lam, countfrom = 0, varmap = {})
+    lam, _ = _lambda_normal (lam, countfrom = 0, varmap = {}, reserved_prefix = reserved_prefix)
+    return lam
 
-def _lambda_normal (lam, countfrom, varmap):
+def _lambda_normal (lam, countfrom, varmap, reserved_prefix='_!R'):
     if islambda (lam):
         (var, _, sub) = lam
-        rname = '_!R' + str (countfrom)
-        assert var not in varmap
-        varmap[var] = rname
-        ans = (rname, ':', _lambda_normal (sub, countfrom + 1, varmap))
-        del varmap[var]
-        return ans
+        rname = reserved_prefix + str (countfrom)
+        subvarmap = {**varmap}
+        subvarmap[var] = rname
+        sub, tail = _lambda_normal (sub, countfrom + 1, subvarmap)
+        return (rname, ':', sub), tail
     elif isseq (lam):
-        return tuple (_lambda_normal (sub, countfrom, varmap)
-                      for sub in lam)
+        ans = []
+        for sub in lam:
+            resub, countfrom = _lambda_normal (sub, countfrom, varmap)
+            ans.append (resub)
+        return (tuple (ans), countfrom)
     else:
         # Atomic.
-        return varmap.get (lam, lam)
+        return varmap.get (lam, lam), countfrom
 
 def lambda_valid (lam, avoid = ()):
     # Returns if `lam` is a valid lambda expression.
@@ -148,4 +178,32 @@ def bindings_by (lam, path, prefix = ()):
 
 def is_redux (lam):
     return len (lam) == 2 and islambda (lam[0])
+
+# Finds all abstraction opportunities in `term`
+# Try entering:
+#     (_x : (_y : (= (+ _x _y) (+ _y _x) (_z : (+ _x _y)))))
+#     (_x : (_y : (= (+ _x _y) (+ _y _x) (_x : (+ _x _y)))))
+def abstractions (term):
+    nf = lambda_normal (term)
+    maps = {}
+    for nfo, path in walk (nf):
+        o = sub_by_path (term, path)
+        subnf = lambda_normal (nfo, reserved_prefix='_!S')
+        maps.setdefault (subnf, [])
+        maps[subnf].append (path)
+    for elem, paths in maps.items ():
+        print ('Term', elem, 'appeared in:')
+        for p in paths:
+            print ('   ', p, 'as', sub_by_path (term, p))
+        print ()
+
+if __name__ == '__main__':
+    try:
+        while True:
+            line = input ()
+            row = expr.parse (line)
+            abstractions (row)
+    except EOFError:
+        exit (0)
+
 
