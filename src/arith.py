@@ -253,7 +253,7 @@ AXIOMS = {
 
     'peano-0':    expr.parseall ('(= (S *a) (S *b)) (= *a *b)'),
     'peano-1':    expr.parseall ('(not (= (S *a) O))'),
-    'peano-2':    expr.parseall ('(**p O) (forall (=> nat n (impl (**p n) (**p (S n))))) (forall (=> nat n (**p n)))'),
+    'peano-2':    expr.parseall ('(**p O) (forall (=> nat n (impl (**p n) (**p (S n))))) (forall (=> nat n (**p n)))'),    # WARNING: rule does not handle variable capturing. Do not use.
     '+-O':        expr.parseall ('(= (+ *a O) *a)'),
     '+-S':        expr.parseall ('(= (+ *a (S *b)) (S (+ *a *b)))'),
     '*-O':        expr.parseall ('(= (* *a O) O)'),

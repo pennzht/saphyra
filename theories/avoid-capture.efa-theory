@@ -1,0 +1,44 @@
+[prove #base [+-O [_a O]]
+       ((O + O) = O)]
+
+[prove #eq-true [pack [source eq-1]]
+       ((_a = _a) = (S O))]
+
+[prove #step-3 [if-eq [source truth]
+                      [reverse]
+                      [_a (S O)]
+                      [_c ((O + _a) = _a)]]
+       (if ((O + _a) = _a)
+           (S O)
+           (S O))]
+
+[prove #step-2 [#eq-true [source #step-3]
+                         [path (2)]
+                         [reverse]
+                         [_a (O + (S _a))]]
+       (if ((O + _a) = _a)
+           ((O + (S _a)) = (O + (S _a)))
+           (S O))]
+
+[prove #step-1 [+-S [source #step-2]
+                    [path (2 2)]
+                    [_a O]
+                    [_b _a]]
+       (if ((O + _a) = _a)
+           ((O + (S _a)) = (S (O + _a)))
+           (S O))]
+
+[prove #step [if-repl [source #step-1]
+                      [_a (O + _a)]
+                      [_b _a]
+                      [__f (_m : ((O + (S _a)) = (S _m)))]
+                      [_x (S O)]]
+       (if ((O + _a) = _a)
+           ((O + (S _a)) = (S _a))
+           (S O))]
+
+[prove #O+a [induction [__f (_a : ((O + _a) = _a))]
+                       [base #base]
+                       [step #step]
+                       [indvar _a]]
+       ((O + _a) = _a)]
