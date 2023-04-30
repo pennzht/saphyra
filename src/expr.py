@@ -106,6 +106,6 @@ def purr (obj):
     lines = format_lines (obj, 0, 40)
     return ''.join (' ' * indent + line + '\n' for (indent, line) in lines)
 
-print (purr (parse ('(+ a b c)')))
-
-print (purr (data ('arith.blue')))
+if __name__ == '__main__':
+    print (purr (parse ('(+ a b c)')))
+    print (purr (data ('arith.blue')))

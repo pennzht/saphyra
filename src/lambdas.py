@@ -138,3 +138,14 @@ def lambda_valid (lam, avoid = ()):
         # Atomic.
         return True
 
+def bindings_by (lam, path, prefix = ()):
+    if not path:
+        return prefix
+    elif islambda (lam):
+        return bindings_by (lam[path[0]], path[1:], prefix + (lam[0],))
+    else:
+        return bindings_by (lam[path[0]], path[1:], prefix)
+
+def is_redux (lam):
+    return len (lam) == 2 and islambda (lam[0])
+
