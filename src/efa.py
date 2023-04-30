@@ -325,6 +325,7 @@ def verify (theory_text, file_name='(unnamed)'):
                         lhs, eq, rhs = pattern
                         pattern = rhs, eq, lhs
                     path = get (rule, 'path', ())
+                    assert isseq (path)
                     path = tuple (map (int, path))
                     # Rule expansion
                     replacements = [pair for pair in rule[1:] if type (pair) is tuple and pair[0].startswith ('_')]

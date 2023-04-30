@@ -29,6 +29,6 @@
 [prove #4 [unpack [source #3]]
        (if (_a = _b) (_a = _b) (S O))]
 
-[prove #5 [True [reverse] [source #4] [path 3]]
+[prove #5 [True [reverse] [source #4] [path (3)]]
        (if (_a = _b) (_a = _b) True)]
 

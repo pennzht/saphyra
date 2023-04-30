@@ -1,0 +1,15 @@
+[define True (S O)]
+
+[prove #1 [eq-1 [_a (if (_a = _b) (_a = _b) True)]]
+       ((if (_a = _b) (_a = _b) True)
+        =
+        (if (_a = _b) (_a = _b) True))]
+
+[prove #2 [if-repl [__f (_n : (_n = _b))]
+                   [_x True]
+                   [source #1]
+                   [path (2)]]
+       ((if (_a = _b) (_a = _b) True)
+        =
+        (if (_a = _b) (_b = _b) True))]
+
