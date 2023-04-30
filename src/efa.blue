@@ -15,6 +15,7 @@
      `induction` axiom:
      Given (__f O) and (if (__f _n) (__f (S _n)) (S O)),
      prove (__f _n)
+     [induction [__f function] [base ...] [step ...]]
 
      `pack` / `unpack` axiom:
      Given _a, prove (_a = (S O))

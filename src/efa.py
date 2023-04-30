@@ -149,6 +149,27 @@ def lambda_replace (exp, var, arg, avoid_binding = ()):
         if exp == var: return arg
         else:          return exp
 
+def rich_lambda_replace (exp, f, arg, avoid_binding = ()):
+    if islambda (exp):
+        innervar = exp[0]
+        innerexp = exp[2]
+        if innervar in all_vars (arg):
+            newvar = genvar (original = innervar,
+                               avoid = all_symbols (arg) .union (all_symbols (exp)) .union (set (avoid_binding)))
+            innerexp = lambda_replace (innerexp, innervar, newvar, ())
+            innervar = newvar
+        new_innerexp = rich_lambda_replace (innerexp, f, arg, avoid_binding)
+        return (innervar, ':', new_innerexp)
+    elif isseq (exp):
+        exp = tuple (rich_lambda_replace (subexp, f, arg, avoid_binding)
+                     for subexp in exp)
+        # Detect (f x)
+        if exp[0] == f and len (exp) == 2:
+            exp = lambda_b_reduce (arg, exp[1], avoid_binding)
+        return exp
+    else:
+        return exp
+
 def lambda_eq (a, b):
     # Judges if `a` and `b` are the same lambda expression.
     return lambda_normal (a) == lambda_normal (b)
@@ -184,6 +205,31 @@ def lambda_valid (lam, avoid = ()):
     else:
         # Atomic.
         return True
+
+def get (dictionary, key, default='__error__'):
+    for (k, *subs) in dictionary:
+        if k == key:
+            if not subs:
+                return True
+            else:
+                return subs[0]
+    # Not found
+    if default == '__error__': raise Exception (f'{key} not found in {dictionary}')
+    else: return default
+
+def sub_by_path (term, path):
+    if not path:
+        return term
+    else:
+        return sub_by_path (term[path[0]], path[1:])
+
+def replace_by_path (term, path, target):
+    if not path:
+        return target
+    else:
+        ans = list (term)
+        ans[path[0]] = replace_by_path (ans[path[0]], path[1:], target)
+        return tuple (ans)
 
 def verify (theory_text, file_name='(unnamed)'):
     parsed = expr.parseall (theory_text)
@@ -238,21 +284,79 @@ def verify (theory_text, file_name='(unnamed)'):
                     raise ProofError (f'RHS {rhs} is not of type "nat".')
 
             if hashead (row, 'prove'):
-                (_prove, label, axiom_invocation, stmt) = row
+                (_prove, label, rule, body) = row
                 assert _prove == 'prove'
                 assert type (label) is str
                 assert label not in claims
-                assert type (axiom_invocation) is tuple
+                assert type (rule) is tuple and type (rule[0]) is str
+                ruletype = rule[0]
 
-                # Verify statement TODO: add induction, pack/unpack axioms
-                (axiom, *precedents) = axiom_invocation
-                precedents = [claims[name] for name in precedents]
-                if is_valid_derivation (axiom, [*precedents, stmt]):
-                    'success'
-                    claims[label] = stmt
-                    continue
+                # Special cases
+                if ruletype == 'pack':
+                    prec = claims[get (rule, 'source')]
+                    if body == (prec, '=', ('S', 'O')):
+                        'Good'
+                    else:
+                        raise ProofError (row)
+
+                elif ruletype == 'unpack':
+                    prec = claims[get (rule, 'source')]
+                    if prec == (body, '=', ('S', 'O')):
+                        'Good'
+                    else:
+                        raise ProofError (row)
+
+                elif ruletype == 'induction':
+                    f = get (rule, '__f')
+                    base, step = claims[get (rule, 'base')], claims[get (rule, 'step')]
+                    base_matches = lambda_eq (base, lambda_b_reduce (f, 'O'))
+                    if not base_matches: raise ProofError (row)
+                    inductive_var = step[1][1]
+                    step_matches = lambda_eq (step, ('if',
+                                                     lambda_b_reduce (f, inductive_var),
+                                                     lambda_b_reduce (f, ('S', inductive_var)),
+                                                     ('S', 'O')))
+                    if not step_matches: raise ProofError (row)
+                    'Good'
+
                 else:
-                    raise ProofError (row)
+                    pattern = claims[ruletype]
+                    if get (rule, 'reverse', False):
+                        lhs, eq, rhs = pattern
+                        pattern = rhs, eq, lhs
+                    path = get (rule, 'path', ())
+                    path = tuple (map (int, path))
+                    # Rule expansion
+                    replacements = [pair for pair in rule[1:] if type (pair) is tuple and pair[0].startswith ('_')]
+                    for (var, target) in replacements:
+                        if isvar (var):
+                            pattern = lambda_replace (pattern, var, target)
+                        else:
+                            pattern = rich_lambda_replace (pattern, var, target)
+                    # Check against path
+                    source = get (rule, 'source', None)
+                    if source is None:
+                        if lambda_eq (pattern, body):
+                            'Good'
+                        else:
+                            print (pattern, body, sep='\n')
+                            raise ProofError (row)
+                    else:
+                        prec = claims[source]
+                        if (lambda_eq (sub_by_path (prec, path), pattern[0]) and
+                            lambda_eq (replace_by_path (prec, path, pattern[2]), body)):
+                            'Good'
+                        else:
+                            print (path)
+                            print ('prec', prec)
+                            print ('body', body)
+                            print ('pattern', pattern)
+                            raise ProofError (row)
+
+                # Well-proven
+                claims[label] = body
+                print ('Registered claim', label, body)
+                continue
 
             # Invalid statement
             raise ProofSyntaxError (row)

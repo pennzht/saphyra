@@ -6,22 +6,27 @@
         =
         (if (_a = _b) (_b = _b) (S O)))]
 
-[prove #2 [eq-1 [_a _b]
-                [source #1]
-                [path 2 2]]
+[prove #1.5 [eq-1 [_a _b]]
+            (_b = _b)]
+
+[prove #1.6 [pack [source #1.5]]
+            ((_b = _b) = (S O))]
+
+[prove #2 [#1.6 [source #1]
+                [path (2 2)]]
        ((if (_a = _b) (_a = _b) (S O))
         =
         (if (_a = _b) (S O) (S O)))]
 
-[prove #3 [if-eq [_c (_a = _b)]
-                 [_a (S O)]
+[prove #3 [if-eq [_a (S O)]
+                 [_c (_a = _b)]
                  [source #2]
-                 [path 2]]
+                 [path (2)]]
        ((if (_a = _b) (_a = _b) (S O))
         =
         (S O))]
 
-[prove #4 [unpack [source #4]]
+[prove #4 [unpack [source #3]]
        (if (_a = _b) (_a = _b) (S O))]
 
 [prove #5 [True [reverse] [source #4] [path 3]]
