@@ -183,6 +183,45 @@ def verify (theory, file_name='(unnamed)'):
                         raise ProofError (row)
 
                 elif ruletype == 'induction':
+                    base = claims[get (rule, 'base')]
+                    step = claims[get (rule, 'step')]
+                    indvar = get (rule, 'indvar')
+                    output = body
+                    if is_induction (base, step, indvar, output):
+                        'Good'
+                    else:
+                        raise ProofError (row)
+
+                elif ruletype == 'beta':
+                    assert body[1] == '='
+                    if is_beta (body[0], body[2]):
+                        'Good'
+                    else:
+                        raise ProofError (row)
+
+                elif ruletype == 'repl':
+                    path = get (rule, 'path', ())
+                    assert isseq (path)
+                    path = tuple (map (int, path))
+                    old = get (rule, 'old')
+                    new = body
+                    equation = get (rule, 'from')
+                    assert equation[1] == '='
+                    if is_replacement (path, old, new, equation[0],
+                                       equation[2]):
+                        'Good'
+                    else:
+                        raise ProofError (row)
+
+                elif ruletype == 'inst':
+                    # Instantiation
+                    source = get (rule, 'from')
+                    var = get (rule, 'var')
+                    target = get (rule, 'target')
+                    if is_instantiation (source, var, target, body):
+                        'Good'
+                    else:
+                        raise ProofError (row)
 
                 else:
                     pattern = claims[ruletype]
