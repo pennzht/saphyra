@@ -78,6 +78,36 @@ def get (dictionary, key, default='__error__'):
     if default == '__error__': raise Exception (f'{key} not found in {dictionary}')
     else: return default
 
+# Individual rules
+
+def is_instantiation (rule, var, target, output):
+    return lambda_eq (lambda_replace (rule, var, target), output)
+
+def is_replacement (path, old_structure, new_structure, lhs, rhs):
+    return (lambda_eq (sub_by_path (old_structure, path), lhs) and
+            lambda_eq (replace_by_path (old_structure, path, rhs), new_structure))
+
+def is_beta (redux, reduced):
+    return lambda_eq (reduced, lambda_b_reduce (redux[0], redux[1]))
+
+def is_induction (base, step, indvar, output):
+    f = (indvar, ':', output)
+    base_matches = lambda_eq (base, lambda_b_reduce (f, 'O'))
+    # Checks generality, avoiding var capture
+    general_step = (indvar, ':', step)
+    # print (expr.purr (general_step))
+    step_matches_1 = lambda_eq (lambda_b_reduce (general_step, '_!Rl'),
+                                ('if',
+                                 lambda_b_reduce (f, '_!Rl'),
+                                 lambda_b_reduce (f, ('S', '_!Rl')),
+                                 ('S', 'O')))
+    step_matches_2 = lambda_eq (lambda_b_reduce (general_step, '_!Rr'),
+                                ('if',
+                                 lambda_b_reduce (f, '_!Rr'),
+                                 lambda_b_reduce (f, ('S', '_!Rr')),
+                                 ('S', 'O')))
+    return base_matches and step_matches_1 and step_matches_2
+
 def verify (theory, file_name='(unnamed)'):
     claims = {**_extract_axioms ()}
     types = {**_typemap}
@@ -153,27 +183,6 @@ def verify (theory, file_name='(unnamed)'):
                         raise ProofError (row)
 
                 elif ruletype == 'induction':
-                    f = get (rule, '__f')
-                    base, step = claims[get (rule, 'base')], claims[get (rule, 'step')]
-                    base_matches = lambda_eq (base, lambda_b_reduce (f, 'O'))
-                    if not base_matches: raise ProofError (row)
-                    inductive_var = get (rule, 'indvar')
-                    # Checks generality, avoiding var capture
-                    general_step = (inductive_var, ':', step)
-                    print (expr.purr (general_step))
-                    step_matches_1 = lambda_eq (lambda_b_reduce (general_step, '_!Rl'),
-                                              ('if',
-                                               lambda_b_reduce (f, '_!Rl'),
-                                               lambda_b_reduce (f, ('S', '_!Rl')),
-                                               ('S', 'O')))
-                    step_matches_2 = lambda_eq (lambda_b_reduce (general_step, '_!Rr'),
-                                              ('if',
-                                               lambda_b_reduce (f, '_!Rr'),
-                                               lambda_b_reduce (f, ('S', '_!Rr')),
-                                               ('S', 'O')))
-                    if not step_matches_1: raise ProofError (row)
-                    if not step_matches_2: raise ProofError (row)
-                    'Good'
 
                 else:
                     pattern = claims[ruletype]
