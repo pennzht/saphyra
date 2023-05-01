@@ -91,6 +91,7 @@ def is_beta (redux, reduced):
     return lambda_eq (reduced, lambda_b_reduce (redux[0], redux[1]))
 
 def is_induction (base, step, indvar, output):
+    if not isvar (indvar): return False
     f = (indvar, ':', output)
     base_matches = lambda_eq (base, lambda_b_reduce (f, 'O'))
     # Checks generality, avoiding var capture
