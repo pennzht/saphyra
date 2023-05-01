@@ -1,11 +1,11 @@
-[theorem
+[theorem if-eq-2
     (if (_a = _b)
         (_a = _b)
         (S O))
 
     (comment - a draft for the tactic language.)
 
-  [focus () if-repl var-all]
+  [focus () if-repl (2 0)]
     (comment - matches and finds _a = _a, _b = _b, __f = (_x : (_x = _b))
              - turns to goal (if (_a = _b) (_b = _b) (S O)))
   [focus (2) (pack eq-1)]
@@ -16,4 +16,22 @@
              - turns to goal (S O)
              - goal is trivial and automatically removed)]
 
+[theorem O-+
+    ((O + _a) = _a)
+
+  [induction [base #base] [step #step] var-all]
+    (comment - #base = (O + O) = O
+               #step = (if ((O + _a) = _a)
+                           ((O + (S _a)) = (S _a)) (S O)))
+  [focus #base () +-O]
+  [focus #step (2 0) +-S]
+  [focus () if-repl (2 0 1)]
+  [focus (2) eq-1]
+  [focus () if-eq]]
+
+(comment - syntax
+  [focus <goal-name> <path> <theorem> <path<s>-to-replace>]
+  theorem may be (pack ...) or (unpack ...)
+  theorem may be (reverse ...)
+)
 
