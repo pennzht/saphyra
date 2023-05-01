@@ -13,7 +13,7 @@
              - turns to goal (if (_a = _b) (S O) (S O)))
   [focus () if-eq]
     (comment - matches and finds _c = (_a = _b), _a = (S O)
-             - turns to goal (S O))
-  [proven]
-    (comment - removes the empty goal)]
+             - turns to goal (S O)
+             - goal is trivial and automatically removed)]
+
 
