@@ -1,7 +1,19 @@
 [theorem
     (if (_a = _b)
         (_a = _b)
-        True)
- [True [path (3)]]
- [pack]]
+        (S O))
+
+    (comment - a draft for the tactic language.)
+
+  [focus () if-repl var-all]
+    (comment - matches and finds _a = _a, _b = _b, __f = (_x : (_x = _b))
+             - turns to goal (if (_a = _b) (_b = _b) (S O)))
+  [focus (2) (pack eq-1)]
+    (comment - matches and finds _a = _b
+             - turns to goal (if (_a = _b) (S O) (S O)))
+  [focus () if-eq]
+    (comment - matches and finds _c = (_a = _b), _a = (S O)
+             - turns to goal (S O))
+  [proven]
+    (comment - removes the empty goal)]
 
