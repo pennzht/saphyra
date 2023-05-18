@@ -1,7 +1,7 @@
 # A reasonable virtual machine.
 
 import functools
-import operator
+import operator as op
 
 '''
 Design
@@ -34,32 +34,17 @@ def replace_args (args, value_list, body):
         return body
 
 def expand_function (fn, env, value_list, stack):
+    natives = {'-': op.sub, 'div': op.floordiv, 'mod': op.mod,
+               '^': op.pow, '>': op.gt, '>=': op.ge,
+               '<': op.lt, '<=': op.le, '!=': op.ne, '=': op.eq,}
     if fn == '+':
         return env, sum (value_list)
-    elif fn == '-':
-        return env, value_list[0] - value_list[1]
     elif fn == '*':
-        return env, functools.reduce (operator.mul, value_list, 1)
-    elif fn == 'div':
-        return env, value_list[0] // value_list[1] if value_list[1] else None
-    elif fn == 'mod':
-        return env, value_list[0] % value_list[1] if value_list[1] else None
-    elif fn == '^':
-        return env, value_list[0] ** value_list[1] if value_list[1] >= 0 else 0
-    elif fn == '>':
-        return env, value_list[0] > value_list[1]
-    elif fn == '>=':
-        return env, value_list[0] >= value_list[1]
-    elif fn == '<':
-        return env, value_list[0] < value_list[1]
-    elif fn == '<=':
-        return env, value_list[0] <= value_list[1]
-    elif fn == '!=':
-        return env, value_list[0] != value_list[1]
-    elif fn == '=':
-        return env, value_list[0] == value_list[1]
+        return env, functools.reduce (op.mul, value_list, 1)
     elif fn == 'not':
         return env, 0 if value_list[0] else 1
+    elif fn in natives:
+        return env, natives[fn](value_list[0], value_list[1])
     else:
         # User-defined function
         for elem in stack:
