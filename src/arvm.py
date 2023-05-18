@@ -36,7 +36,10 @@ def replace_args (args, value_list, body):
 def expand_function (fn, env, value_list, stack):
     natives = {'-': op.sub, 'div': op.floordiv, 'mod': op.mod,
                '^': op.pow, '>': op.gt, '>=': op.ge,
-               '<': op.lt, '<=': op.le, '!=': op.ne, '=': op.eq,}
+               '<': op.lt, '<=': op.le, '!=': op.ne, '=': op.eq,
+               'b<<': op.lshift, 'b>>': op.rshift,
+               'b&': op.and_, 'b|': op.or_, 'b~': op.not_,
+               'b^': op.xor}
     if fn == '+':
         return env, sum (value_list)
     elif fn == '*':
