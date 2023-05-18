@@ -23,6 +23,11 @@ expressions = [
          (if (= b 0) 1 (* a (expt a (- b 1))))]
      (expt 3 5)
     )
+    ''',
+
+    # Exponentiation with computations in parts
+    '''
+    (^ (+ 1 2) (+ 1 9))
     '''
 ]
 
