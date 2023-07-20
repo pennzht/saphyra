@@ -109,6 +109,16 @@ def is_induction (base, step, indvar, output):
                                  ('S', 'O')))
     return base_matches and step_matches_1 and step_matches_2
 
+'''\
+Fields in a proof step.
+
+[prove _name_ [rule-name [source ...]
+                         [reverse?]
+                         [path ...]
+                         [_a ...] [_b ...] [_c...]]
+       proven_step]
+'''
+
 def verify (theory, file_name='(unnamed)'):
     claims = {**_extract_axioms ()}
     types = {**_typemap}
