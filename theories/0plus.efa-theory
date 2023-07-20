@@ -6,6 +6,9 @@
 [prove #eq-true [pack [source eq-1]]
        ((_a = _a) = (S O))]
 
+[prove #eq-true-pre [#eq-true [_a (O + (S _a))]]
+       ((  (O + (S _a)) = (O + (S _a))  ) = (S O))]
+
 [prove #step-3 [if-eq [source truth]
                       [reverse]
                       [_a (S O)]
