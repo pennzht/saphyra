@@ -1,11 +1,12 @@
-# Generate a step given an output.
+# Given a statement, attempts to match parts of it with different theorems.
+# TODO: incomplete.
 
 # General form:
 
+import lambdas
 import expr
 
-def isseq (o):
-    return isinstance (o, tuple) or isinstance (o, list)
+isseq = lambdas.isseq
 
 def mergematch (m1, m2):
     if False in [m1, m2]: return False
@@ -37,6 +38,10 @@ def match_pattern (pattern, form):
         else:
             return False
 
+def apply_theorem_at (theorem_left, theorem_right, term, path):
+    subterm = lambdas.sub_by_path (term, path)
+    attempt_match = match_pattern (pattern = theorem_left, form = subterm)
+    pass  # TODO, continue
 
 if __name__ == '__main__':
     print (match_pattern (
