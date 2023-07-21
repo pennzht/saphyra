@@ -5,6 +5,7 @@
 
 import lambdas
 import expr
+import efa
 
 isseq = lambdas.isseq
 
@@ -60,6 +61,20 @@ def apply_theorem_at (theorem_left, theorem_right, term, path):
     return lambdas.replace_by_path (term, path, new_subterm)
     pass  # TODO, continue
 
+def interactive ():
+    axioms = efa._extract_axioms ()
+    term = expr.parse ('''
+      (  ((S O) + (S O)) * ((S O) + (S O))  )
+    ''')
+    while True:
+        print (term)
+        pattern = input ('<path> <theorem> <direction:ltr/rtl>')
+        (path, theorem, direction) = expr.parseall (pattern)
+        path = tuple (int (x) for x in path)
+        print (path)
+        print (theorem)
+        print (direction)
+
 if __name__ == '__main__':
     print (match_pattern (
         expr.parse ('((_a + O) = _a)'),
@@ -83,4 +98,7 @@ if __name__ == '__main__':
         expr.parse ('((if (S _r) (S _r) O) 1 2)'),
         (0,),
     ))  # Successful: ((S _r) 1 2)
+
+    interactive ()
+
 
