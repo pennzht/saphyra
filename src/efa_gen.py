@@ -48,32 +48,69 @@ def apply_theorem_at (theorem_left, theorem_right, term, path):
     subterm = lambdas.sub_by_path (term, path)
     attempt_match = match_pattern (pattern = theorem_left, form = subterm)
     if not attempt_match:
-        return 'Cannot apply theorem.'
+        return 'FAIL: Cannot apply theorem.'
     reconstructed_subterm = _lambda_replace_all(
         theorem_left,
         attempt_match)
     if not lambdas.lambda_eq (reconstructed_subterm, subterm):
-        return 'Cannot apply theorem: replacement failed.'
+        return 'FAIL: Cannot apply theorem: replacement failed.'
     # Replacement successful.
     new_subterm = _lambda_replace_all(
         theorem_right,
         attempt_match)
     return lambdas.replace_by_path (term, path, new_subterm)
-    pass  # TODO, continue
 
 def interactive ():
     axioms = efa._extract_axioms ()
+    expr.pr (axioms)
     term = expr.parse ('''
       (  ((S O) + (S O)) * ((S O) + (S O))  )
     ''')
+    commands = []
     while True:
-        print (term)
-        pattern = input ('<path> <theorem> <direction:ltr/rtl>')
-        (path, theorem, direction) = expr.parseall (pattern)
+        print (expr.purr (term))
+        pattern = input ('Enter <path> <theorem> <direction:ltr/rtl> ... ')
+        (path, theorem_name, direction) = expr.parseall (pattern)
         path = tuple (int (x) for x in path)
         print (path)
-        print (theorem)
+        print (theorem_name)
         print (direction)
+
+        theorem = axioms[theorem_name]
+        if direction == 'ltr':
+            l, _, r = theorem
+        else:
+            r, _, l = theorem
+        new_term = apply_theorem_at (l, r, term, path)
+        if type (new_term) is str and new_term.startswith('FAIL'):
+            print ('Attempt failed. Try again.')
+        else:
+            print ('Attempt succeeded.')
+            commands.append (pattern)
+            term = new_term
+            print ('... commands ...', commands)
+
+# Successful interactive steps:
+# Starts with
+#     (  ((S O) + (S O)) * ((S O) + (S O))  )
+# (comment : 2 * 2)
+# Ends with
+#     (S (S (S (S O))))
+# (comment : 4)
+#
+# [0] +-S ltr
+# [0 1] +-O ltr
+# [2] +-S ltr
+# [2 1] +-O ltr
+# [] *-S ltr
+# [0] *-S ltr
+# [0 0] *-O ltr
+# [0] +-S ltr
+# [0 1] +-S ltr
+# [0 1 1] +-O ltr
+# [] +-S ltr
+# [1] +-S ltr
+# [1 1] +-O ltr
 
 if __name__ == '__main__':
     print (match_pattern (
