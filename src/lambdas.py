@@ -23,6 +23,17 @@ def walk (o, prefix=()):
     else:
         yield (o, prefix)
 
+def _all_path_indices (term, prefix):
+    yield tuple (prefix)
+    if isseq (term):
+        for (i, t) in enumerate (term):
+            prefix.append (i)
+            yield from _all_path_indices (t, prefix)
+            prefix.pop ()
+
+def all_path_indices (term):
+    return list (_all_path_indices (term, []))
+
 def sub_by_path (term, path):
     if not path:
         return term

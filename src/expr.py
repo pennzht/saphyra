@@ -102,8 +102,8 @@ def format_lines (obj, depth, wlimit):
     else:
         return [(0, str (obj))]
             
-def purr (obj):
-    lines = format_lines (obj, 0, 40)
+def purr (obj, maxwidth = 40):
+    lines = format_lines (obj, 0, maxwidth)
     return ''.join (' ' * indent + line + '\n' for (indent, line) in lines)
 
 if __name__ == '__main__':

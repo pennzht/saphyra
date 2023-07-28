@@ -60,6 +60,31 @@ def apply_theorem_at (theorem_left, theorem_right, term, path):
         attempt_match)
     return lambdas.replace_by_path (term, path, new_subterm)
 
+def print_valid_replacements (term, path, theorem_name, direction, axioms):
+    if path == '?':
+        paths = lambdas.all_path_indices (term)
+    else:
+        paths = [tuple (int (x) for x in path)]
+
+    if theorem_name == '?' or direction == '?':
+        theorems = [(a, d) for a in axioms for d in ['ltr', 'rtl']]
+    else:
+        theorems = [(theorem_name, direction)]
+
+    for path in paths:
+        for (theorem_name, direction) in theorems:
+            theorem = axioms[theorem_name]
+            if len (theorem) != 3 or theorem[1] != '=': continue
+            if direction == 'ltr':
+                l, _, r = theorem
+            else:
+                r, _, l = theorem
+            new_term = apply_theorem_at (l, r, term, path)
+            if type (new_term) is str and new_term.startswith('FAIL'):
+                continue  # Application failed
+            # Application succeeded
+            print (path, theorem_name, direction, '->', expr.purr (new_term, maxwidth=80), end='')
+
 def interactive (term):
     axioms = efa._extract_axioms ()
     expr.pr (axioms)
@@ -68,6 +93,12 @@ def interactive (term):
         print (expr.purr (term))
         pattern = input ('Enter <path> <theorem> <direction:ltr/rtl> ... ')
         (path, theorem_name, direction) = expr.parseall (pattern)
+        # Special case: if missing one, keep hinting
+        if '?' in (path, theorem_name, direction):
+            print_valid_replacements (term, path, theorem_name, direction,
+                                      axioms)
+            continue  # TODO: Add hinting.
+
         path = tuple (int (x) for x in path)
         print (path)
         print (theorem_name)
@@ -133,10 +164,12 @@ if __name__ == '__main__':
         (0,),
     ))  # Successful: ((S _r) 1 2)
 
-    # interactive (term = expr.parse ('(  ((S O) + (S O)) * ((S O) + (S O))  )'))
+    # Type "? +-S ltr" for hints on which paths to use,
+    # and "[0] ? ?" for hints on which theorems to use.
+    interactive (term = expr.parse ('(  ((S O) + (S O)) * ((S O) + (S O))  )'))
     # interactive (term = expr.parse ('((  ((S O) + (S O)) * ((S O) + (S O))  ) = (S (S (S (S O)))))'))
-    interactive (term =
-                 expr.parse ('''
-                   ((if (S O) _x _y) = (if _m _x _x))
-                 ''')
-                 )
+    # interactive (term =
+    #              expr.parse ('''
+    #                ((if (S O) _x _y) = (if _m _x _x))
+    #              ''')
+    #              )
