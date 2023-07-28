@@ -134,5 +134,9 @@ if __name__ == '__main__':
     ))  # Successful: ((S _r) 1 2)
 
     # interactive (term = expr.parse ('(  ((S O) + (S O)) * ((S O) + (S O))  )'))
-    interactive (term = expr.parse ('((  ((S O) + (S O)) * ((S O) + (S O))  ) = (S (S (S (S O)))))'))
-
+    # interactive (term = expr.parse ('((  ((S O) + (S O)) * ((S O) + (S O))  ) = (S (S (S (S O)))))'))
+    interactive (term =
+                 expr.parse ('''
+                   ((if (S O) _x _y) = (if _m _x _x))
+                 ''')
+                 )
