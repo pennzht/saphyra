@@ -60,12 +60,9 @@ def apply_theorem_at (theorem_left, theorem_right, term, path):
         attempt_match)
     return lambdas.replace_by_path (term, path, new_subterm)
 
-def interactive ():
+def interactive (term):
     axioms = efa._extract_axioms ()
     expr.pr (axioms)
-    term = expr.parse ('''
-      (  ((S O) + (S O)) * ((S O) + (S O))  )
-    ''')
     commands = []
     while True:
         print (expr.purr (term))
@@ -136,6 +133,6 @@ if __name__ == '__main__':
         (0,),
     ))  # Successful: ((S _r) 1 2)
 
-    interactive ()
-
+    # interactive (term = expr.parse ('(  ((S O) + (S O)) * ((S O) + (S O))  )'))
+    interactive (term = expr.parse ('((  ((S O) + (S O)) * ((S O) + (S O))  ) = (S (S (S (S O)))))'))
 

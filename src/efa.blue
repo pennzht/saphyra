@@ -1,5 +1,7 @@
     truth   (S O)
     eq-1    (_a = _a)
+    [comment - eq-1-alter is added for temporary testing purposes.]
+    eq-1-alter    ((_a = _a) = (S O))
     eq-2    ((_a = _b) = (_b = _a))
 
     [comment
