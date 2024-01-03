@@ -1,0 +1,51 @@
+[comment first-order logic]
+
+    and-i       [_a _b (and _a _b)]
+    and-el      [(and _a _b) _a]
+    and-er      [(and _a _b) _b]
+
+    or-il       [_a (or _a _b)]
+    or-ir       [_b (or _a _b)]
+    or-e        [(or _a _b) (impl _a _c) (impl _b _c) _c]
+
+    true-i      [true]
+    false-e     [(impl false _a)]
+
+    not-i       [(impl _a false) (not _a)]
+    not-e       [(not _a) (impl _a false)]
+
+    impl-e      [(impl _a _b) _a _b]
+
+    equiv-el    [(equiv _a _b) (impl _a _b)]
+    equiv-er    [(equiv _a _b) (impl _b _a)]
+    equiv-i     [(impl _a _b) (impl _b _a) (equiv _a _b)]
+
+    forall-e    [(forall __p) (__p _m)]
+
+    exists-i    [(__p _m) (exists __p)]
+    exists-e    [(exists __p)
+                 (forall (: _n (impl (__p _n) _q)))
+                 _q]
+
+    =-i         [(= _a _a)]
+    =-e         [(= _a _b) (__p _a) (__p _b)]
+
+[comment zfc axioms]
+
+    ax-ext      [(impl (forall (: _u (equiv (in _u _x) (in _u _y))))
+                        (= _x _y))]
+    ax-pair     [(equiv
+                   (in _x (pair _a _b))
+                   (or (= _x _a) (= _x _b)))]
+    ax-subset   ...
+    ax-union    [(equiv
+                   (in _u (union _x))
+                   (exists (: _z (and (in _z _x) (in _u _z)))))]
+    ax-pow      [(equiv
+                   (in _u (pow _x))
+                   (forall (: _t (impl (in _t _u) (in _t _x)))))]
+    ax-inf      ...
+    ax-repl     ...
+    ax-found    ...
+    ax-choice   ...
+
