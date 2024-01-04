@@ -35,32 +35,32 @@
     =-i         [(= _a _a)]
     =-e         [(= _a _b) (__p _a) (__p _b)]
 
+[comment removed type annotations. every statement is checked for type correctness.]
 [comment zfc axioms]
 
-    ax-ext      [(type _x set) (type _y set) (impl (forall (: _u (equiv (in _u _x) (in _u _y))))
+    ax-ext      [(impl (forall (: _u (equiv (in _u _x) (in _u _y))))
                         (= _x _y))]
-    ax-pair     [(type _a set) (type _b set) (type _x set) (equiv
+    ax-pair     [(equiv
                    (in _x (pair _a _b))
                    (or (= _x _a) (= _x _b)))]
-    ax-subset   [(type _x set) (type _p pred_1) (type _u set) (equiv
-                   (_u in (subset _x _p))
-                   (and (_u in _x) (_p _u)))]
-    ax-union    [(type _x set) (type _u set)
-                 (equiv
+    ax-subset   [(type __p pred_1) (equiv
+                   (_u in (subset _x __p))
+                   (and (_u in _x) (__p _u)))]
+    ax-union    [(equiv
                    (in _u (union _x))
                    (exists (: _z (and (in _z _x) (in _u _z)))))]
-    ax-pow      [(type _x set) (type _u set)
-                 (equiv
+    ax-pow      [(equiv
                    (in _u (pow _x))
                    (forall (: _t (impl (in _t _u) (in _t _x)))))]
-    ax-empty    [(type _u set) (not (in _u empty))]
+    ax-empty    [(not (in _u empty))]
     ax-inf      [(and
                    (in empty infinity)
                    (forall (: _x (impl (in _x infinity)
                                        (in (pair _x (pair _x _x)) infinity)))))]
-    ax-repl     ...
-    ax-found    [(type _s set)
-                 (or (= _s empty)
+    ax-repl     [(type __f func_1) (equiv
+                   (_u in (map _x __f))
+                   (exists (: _preimg (and (in _preimg _x) (= _u (__f _preimg))))))]
+    ax-found    [(or (= _s empty)
                      (exists (: _x (and
                                      (in _x _s)
                                      (not (exists (: _t (and (in _t _s) (in _t _x)))))))))]
