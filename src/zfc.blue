@@ -37,15 +37,15 @@
     ax-pair     [(equiv
                    (in _x (pair _a _b))
                    (or (= _x _a) (= _x _b)))]
-    ax-subset   ...
+    [comment ax-subset   ...]
     ax-union    [(equiv
                    (in _u (union _x))
                    (exists (: _z (and (in _z _x) (in _u _z)))))]
     ax-pow      [(equiv
                    (in _u (pow _x))
                    (forall (: _t (impl (in _t _u) (in _t _x)))))]
-    ax-inf      ...
-    ax-repl     ...
-    ax-found    ...
-    ax-choice   ...
+    [comment ax-inf      ...]
+    [comment ax-repl     ...]
+    [comment ax-found    ...]
+    [comment ax-choice   ...]
 

@@ -64,5 +64,5 @@
                      (exists (: _x (and
                                      (in _x _s)
                                      (not (exists (: _t (and (in _t _s) (in _t _x)))))))))]
-    ax-choice   ...
+    [comment ax-choice   ...]
 
