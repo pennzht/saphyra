@@ -3,7 +3,8 @@
 from pprint import pprint
 import expr
 
-# 1. Simple derivation node
+# Type signatures and inference
+
 Types = {
     '(-> stmt stmt stmt)':
         ['and', 'or', 'impl', 'equiv'],
@@ -28,5 +29,21 @@ for key in Types:
 
 pprint (_typemap)
 
+def infer_type (term, env=None):
+    env = env or []
+    if type (term) is str:
+        for (a, b) in env:
+            if a == term: return b
+        raise Exception (f'Term {term} not found in env {env}')
+    elif type (term) is tuple and term and term[0] == ':':
+        # Lambda
+        ...
+    elif type (term) is tuple:
+        # Application
+        ...
+    else:
+        raise Exception (f'Unexpected term type {term}')
+
+# 1. Simple derivation node
 # 2. Simple derivation graph
 
