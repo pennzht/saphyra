@@ -1,0 +1,18 @@
+Common libraries, and frequently-used shared functions
+======================================================
+
+general.py : solves {{pattern matching}}
+lambdas.py : {{lambda expressions}} and {{replacement}}
+expr.py : {{s-expressions}}, structural
+(651 lines total)
+
+Other
+=====
+
+verify.py, arith.py : verification for arith.blue
+fol.py : verification for zfc.blue / zfc_typed.blue
+efa.py : verification for efa.blue
+efa_gen.py : interactive theorem proving for efa.blue
+lc.py : a simple lambda calculus
+arvm.py : a simple VM / stack machine
+
