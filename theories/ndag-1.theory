@@ -1,0 +1,25 @@
+(comment - format is as follows:
+  (tag (inputs ...)
+       (outputs ...)
+       rule))
+
+(#assu-1
+  [_A:P] [_A:P] (id))
+(#assu-2
+  [_B:P] [_B:P] (id))
+(#merge
+  [_A:P _B:P] [_A:P] (abstr #assu-1 #assu-2))
+(#ans-1
+  [_A:P] [(-> _B:P _A:P)]
+  (impl-introd #merge))
+(#ans-2
+  [] [(-> _A:P (-> _B:P _A:P))]
+  (impl-introd #ans-1))
+
+(comment - graph
+  {{{
+    assu-1
+    assu-2
+  } merge} -> ans-1} -> ans-2
+)
+

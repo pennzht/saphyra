@@ -1,0 +1,40 @@
+(#ans
+  []
+  [((-> (and _A _B) _C)
+    (-> _A (-> _B _C)))]
+  (impl-intro #ans-1))
+
+(#ans-1
+  [(-> (and _A _B) _C)]
+  [(-> _A (-> _B _C))]
+  (impl-intro #ans-2))
+
+(#ans-2
+  [(-> (and _A _B) _C) _A]
+  [(-> _B _C)]
+  (impl-intro #ans-3))
+
+(#ans-3
+  [(-> (and _A _B) _C) _A _B]
+  [_C]
+  (abstr #and-intro #mp))
+
+(#and-intro
+  [_A _B] [(and _A _B)]
+  (and-intro))
+
+(#mp
+  [(and _A _B) (-> (and _A _B) _C)] [_C]
+  (mp))
+
+(comment - subgraph links)
+(#ans impl-intro #ans-1)
+(#ans-1 impl-intro #ans-2)
+(#ans-2 impl-intro #ans-3)
+(#ans-3 abstr #and-intro #mp)
+(#and-intro and-intro)
+(#mp mp)
+
+(comment - flow of statements between siblings)
+(#and-intro #mp (and _A _B))
+
