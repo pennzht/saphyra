@@ -25,7 +25,7 @@ def verify (theory):
 
     A theory is a collection of definitions and links.'''
     try:
-        graph = toposort (theory)
+        graph = toposort.sort_theory (theory)
         verify_per_step (graph)
         return True
     except TheoryError as e:
@@ -34,3 +34,4 @@ def verify (theory):
 
 print (expr.purr (rules ()))
 
+print (verify (expr.data ('../theories/ndag-2.nodegraph')))
