@@ -1,0 +1,25 @@
+(and-intro
+  [*A *B] [(and *A *B)])
+
+(and-elim
+  [(and *A *B)] [*A *B])
+
+(or-intro-1
+  [*A] [(or *A *B)])
+
+(or-intro-2
+  [*B] [(or *A *B)])
+
+(or-elim
+  [(or *A *B) (-> *A *C) (-> *B *C)]
+  [*C])
+
+(false-elim
+  [false] [*A])
+
+(true-intro
+  [] [true])
+
+(tnd
+  [] [(or *A (-> *A false))])
+
