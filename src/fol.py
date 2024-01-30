@@ -4,6 +4,7 @@
 import expr
 import general  # for .match
 import toposort
+from pprint import pprint
 
 class TheoryError (Exception):
     def __init__ (self, reason=None):
@@ -14,11 +15,23 @@ class TheoryError (Exception):
         return f'TheoryError (reason = {repr(self.reason)})'
 
 def rules ():
-    return expr.data ('./fol.blue')
+    data = expr.data ('./fol.blue')
+    return {a: (b, c) for (a, b, c) in data}
 
 def verify_per_step (graph):
     '''Verifies a sorted graph step by step.'''
-    ...
+    nodes = graph['nodes']
+    derives = graph['derives']
+    links = graph['links']
+    axioms = rules ()
+    for node in graph['order']:
+        reason = derives[node]
+        if reason[0] not in {'impl-intro', 'join'}:
+            # Actual axiom
+            match = general.match (nodes[node], axioms[reason[0]])
+            print ('match:', node, match)
+        else:
+            print ('skipping', node)
 
 def verify (theory):
     '''Verifies a theory.
@@ -32,6 +45,6 @@ def verify (theory):
         print (e)
         return False
 
-print (expr.purr (rules ()))
+pprint (rules ())
 
 print (verify (expr.data ('../theories/ndag-2.nodegraph')))

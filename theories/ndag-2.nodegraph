@@ -27,6 +27,8 @@
 (derive impl-intro #ans-1 #ans-2)
 (derive impl-intro #ans-2 #ans-3)
 (derive join #ans-3 #and-intro #mp)
+(derive mp #mp)
+(derive and-intro #and-intro)
 
 (comment - flow of statements between siblings)
 (link #mp 0 #and-intro 0)

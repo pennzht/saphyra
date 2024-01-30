@@ -11,7 +11,7 @@ def read_theory (theory):
     nodes = {}
     ancestors = defaultdict (list)
     descendants = defaultdict (list)
-    derives = defaultdict (list)
+    derives = {}
     links = defaultdict (list)
     for row in theory:
         if not row: raise Exception ('Unrecognized row.')
@@ -25,14 +25,16 @@ def read_theory (theory):
         elif head == 'derive':
             (_, method, result_node, *orig_nodes) = row
             ancestors[result_node].extend (orig_nodes)
-            derives[result_node].extend (orig_nodes)
+            derives[result_node] = (
+                tuple([method, *orig_nodes]))
             for elem in orig_nodes:
                 descendants[elem].append (result_node)
         elif head == 'link':
             (_, late_node, late_index,
              early_node, early_index) = row
             ancestors[late_node].append (early_node)
-            links[late_node].append (early_node)
+            links[late_node].append (
+                (late_index, early_node, early_index))
             descendants[early_node].append (late_node)
         else:
             raise Exception ('Unrecognized row.')

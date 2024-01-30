@@ -20,6 +20,9 @@
 (true-intro
   [] [true])
 
+(mp
+  [*A (-> *A *B)] [*B])
+
 (tnd
   [] [(or *A (-> *A false))])
 
