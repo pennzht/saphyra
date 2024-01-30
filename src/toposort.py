@@ -7,7 +7,7 @@
 from collections import defaultdict
 from pprint import pprint
 
-def sort_theory (theory):
+def read_theory (theory):
     nodes = {}
     ancestors = defaultdict (list)
     descendants = defaultdict (list)
@@ -31,8 +31,32 @@ def sort_theory (theory):
             descendants[early_node].append (late_node)
         else:
             raise Exception ('Unrecognized row.')
-    pprint (nodes)
-    pprint (ancestors)
-    pprint (descendants)
 
+    order = find_order (nodes, ancestors, descendants)
+
+    ans = {
+        'nodes': nodes,
+        'order': order,
+        'ancestors': ancestors,
+        'descendants': descendants,
+    }
+    pprint (ans); return ans
+
+def find_order (nodes, ancestors, descendants):
+    indegree = {n: len (ancestors[n]) for n in nodes}
+    head = [n for n in nodes if indegree[n] == 0]
+    head.reverse()
+    order = []
+    covered = set()
+    while head and len (order) <= len (nodes):
+        latest = head.pop ()
+        order.append (latest)
+        covered.add (latest)
+        for nxt in descendants[latest]:
+            indegree[nxt] -= 1
+            if indegree[nxt] == 0: head.append (nxt)
+    if len (covered) == len (nodes):
+        return order
+    else:
+        return None
 

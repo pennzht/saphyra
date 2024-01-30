@@ -25,7 +25,7 @@ def verify (theory):
 
     A theory is a collection of definitions and links.'''
     try:
-        graph = toposort.sort_theory (theory)
+        graph = toposort.read_theory (theory)
         verify_per_step (graph)
         return True
     except TheoryError as e:
