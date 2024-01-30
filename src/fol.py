@@ -25,13 +25,25 @@ def verify_per_step (graph):
     links = graph['links']
     axioms = rules ()
     for node in graph['order']:
+        curr = nodes[node]
         reason = derives[node]
         if reason[0] not in {'impl-intro', 'join'}:
             # Actual axiom
-            match = general.match (nodes[node], axioms[reason[0]])
+            match = general.match (curr, axioms[reason[0]])
             print ('match:', node, match)
+            if not match: return False
         else:
-            print ('skipping', node)
+            if reason[0] == 'impl-intro':
+                prev = nodes[reason[1]]
+                is_valid = (
+                    general.match (curr[1], (('->', '*A', '*B'),)) and
+                    curr[1][0][1] in prev[0] and
+                    curr[1][0][2] in prev[1] and
+                    all (x in prev[0] for x in curr[0]))
+                print ('impl-intro valid:', is_valid)
+                if not is_valid: return False
+            elif reason[0] == 'join':
+                pass
 
 def verify (theory):
     '''Verifies a theory.

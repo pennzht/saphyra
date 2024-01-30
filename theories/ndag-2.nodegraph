@@ -1,8 +1,8 @@
 (comment - node data)
 (node #ans
   []
-  [((-> (and _A _B) _C)
-    (-> _A (-> _B _C)))])
+  [(-> (-> (and _A _B) _C)
+       (-> _A (-> _B _C)))])
 
 (node #ans-1
   [(-> (and _A _B) _C)]
