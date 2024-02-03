@@ -15,5 +15,6 @@ function execute (e) {
     // fn = new Function (`return ${inValue}`);
     // $('output').innerText = fn();
     console.log (ans = parseSexp (inValue));
+    $('display').innerHTML = display (ans);
     $('output').innerText = JSON.stringify (ans, null, 2);
 }

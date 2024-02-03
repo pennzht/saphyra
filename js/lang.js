@@ -16,3 +16,11 @@ function parseSexp (input) {
     return JSON.parse (input);
 }
 
+function display (sexp) {
+    if (typeof sexp === 'string') {
+        return sexp;
+    } else {
+        parts = sexp.map (display);
+        return '<sexp> ' + parts.join(' ')  + '</sexp>';
+    }
+}
