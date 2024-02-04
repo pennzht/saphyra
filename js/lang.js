@@ -29,7 +29,7 @@ function display (sexp) {
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
-function isValidStep (rule, ins, outs, subs = null) {
+function isValidStep (rule, ins, outs, subs = null, order = null) {
     try {
         const i = ins, o = outs;
         if (rule === 'and-intro') {
@@ -71,7 +71,8 @@ function isValidStep (rule, ins, outs, subs = null) {
                 eq (sub.ins, [...i, out[1]]) &&
                 eq (sub.outs, [out[2]]);
         } else if (rule === 'join') {
-            return true;  // TODO - judge
+            // TODO - add joins.
+            return true;
         } else {
             return false;  // Unrecognized rule.
         }
@@ -199,7 +200,7 @@ function verifyEachStep (module) {
             module.errors.push (`No derivation for ${name}.`); continue;
         }
         const subs = deriv.args.map ((name) => module.nodes.get(name));
-        const isMatch = isValidStep (deriv.rule, node.ins, node.outs, subs);
+        const isMatch = isValidStep (deriv.rule, node.ins, node.outs, subs, module.order);
         if (!isMatch) {
             module.success = false;
             module.errors.push (`Derivation ${deriv.rule} failed for ${name}.`); continue;
