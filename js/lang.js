@@ -61,7 +61,15 @@ function isValidStep (rule, ins, outs, subs = null) {
         } else if (rule === 'id') {
             return eq (i, o);
         } else if (rule === 'impl-intro') {
-            return true;  // TODO - judge
+            // Rule: from [..., A] |- [B]
+            //         to [...] |- [A -> B]
+            if (o.length !== 1) return false;
+            const [out] = o;
+            if (subs?.length !== 1) return false;
+            const [sub] = subs;
+            return out[0] === '->' &&
+                eq (sub.ins, [...i, out[1]]) &&
+                eq (sub.outs, [out[2]]);
         } else if (rule === 'join') {
             return true;  // TODO - judge
         } else {
@@ -182,6 +190,22 @@ function toposort (module) {
 
 // TODO - check each step
 function verifyEachStep (module) {
+    for (const name of module.order) {
+        const node = module.nodes.get(name);
+        const deriv = module.derives.get(name);
+        if (deriv === undefined) {
+            // Rule does not have valid derivation
+            module.success = false;
+            module.errors.push (`No derivation for ${name}.`); continue;
+        }
+        const subs = deriv.args.map ((name) => module.nodes.get(name));
+        const isMatch = isValidStep (deriv.rule, node.ins, node.outs, subs);
+        if (!isMatch) {
+            module.success = false;
+            module.errors.push (`Derivation ${deriv.rule} failed for ${name}.`); continue;
+        }
+    }
+
     return module;
 }
 
