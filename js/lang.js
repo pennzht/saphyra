@@ -179,6 +179,10 @@ function isValidDeriv (lines) {
     if (order.length === names.length) {
         // Order successful
         console.log ('order', order);
+    } else {
+        console.log ('failed', order);
+        module.success = false;
+        return module;
     }
 
     // TODO - check each step
