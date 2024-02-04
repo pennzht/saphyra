@@ -76,9 +76,8 @@ function isValidStepInAnyRule (ins, outs, subs = null) {
             'false-elim', 'true-intro', 'mp', 'tnd', 'impl-intro', 'join'].some ((rule) => isValidStep (rule, ins, outs, subs));
 }
 
-/// If a sequence of items (in correct order) is a valid derivation.
-/// Applies to a system.
-function isValidDeriv (lines) {
+/// Parses a module.
+function parseModule (lines) {
     const nodes = new Map();  // Map<name, {ins, outs}>
     const descs = new Map();  // Descendants: Map<name, name[]>
     const ances = new Map();  // Ancestors: Map<name, name[]>
@@ -142,7 +141,24 @@ function isValidDeriv (lines) {
     return {
         success: errors.length === 0,
         errors,
+        nodes,
+        descs,
+        ances,
+        derives,
+        // no links for now
     };
+}
+
+/// If a sequence of items (in correct order) is a valid derivation.
+/// Applies to a system.
+function isValidDeriv (lines) {
+    const module = parseModule(lines);
+
+    // TODO - toposort
+
+    // TODO - check each step
+
+    return module;
 }
 
 /// If two sexps are equal.
