@@ -4,18 +4,25 @@ $('input').oninput = execute;
 
 window.onload = (e) => {
     $('input').value =
-`[|- [A B] [[and A B]]]
-[|- [A] [[or A B]]]
+`[and-intro [A B] [[and A B]]]
+[or-intro-1 [A] [[or A B]]]
+[or-elim
+  [
+    [or X [and X Y]]
+    [-> X M]
+    [-> [and X Y] M]
+  ]
+  [M]
+]
 `;
     execute(e);
 }
 
 function execute (e) {
     inValue = $('input').value;
-    // fn = new Function (`return ${inValue}`);
-    // $('output').innerText = fn();
     console.log (ans = parseSexp (inValue));
     $('display').innerHTML = display (ans);
-//    $('output').innerText = JSON.stringify (ans, null, 2);
-    $('output').innerText = isValidDeriv ('and-intro', ans[0][1], ans[0][2]);
+    $('output').innerText = ans.map (
+        (row) => isValidStep (...row),
+    );
 }
