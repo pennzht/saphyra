@@ -38,4 +38,7 @@ Directory structure
     - Generated test results (`*.txt`)
 * `theories/`
     - Theory files (`*.theory`, `*.efa-theory`, `*.efa-tactic-theory`)
+* `js/`
+    - JavaScript version
+        * Point your browser at `start.html` to view the demo (__WIP__)
 
