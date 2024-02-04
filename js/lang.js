@@ -143,18 +143,8 @@ function parseModule (lines) {
     };
 }
 
-/// If a sequence of items (in correct order) is a valid derivation.
-/// Applies to a system.
-function isValidDeriv (lines) {
-    const module = parseModule(lines);
-
-    // Toposort of the module.
-    if (!module.success) {
-        return module;
-    }
-
-    console.log(module.ances);
-
+/// Performs a toposort (topological sorting) of the nodes of the module.
+function toposort (module) {
     const names = [... module.nodes.keys()];
 
     const indegree = new Map(
@@ -178,16 +168,41 @@ function isValidDeriv (lines) {
         }
     }
 
+    module.order = order;
+
     if (order.length === names.length) {
         // Order successful
-        console.log ('order', order);
     } else {
-        console.log ('failed', order);
         module.success = false;
+        module.errors.push (`Dependency graph has at least one cycle.`);
+    }
+
+    return module;
+}
+
+// TODO - check each step
+function verifyEachStep (module) {
+    return module;
+}
+
+/// If a sequence of items (in correct order) is a valid derivation.
+/// Applies to a system.
+function isValidDeriv (lines) {
+    const module = parseModule(lines);
+
+    if (!module.success) {
         return module;
     }
 
-    // TODO - check each step
+    toposort(module);
+
+    if (!module.success) {
+        return module;
+    }
+
+    verifyEachStep (module);
+
+    console.log(module);
 
     return module;
 }
