@@ -1,6 +1,11 @@
+* {
+    font-family: "Linux Biolinum", "Inter UI", "Inter", sans-serif;
+}
+
 sexp {
     border: 1px solid black;
     padding: 3px;
     margin: 3px;
     display: inline-block;
 }
+
