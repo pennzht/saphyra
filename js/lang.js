@@ -58,6 +58,8 @@ function isValidStep (rule, ins, outs, subs = null) {
         } else if (rule === 'tnd') {
             const a = o[0][1];
             return eq (o, [['or', a, ['->', a, 'false']]]);
+        } else if (rule === 'id') {
+            return eq (i, o);
         } else if (rule === 'impl-intro') {
             return true;  // TODO - judge
         } else if (rule === 'join') {
@@ -73,7 +75,7 @@ function isValidStep (rule, ins, outs, subs = null) {
 /// Temporary function for isvalidstep for any rule.
 function isValidStepInAnyRule (ins, outs, subs = null) {
     return ['and-intro', 'and-elim', 'or-intro-1', 'or-intro-2', 'or-elim',
-            'false-elim', 'true-intro', 'mp', 'tnd', 'impl-intro', 'join'].some ((rule) => isValidStep (rule, ins, outs, subs));
+            'false-elim', 'true-intro', 'mp', 'tnd', 'id', 'impl-intro', 'join'].some ((rule) => isValidStep (rule, ins, outs, subs));
 }
 
 /// Parses a module.
