@@ -29,7 +29,7 @@ function display (sexp) {
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
-function isValidStep (rule, ins, outs) {
+function isValidStep (rule, ins, outs, subs = null) {
     const i = ins, o = outs;
     if (rule === 'and-intro') {
         return i.length === 2 && equal (o, [['and', ...i]]);
@@ -57,15 +57,19 @@ function isValidStep (rule, ins, outs) {
     } else if (rule === 'tnd') {
         const a = o[0][1];
         return equal (o, [['or', a, ['->', a, 'false']]]);
+    } else if (rule === 'impl-intro') {
+        return true;  // TODO - judge
+    } else if (rule === 'join') {
+        return true;  // TODO - judge
     } else {
         return false;  // Unrecognized rule.
     }
 }
 
 /// Temporary function for isvalidstep for any rule.
-function isValidStepInAnyRule (ins, outs) {
+function isValidStepInAnyRule (ins, outs, subs = null) {
     return ['and-intro', 'and-elim', 'or-intro-1', 'or-intro-2', 'or-elim',
-            'false-elim', 'true-intro', 'mp', 'tnd'].some ((rule) => isValidStep (rule, ins, outs));
+            'false-elim', 'true-intro', 'mp', 'tnd', 'impl-intro', 'join'].some ((rule) => isValidStep (rule, ins, outs, subs));
 }
 
 /// If a sequence of items (in correct order) is a valid derivation.
