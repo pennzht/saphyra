@@ -62,6 +62,12 @@ function isValidStep (rule, ins, outs) {
     }
 }
 
+/// Temporary function for isvalidstep for any rule.
+function isValidStepInAnyRule (ins, outs) {
+    return ['and-intro', 'and-elim', 'or-intro-1', 'or-intro-2', 'or-elim',
+            'false-elim', 'true-intro', 'mp', 'tnd'].some ((rule) => isValidStep (rule, ins, outs));
+}
+
 /// If a sequence of items (in correct order) is a valid derivation.
 /// Applies to a system.
 function isValidDeriv (lines) {
