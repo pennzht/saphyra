@@ -130,14 +130,6 @@ function parseModule (lines) {
         }
     }
 
-    console.log (
-        'nodes', nodes,
-        'descs', descs,
-        'ances', ances,
-        'derives', derives,
-        'errors', errors,
-    );
-
     return {
         success: errors.length === 0,
         errors,
@@ -154,7 +146,40 @@ function parseModule (lines) {
 function isValidDeriv (lines) {
     const module = parseModule(lines);
 
-    // TODO - toposort
+    // Toposort of the module.
+    if (!module.success) {
+        return module;
+    }
+
+    console.log(module.ances);
+
+    const names = [... module.nodes.keys()];
+
+    const indegree = new Map(
+        names.map ((name) =>
+            [name, module.ances.get(name)?.length ?? 0])
+    );
+    
+    const starts = names.filter ((name) => indegree.get(name) === 0);
+    starts.reverse();
+
+    const order = [];
+
+    while (order.length < names.length && starts.length > 0) {
+        const next = starts.pop();
+        order.push (next);
+        for (const y of (module.descs.get(next) ?? [])) {
+            indegree.set(y, indegree.get(y) - 1);
+            if (indegree.get(y) <= 0) {
+                starts.push (y);
+            }
+        }
+    }
+
+    if (order.length === names.length) {
+        // Order successful
+        console.log ('order', order);
+    }
 
     // TODO - check each step
 
