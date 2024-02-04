@@ -6,14 +6,8 @@ window.onload = (e) => {
     $('input').value =
 `[and-intro [A B] [[and A B]]]
 [or-intro-1 [A] [[or A B]]]
-[or-elim
-  [
-    [or X [and X Y]]
-    [-> X M]
-    [-> [and X Y] M]
-  ]
-  [M]
-]
+[and-elim [[and X Y]] [X Y]]
+[false-elim [false] [A B C D]]
 `;
     execute(e);
 }
