@@ -50,4 +50,5 @@ function execute (e) {
     $('output').innerText = ans.map (
         (row) => row.length === 4 && isValidStepInAnyRule (row[2], row[3]),
     );
+    isValidDeriv (ans);
 }
