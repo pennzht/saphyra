@@ -11,6 +11,7 @@ window.onload = (e) => {
 function execute (e) {
     inValue = $('input').value;
     console.log (ans = parseSexp (inValue));
+    console.log ('string:', str(ans));
     $('display').innerHTML = display (ans);
     $('output').innerText = ans.map (
         (row) => row.length === 4 && isValidStepInAnyRule (row[2], row[3]),

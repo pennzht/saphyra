@@ -257,6 +257,8 @@ function eq (a, b) {
     return str(a) === str(b);
 }
 
+// Sexp to string.
 function str (object) {
-    return JSON.stringify(object);
+    if (typeof object === 'string') return object;
+    else return '[' + object.map (str).join(' ') + ']';
 }
