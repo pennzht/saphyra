@@ -71,8 +71,28 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
                 eq (sub.ins, [...i, out[1]]) &&
                 eq (sub.outs, [out[2]]);
         } else if (rule === 'join') {
-            // TODO - add joins.
-            return true;
+            // TODO - use link order instead of arg order.
+            const assumptions = new Map();
+            const conclusions = new Map();
+            for (const sub of subs) {
+                // For each subnode, add its assumptions if they're not proven yet.
+                for (const iElem of sub.ins) {
+                    if (! conclusions.has(str(iElem))) assumptions.set(str(iElem), iElem);
+                }
+                // And add its conclusions.
+                for (const oElem of sub.outs) {
+                    conclusions.set(str(oElem), oElem);
+                }
+            }
+            // Derivation is true only if no invalid assumptions are used,
+            // and all conclusions are proven.
+            const assumptionsValid = [... assumptions.values()].every (
+                (a) => ins.some((b) => eq(a, b))
+            );
+            const conclusionsValid = outs.every ((a) => [... conclusions.values()].some (
+                (b) => eq(a, b)
+            ));
+            return assumptionsValid && conclusionsValid;
         } else {
             return false;  // Unrecognized rule.
         }
