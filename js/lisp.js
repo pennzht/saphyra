@@ -55,26 +55,35 @@ const operators = {
 // {type: 'expr', form, env} - before expansion
 // {type: 'fnop', args: value[], subindex} - during expansion
     // Notice! For a fnop like (+ x y), args is [+, x, y], because the function head has to be evaluated too.
+// {type: 'macro', args: value[], subindex} - if, let, letrec
 // {type: 'literal', form} - after expansion
 // {type: 'closure', form, env} - lambda closure, cannot expand further
 
 function stepStack (stack) {
-    const tail = stack.pop ();
-    if (tail.type === 'expr') {
-        // TODO - Judge type
-    } else if (tail.type === 'fnop') {
-        if (tail.subindex >= tail.args.length) {
+    const frame = stack.pop ();
+    if (frame.type === 'expr') {
+        if (frame.form.length <= 0) {
+            frame.push ({type: 'literal', []});
+        } else if (frame.form.length === 4 && frame.form[0] === 'if') {
+            frame.push ({type: 'macro', args: frame.form, 1});
+        } else {
+            // TODO ...
+        }
+    } else if (frame.type === 'fnop') {
+        if (frame.subindex >= frame.args.length) {
             // Args finished operating; go to function
         } else {
-            stack.push (tail);
-            stack.push (tail.args[tail.subindex]);
+            stack.push (frame);
+            stack.push (frame.args[frame.subindex]);
         }
-    } else if (tail.type === 'literal' || tail.type === 'closure') {
+    } else if (frame.type === 'macro') {
+        // TODO - handle macros
+    } else if (frame.type === 'literal' || frame.type === 'closure') {
         // Done, go to previous one
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
             if (parent.type !== 'fnop') console.log ('Error! Incorrect parent.type', parent.type, stack);
-            parent.args[parent.subindex] = tail;
+            parent.args[parent.subindex] = frame;
             parent.subindex ++;
         } else {
             return 'done';
