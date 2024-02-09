@@ -1,6 +1,8 @@
 // A tiny lisp for scripting purposes.
 // Emulate a stack to avoid infinite loops.
 
+// TODO - finish language implementation.
+
 const arity = {
     // Binary
     '+': 2,
