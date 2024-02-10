@@ -1,40 +1,44 @@
 const folRules = `
 (and-intro
-  [*A *B]
-  [*A *B] [(and *A *B)])
+  [_A _B]
+  [_A _B] [(and _A _B)])
 
 (and-elim
-  [*A *B]
-  [(and *A *B)] [*A *B])
+  [_A _B]
+  [(and _A _B)] [_A _B])
 
 (or-intro-1
-  [*A *B]
-  [*A] [(or *A *B)])
+  [_A _B]
+  [_A] [(or _A _B)])
 
 (or-intro-2
-  [*A *B]
-  [*B] [(or *A *B)])
+  [_A _B]
+  [_B] [(or _A _B)])
 
 (or-elim
-  [*A *B *C]
-  [(or *A *B) (-> *A *C) (-> *B *C)]
-  [*C])
+  [_A _B _C]
+  [(or _A _B) (-> _A _C) (-> _B _C)]
+  [_C])
 
 (false-elim
-  [*A]
-  [false] [*A])
+  [_A]
+  [false] [_A])
 
 (true-intro
   []
   [] [true])
 
 (mp
-  [*A *B]
-  [*A (-> *A *B)] [*B])
+  [_A _B]
+  [_A (-> _A _B)] [_B])
 
 (tnd
-  [*A]
-  [] [(or *A (-> *A false))])
+  [_A]
+  [] [(or _A (-> _A false))])
+
+(id
+  [_A]
+  [_A])
 `;
 
 const sampleDeriv1 = `(comment - node data)

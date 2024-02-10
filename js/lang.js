@@ -84,39 +84,20 @@ function combineMatch (oldMatch, newMatch) {
 
 /// TODO: replace `isValidStep` with matches.
 
+const folRulesSexp = new Map(parseSexp (folRules));
+console.log ('folRulesSexp', folRulesSexp);
+
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
 function isValidStep (rule, ins, outs, subs = null, order = null) {
     try {
         const i = ins, o = outs;
-        if (rule === 'and-intro') {
-            return i.length === 2 && eq (o, [['and', ...i]]);
-        } else if (rule === 'and-elim') {
-            return o.length === 2 && eq (i, [['and', ...o]]);
-        } else if (rule === 'or-intro-1') {
-            return i.length === 1 && o.length === 1 &&
-                o[0][0] === 'or' && eq(o[0][1], i[0]);
-        } else if (rule === 'or-intro-2') {
-            return i.length === 1 && o.length === 1 &&
-                o[0][0] === 'or' && eq(o[0][2], i[0]);
-        } else if (rule === 'or-elim') {
-            return i.length === 3 && o.length === 1 &&
-                i[0][0] === 'or' && i[1][0] === '->' && i[2][0] === '->' &&
-                eq(i[0][1], i[1][1]) && eq(i[0][2], i[2][1]) &&
-                eq(i[1][2], i[2][2]) && eq(i[1][2], o[0]);
-        } else if (rule === 'false-elim') {
-            return eq (i, ['false']);
-        } else if (rule === 'true-intro') {
-            return eq (o, ['true']);
-        } else if (rule === 'mp') {
-            return i.length === 2 && o.length === 1 &&
-                eq(i[0], i[1][1]) && i[1][0] === '->' &&
-                eq(i[1][2], o[0]);
-        } else if (rule === 'tnd') {
-            const a = o[0][1];
-            return eq (o, [['or', a, ['->', a, 'false']]]);
-        } else if (rule === 'id') {
-            return eq (i, o);
+        
+        const folRule = folRulesSexp.get(rule) ?? null;
+        if (folRule !== null) {
+            // Rule defined
+            const match = simpleMatch (folRule, [ins, outs]);
+            return match.success;
         } else if (rule === 'impl-intro') {
             // Rule: from [..., A] |- [B]
             //         to [...] |- [A -> B]

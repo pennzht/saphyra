@@ -4,7 +4,7 @@ $('input').oninput = execute;
 
 window.onload = (e) => {
     /* example input */
-    $('input').value = sampleDeriv2;
+    $('input').value = sampleDeriv1;
     execute(e);
 }
 
