@@ -82,6 +82,8 @@ function combineMatch (oldMatch, newMatch) {
     }
 }
 
+/// TODO: replace `isValidStep` with matches.
+
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
 function isValidStep (rule, ins, outs, subs = null, order = null) {
@@ -330,3 +332,6 @@ console.log (
         parseSexp ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
     )
 );
+
+/// TODO: type checking
+
