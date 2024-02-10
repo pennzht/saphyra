@@ -27,6 +27,10 @@ function display (sexp) {
     }
 }
 
+function displayInRows (sexpList) {
+    return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
+}
+
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
 function isValidStep (rule, ins, outs, subs = null, order = null) {
