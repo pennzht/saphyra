@@ -31,6 +31,57 @@ function displayInRows (sexpList) {
     return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
 }
 
+/// Performs a simple match between pattern and sexp.
+function simpleMatch (pattern, sexp) {
+    if (isVar (pattern)) {
+        return {success: true, map: new Map([[pattern, sexp]])};
+    } else if (isAtom (pattern)) {
+        if (eq (pattern, sexp)) {
+            return {success: true, map: new Map([])};
+        } else {
+            return {success: false, cause: `${pattern} -> ${sexp} atom_mismatch`};
+        }
+    } else {
+        // isList
+        if (isAtom (sexp)) {
+            return {success: false, cause: `${pattern} -> ${sexp} atom`};
+        } else if (pattern.length !== sexp.length) {
+            return {success: false, cause: `${pattern} -> ${sexp} length_mismatch`};
+        } else {
+            var totalMatch = {success: true, map: new Map([])};
+            for (var i = 0; i < pattern.length; i++) {
+                const match = simpleMatch (pattern[i], sexp[i]);
+                combineMatch (totalMatch, match);
+                if (! totalMatch.success) {
+                    return totalMatch;
+                }
+            }
+            return totalMatch;
+        }
+    }
+}
+
+function combineMatch (oldMatch, newMatch) {
+    if (! oldMatch.success) return;
+    if (! newMatch.success) {
+        oldMatch.success = false;
+        oldMatch.cause = newMatch.cause;
+        return;
+    }
+    for (const x of newMatch.map.keys ()) {
+        if (oldMatch.map.has(x)) {
+            if (eq(oldMatch.map.get(x), newMatch.map.get(x))) { /*good*/ }
+            else {
+                oldMatch.success = false;
+                oldMatch.cause = `${x} -> ${oldMatch.map.get(x)}, ${newMatch.map.get(x)}`;
+                return;
+            }
+        } else {
+            oldMatch.map.set(x, newMatch.map.get(x));
+        }
+    }
+}
+
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
 function isValidStep (rule, ins, outs, subs = null, order = null) {
@@ -262,7 +313,20 @@ function eq (a, b) {
 }
 
 // Sexp to string.
-function str (object) {
-    if (typeof object === 'string') return object;
-    else return '[' + object.map (str).join(' ') + ']';
+function str (obj) {
+    if (isAtom(obj)) return obj;
+    else return '[' + obj.map (str).join(' ') + ']';
 }
+
+function isVar (obj) { return isAtom(obj) && obj.startsWith('_'); }
+
+function isAtom (obj) { return typeof obj === 'string'; }
+
+function isList (obj) { return ! isAtom (obj); }
+
+console.log (
+    simpleMatch (
+        parseSexp ('[_A _B [and _A _B]]'),
+        parseSexp ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
+    )
+);
