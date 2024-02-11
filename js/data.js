@@ -38,7 +38,7 @@ const folRules = `
 
 (id
   [_A]
-  [_A])
+  [_A] [_A])
 `;
 
 const sampleDeriv1 = `(comment - node data)

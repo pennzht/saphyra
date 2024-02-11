@@ -82,7 +82,9 @@ function combineMatch (oldMatch, newMatch) {
     }
 }
 
-const folRulesSexp = new Map(parse (folRules));
+const folRulesSexp = new Map(parse (folRules).map (
+    (line) => [line[0], line.slice(1)],
+));
 console.log ('folRulesSexp', folRulesSexp);
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
@@ -94,7 +96,7 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
         const folRule = folRulesSexp.get(rule) ?? null;
         if (folRule !== null) {
             // Rule defined
-            const match = simpleMatch (folRule, [ins, outs]);
+            const match = simpleMatch (folRule.slice(1), [ins, outs]);
             return match.success;
         } else if (rule === 'impl-intro') {
             // Rule: from [..., A] |- [B]
