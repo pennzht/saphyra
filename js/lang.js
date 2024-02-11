@@ -139,12 +139,6 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
     }
 }
 
-/// Temporary function for isvalidstep for any rule.
-function isValidStepInAnyRule (ins, outs, subs = null) {
-    return ['and-intro', 'and-elim', 'or-intro-1', 'or-intro-2', 'or-elim',
-            'false-elim', 'true-intro', 'mp', 'tnd', 'id', 'impl-intro', 'join'].some ((rule) => isValidStep (rule, ins, outs, subs));
-}
-
 /// Parses a module.
 function parseModule (lines) {
     const nodes = new Map();  // Map<name, {ins, outs}>

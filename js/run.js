@@ -13,9 +13,6 @@ function execute (e) {
     console.log (ans = parse (inValue));
     console.log ('string:', str(ans));
     $('display').innerHTML = displayInRows (ans);
-    $('output').innerText = ans.map (
-        (row) => row.length === 4 && isValidStepInAnyRule (row[2], row[3]),
-    );
 
     const module = isValidDeriv (ans);
     $('visual').innerHTML = displayInRows(visualize(module));
