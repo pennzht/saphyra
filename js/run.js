@@ -16,4 +16,8 @@ function execute (e) {
 
     const module = isValidDeriv (ans);
     $('visual').innerHTML = displayInRows(visualize(module));
+
+    $('command').onchange = $('command').oninput = (e) => {
+        console.log ($("command").value);
+    }
 }
