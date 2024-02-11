@@ -245,7 +245,6 @@ function toposort (module) {
     return module;
 }
 
-// TODO - check each step
 function verifyEachStep (module) {
     for (const name of module.order) {
         const node = module.nodes.get(name);
