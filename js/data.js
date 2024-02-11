@@ -89,3 +89,22 @@ export const sampleDeriv2 = `(node #1 [_B _A] [(and _B _A)])
 (node #4 [] [(-> (and _A _B) (and _B _A))])
 (derive impl-intro #4 #3)
 `;
+
+export const sampleDeriv3 = `[comment - this proof is written purely in the <textarea> text box.]
+
+[node #target [] [(and true [-> false false])]]
+
+[derive join #target #sub2 #sub3 #sub1]
+[node #sub1 [true [-> false false]] [(and true [-> false false])]]
+[node #sub2 [] [true]]
+[node #sub3 [] [(-> false false)]]
+[link #sub1 0 #sub2 0]
+[link #sub1 1 #sub3 0]
+[derive true-intro #sub2]
+
+[derive impl-intro #sub3 #id]
+[node #id [false] [false]]
+[derive id #id]
+
+[derive and-intro #sub1]
+`;
