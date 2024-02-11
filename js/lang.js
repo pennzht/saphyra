@@ -1,6 +1,6 @@
 // Parsing a sexp, using only square brackets
 
-function parseSexp (input) {
+function parse (input) {
     input = input.replaceAll ('(', ' [ ');
     input = input.replaceAll (')', ' ] ');
     input = input.replaceAll ('[', ' [ ');
@@ -82,7 +82,7 @@ function combineMatch (oldMatch, newMatch) {
     }
 }
 
-const folRulesSexp = new Map(parseSexp (folRules));
+const folRulesSexp = new Map(parse (folRules));
 console.log ('folRulesSexp', folRulesSexp);
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
@@ -307,8 +307,8 @@ function isList (obj) { return ! isAtom (obj); }
 
 console.log (
     simpleMatch (
-        parseSexp ('[_A _B [and _A _B]]'),
-        parseSexp ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
+        parse ('[_A _B [and _A _B]]'),
+        parse ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
     )
 );
 

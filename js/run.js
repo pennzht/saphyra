@@ -10,7 +10,7 @@ window.onload = (e) => {
 
 function execute (e) {
     inValue = $('input').value;
-    console.log (ans = parseSexp (inValue));
+    console.log (ans = parse (inValue));
     console.log ('string:', str(ans));
     $('display').innerHTML = displayInRows (ans);
     $('output').innerText = ans.map (
