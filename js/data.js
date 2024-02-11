@@ -1,4 +1,4 @@
-const folRules = `
+export const folRules = `
 (and-intro
   [_A _B]
   [_A _B] [(and _A _B)])
@@ -41,7 +41,7 @@ const folRules = `
   [_A] [_A])
 `;
 
-const sampleDeriv1 = `(comment - node data)
+export const sampleDeriv1 = `(comment - node data)
 (node #ans
   []
   [(-> (-> (and _A _B) _C)
@@ -77,7 +77,7 @@ const sampleDeriv1 = `(comment - node data)
 (link #mp 0 #and-intro 0)
 `;
 
-const sampleDeriv2 = `(node #1 [_B _A] [(and _B _A)])
+export const sampleDeriv2 = `(node #1 [_B _A] [(and _B _A)])
 (derive and-intro #1)
 
 (node #2 [(and _A _B)] [_A _B])

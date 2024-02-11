@@ -1,10 +1,15 @@
-$ = (x) => document.getElementById(x);
+import * as data from  './data.js';
+import * as lang from  './lang.js';
+
+const $ = (x) => document.getElementById(x);
 
 $('input').oninput = execute;
 
+console.log ('input value is', $('input').value);
+
 window.onload = (e) => {
     /* example input */
-    $('input').value = sampleDeriv1;
+    $('input').value = data.sampleDeriv1;
     execute(e);
 }
 
@@ -16,15 +21,18 @@ function execute (e) {
     const inValue = $('input').value;
 
     try {
-        console.log (ans = parse (inValue));
-        console.log ('string:', str(ans));
-        $('display').innerHTML = displayInRows (ans);
-        const module = isValidDeriv (ans);
-        $('visual').innerHTML = displayInRows(visualize(module));
+        const ans = lang.parse (inValue);
+        console.log (ans);
+        console.log ('string:', lang.str(ans));
+        $('display').innerHTML = lang.displayInRows (ans);
+        const module = lang.isValidDeriv (ans);
+        $('visual').innerHTML = lang.displayInRows(lang.visualize(module));
         $('output').innerText = JSON.stringify (module, null, 2);
     } catch (e) {
         if (e instanceof SyntaxError) {
             $('output').innerText = 'parsing error';
+        } else {
+            throw e;
         }
     }
 }

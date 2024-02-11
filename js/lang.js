@@ -1,6 +1,8 @@
 // Parsing a sexp, using only square brackets
 
-function parse (input) {
+import * as data from './data.js';
+
+export function parse (input) {
     input = input.replaceAll ('(', ' [ ');
     input = input.replaceAll (')', ' ] ');
     input = input.replaceAll ('[', ' [ ');
@@ -18,21 +20,21 @@ function parse (input) {
     return JSON.parse (input);
 }
 
-function display (sexp) {
+export function display (sexp) {
     if (typeof sexp === 'string') {
         return sexp;
     } else {
-        parts = sexp.map (display);
+        const parts = sexp.map (display);
         return '<sexp> ' + parts.join(' ')  + '</sexp>';
     }
 }
 
-function displayInRows (sexpList) {
+export function displayInRows (sexpList) {
     return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
 }
 
 /// Performs a simple match between pattern and sexp.
-function simpleMatch (pattern, sexp) {
+export function simpleMatch (pattern, sexp) {
     if (isVar (pattern)) {
         return {success: true, map: new Map([[pattern, sexp]])};
     } else if (isAtom (pattern)) {
@@ -61,7 +63,7 @@ function simpleMatch (pattern, sexp) {
     }
 }
 
-function combineMatch (oldMatch, newMatch) {
+export function combineMatch (oldMatch, newMatch) {
     if (! oldMatch.success) return;
     if (! newMatch.success) {
         oldMatch.success = false;
@@ -82,14 +84,14 @@ function combineMatch (oldMatch, newMatch) {
     }
 }
 
-const folRulesSexp = new Map(parse (folRules).map (
+const folRulesSexp = new Map(parse (data.folRules).map (
     (line) => [line[0], line.slice(1)],
 ));
 console.log ('folRulesSexp', folRulesSexp);
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
-function isValidStep (rule, ins, outs, subs = null, order = null) {
+export function isValidStep (rule, ins, outs, subs = null, order = null) {
     try {
         const i = ins, o = outs;
         
@@ -142,7 +144,7 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
 }
 
 /// Parses a module.
-function parseModule (lines) {
+export function parseModule (lines) {
     const nodes = new Map();  // Map<name, {ins, outs}>
     const descs = new Map();  // Descendants: Map<name, name[]>
     const ances = new Map();  // Ancestors: Map<name, name[]>
@@ -177,7 +179,7 @@ function parseModule (lines) {
             if (line.length < 3) {
                 errors.push (`Line ${str(line)} too short.`); continue;
             }
-            [_, rule, child, ...parents] = line;
+            const [_, rule, child, ...parents] = line;
             for (const p of parents) addLink (p, child);
             if (derives.has(child)) {
                 errors.push (`${str(line)} is a redefinition.`); continue;
@@ -207,7 +209,7 @@ function parseModule (lines) {
 }
 
 /// Performs a toposort (topological sorting) of the nodes of the module.
-function toposort (module) {
+export function toposort (module) {
     const names = [... module.nodes.keys()];
 
     const indegree = new Map(
@@ -243,7 +245,7 @@ function toposort (module) {
     return module;
 }
 
-function verifyEachStep (module) {
+export function verifyEachStep (module) {
     for (const name of module.order) {
         const node = module.nodes.get(name);
         const deriv = module.derives.get(name);
@@ -265,7 +267,7 @@ function verifyEachStep (module) {
 
 /// TODO - visualizes the order of a module
 /// including the order of blocks, order of statements
-function visualize (module) {
+export function visualize (module) {
     const ans = [];
     for (const nodeName of module.order) {
         ans.push ([
@@ -279,7 +281,7 @@ function visualize (module) {
 
 /// If a sequence of items (in correct order) is a valid derivation.
 /// Applies to a system.
-function isValidDeriv (lines) {
+export function isValidDeriv (lines) {
     const module = parseModule(lines);
 
     if (!module.success) {
@@ -305,7 +307,7 @@ function eq (a, b) {
 }
 
 // Sexp to string.
-function str (obj) {
+export function str (obj) {
     if (isAtom(obj)) return obj;
     else return '[' + obj.map (str).join(' ') + ']';
 }
