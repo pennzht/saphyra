@@ -69,7 +69,7 @@ const sampleDeriv1 = `(comment - node data)
 (derive impl-intro #ans #ans-1)
 (derive impl-intro #ans-1 #ans-2)
 (derive impl-intro #ans-2 #ans-3)
-(derive join #ans-3 #and-intro #mp)
+(derive join #ans-3 #mp #and-intro)
 (derive mp #mp)
 (derive and-intro #and-intro)
 

@@ -101,8 +101,8 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
             //         to [...] |- [A -> B]
             if (o.length !== 1) return false;
             const [out] = o;
-            if (subs?.length !== 1) return false;
-            const [sub] = subs;
+            if (subs?.size !== 1) return false;
+            const sub = [... subs.values ()][0];
             return out[0] === '->' &&
                 eq (sub.ins, [...i, out[1]]) &&
                 eq (sub.outs, [out[2]]);
@@ -110,7 +110,9 @@ function isValidStep (rule, ins, outs, subs = null, order = null) {
             // TODO - use link order instead of arg order.
             const assumptions = new Map();
             const conclusions = new Map();
-            for (const sub of subs) {
+            const orderedSubs = order.filter ((x) => subs.has (x));
+            for (const subName of orderedSubs) {
+                const sub = subs.get(subName);
                 // For each subnode, add its assumptions if they're not proven yet.
                 for (const iElem of sub.ins) {
                     if (! conclusions.has(str(iElem))) assumptions.set(str(iElem), iElem);
@@ -254,7 +256,7 @@ function verifyEachStep (module) {
             module.success = false;
             module.errors.push (`No derivation for ${name}.`); continue;
         }
-        const subs = deriv.args.map ((name) => module.nodes.get(name));
+        const subs = new Map(deriv.args.map ((name) => [name, module.nodes.get(name)]));
         const isMatch = isValidStep (deriv.rule, node.ins, node.outs, subs, module.order);
         if (!isMatch) {
             module.success = false;
