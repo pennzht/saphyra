@@ -82,8 +82,6 @@ function combineMatch (oldMatch, newMatch) {
     }
 }
 
-/// TODO: replace `isValidStep` with matches.
-
 const folRulesSexp = new Map(parseSexp (folRules));
 console.log ('folRulesSexp', folRulesSexp);
 
