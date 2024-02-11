@@ -8,16 +8,24 @@ window.onload = (e) => {
     execute(e);
 }
 
+$('command').onchange = $('command').oninput = (e) => {
+    console.log ($("command").value);
+}
+
 function execute (e) {
     const inValue = $('input').value;
-    console.log (ans = parse (inValue));
-    console.log ('string:', str(ans));
-    $('display').innerHTML = displayInRows (ans);
 
-    const module = isValidDeriv (ans);
-    $('visual').innerHTML = displayInRows(visualize(module));
-
-    $('command').onchange = $('command').oninput = (e) => {
-        console.log ($("command").value);
+    try {
+        console.log (ans = parse (inValue));
+        console.log ('string:', str(ans));
+        $('display').innerHTML = displayInRows (ans);
+        const module = isValidDeriv (ans);
+        $('visual').innerHTML = displayInRows(visualize(module));
+        $('output').innerText = JSON.stringify (module, null, 2);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            $('output').innerText = 'parsing error';
+        }
     }
 }
+
