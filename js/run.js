@@ -9,12 +9,14 @@ window.onload = (e) => {
 }
 
 function execute (e) {
-    inValue = $('input').value;
+    const inValue = $('input').value;
     console.log (ans = parse (inValue));
     console.log ('string:', str(ans));
     $('display').innerHTML = displayInRows (ans);
     $('output').innerText = ans.map (
         (row) => row.length === 4 && isValidStepInAnyRule (row[2], row[3]),
     );
-    isValidDeriv (ans);
+
+    const module = isValidDeriv (ans);
+    $('visual').innerHTML = displayInRows(visualize(module));
 }

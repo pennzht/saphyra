@@ -266,6 +266,20 @@ function verifyEachStep (module) {
     return module;
 }
 
+/// TODO - visualizes the order of a module
+/// including the order of blocks, order of statements
+function visualize (module) {
+    const ans = [];
+    for (const nodeName of module.order) {
+        ans.push ([
+            nodeName,
+            module.nodes.get(nodeName).ins,
+            module.nodes.get(nodeName).outs,
+        ]);
+    }
+    return ans;
+}
+
 /// If a sequence of items (in correct order) is a valid derivation.
 /// Applies to a system.
 function isValidDeriv (lines) {
