@@ -17,5 +17,11 @@ export class Completer {
     tryProve (node) {
         // node: {ins, outs}
         // returns: [... commands of a subtree?]
+
+        // Break down in this order:
+        // ins.FALSE, outs.TRUE
+        // ins.AND, outs.AND
+        // outs.IMPL, ins.OR
+        // mp (if any)
     }
 }
