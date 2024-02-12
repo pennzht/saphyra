@@ -135,6 +135,9 @@ export function isValidStep (rule, ins, outs, subs = null, order = null) {
                 (b) => eq(a, b)
             ));
             return assumptionsValid && conclusionsValid;
+        } else if (rule === 'todo') {
+            // Permits leaving holes.
+            return true;
         } else {
             return false;  // Unrecognized rule.
         }
@@ -194,6 +197,16 @@ export function parseModule (lines) {
             }
             addLink (/*parent*/ line[3], /*child*/ line[1]);
             // passing linking for now.
+        } else if (line[0] === 'todo') {
+            // Something that should be proven later
+            if (line.length !== 2) {
+                errors.push (`Line ${str(line)} length != 2.`); continue;
+            }
+            const [_, name] = line;
+            if (derives.has(child)) {
+                errors.push (`${str(line)} is a redefinition.`); continue;
+            }
+            derives.set (child, {'todo', args: []});
         }
     }
 
