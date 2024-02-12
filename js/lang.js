@@ -152,6 +152,7 @@ export function parseModule (lines) {
     const descs = new Map();  // Descendants: Map<name, name[]>
     const ances = new Map();  // Ancestors: Map<name, name[]>
     const derives = new Map();  // Reasons for each step
+    const todos = [];  // Statements not proven yet
     // Not storing links for now.
 
     const errors = [];  // Stores errors
@@ -203,10 +204,11 @@ export function parseModule (lines) {
                 errors.push (`Line ${str(line)} length != 2.`); continue;
             }
             const [_, name] = line;
-            if (derives.has(child)) {
+            if (derives.has(name)) {
                 errors.push (`${str(line)} is a redefinition.`); continue;
             }
-            derives.set (child, {'todo', args: []});
+            derives.set (name, {rule: 'todo', args: []});
+            todos.push (name);
         }
     }
 
@@ -218,6 +220,7 @@ export function parseModule (lines) {
         ances,
         derives,
         // no links for now
+        todos,
     };
 }
 
