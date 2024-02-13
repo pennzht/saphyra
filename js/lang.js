@@ -29,8 +29,24 @@ export function display (sexp) {
     }
 }
 
+export function displayHuman (sexp) {
+    if (typeof sexp === 'string') {
+        return sexp;
+    } else {
+        const parts = sexp.map (displayHuman);
+        if (parts.length === 3 && ['->', 'and', 'or'].includes (parts[0])) {
+            return '<sexp> ' + [parts[1], parts[0], parts[2]].join(' ')  + '</sexp>';
+        }
+        return '<sexp> ' + parts.join(' ')  + '</sexp>';
+    }
+}
+
 export function displayInRows (sexpList) {
     return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
+}
+
+export function displayInRowsHuman (sexpList) {
+    return sexpList.map ((x) => `<div>${displayHuman(x)}</div>`).join('');
 }
 
 /// Performs a simple match between pattern and sexp.

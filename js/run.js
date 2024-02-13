@@ -27,7 +27,7 @@ function execute (e) {
         console.log ('string:', lang.str(ans));
         $('display').innerHTML = lang.displayInRows (ans);
         const module = lang.isValidDeriv (ans);
-        $('visual').innerHTML = lang.displayInRows(lang.visualize(module));
+        $('visual').innerHTML = lang.displayInRowsHuman(lang.visualize(module));
         $('output').innerText = JSON.stringify (module, null, 2);
     } catch (e) {
         if (e instanceof SyntaxError) {
