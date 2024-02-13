@@ -221,6 +221,7 @@ export function parseModule (lines) {
         derives,
         // no links for now
         todos,
+        source: lines,
     };
 }
 

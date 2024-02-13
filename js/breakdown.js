@@ -2,11 +2,16 @@ import * as lang from './lang.js';
 import * as data from './data.js';
 
 /// TODO: break down a node into smaller parts.
+/// To simplify: a `Completer` only completes a node.
+/// Sole purpose is to replace a (todo #node) with either (join ...) or a singular node.
 
 export class Completer {
-    constructor (args) {
+    // args: {prefix: string[startsWith'#'], target: string(node)}
+    constructor (module, args) {
+        this.module = module;
         this.prefix = args.prefix;
         this.clock = 0;  // Generator for unique node names.
+        this.target = args.target;  // Name of node to be decomposed.
     }
 
     gensym () {
@@ -14,19 +19,10 @@ export class Completer {
         return `${this.prefix}/${this.clock}`;
     }
 
-    applyBlock (node, indexList, rule) {
-        // Tries to apply a block to the given list of arguments.
-        // TODO - possibly maintain a node of ports?
-    }
-
-    tryProve (node) {
-        // node: {ins, outs}
-        // returns: [... commands of a subtree?]
-
-        // Break down in this order:
-        // ins.FALSE, outs.TRUE
-        // ins.AND, outs.AND
-        // outs.IMPL, ins.OR
-        // mp (if any)
-    }
 }
+
+// Break down in this order:
+// ins.FALSE, outs.TRUE
+// ins.AND, outs.AND
+// outs.IMPL, ins.OR
+// mp (if any)
