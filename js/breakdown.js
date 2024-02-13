@@ -14,6 +14,11 @@ export class Completer {
         return `${this.prefix}/${this.clock}`;
     }
 
+    applyBlock (node, indexList, rule) {
+        // Tries to apply a block to the given list of arguments.
+        // TODO - possibly maintain a node of ports?
+    }
+
     tryProve (node) {
         // node: {ins, outs}
         // returns: [... commands of a subtree?]
