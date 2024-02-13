@@ -20,21 +20,33 @@ export class Completer {
     }
 
     applyRule (ruleName, inIndices, outIndices) {
+        // To avoid fragmentation, one of inIndices or outIndices
+        // must be all non-null.
+        if (inIndices.some ((x) => x === null) &&
+            outIndices.some ((x) => x === null)) {
+            // Bad rule
+            console.log ('inIndices should be all-non-null, or outIndices should all-non-null');
+            return false;
+        }
+
         const rule = lang.folRulesSexp.get(ruleName);
         // [0] => vars
         // [1] => ins, [2] => outs
         if (rule[1].length !== inIndices.length || rule[2].length !== outIndices.length) {
+            console.log ('Rule length mismatch');
             return false;  // Length mismatch
         }
 
         console.log ('rule is', rule[1], rule[2]);
 
+        const targetNode = this.module.nodes.get(this.target);
+
         // Tries to apply a rule to these indices.
         const inTerms = inIndices.map (
-            (i) => this.module.nodes.get(this.target).ins[i] ?? null,
+            (i) => targetNode.ins[i] ?? null,
         );
         const outTerms = outIndices.map (
-            (i) => this.module.nodes.get(this.target).outs[i] ?? null,
+            (i) => targetNode.outs[i] ?? null,
         );
 
         // Filter out nulls, and match.
@@ -49,8 +61,47 @@ export class Completer {
             pattern.push (rule[2][i]);
             sexp.push (outTerms[i]);
         }
-        console.log ('patterns', pattern, sexp);
-        console.log ('match', lang.simpleMatch (pattern, sexp));
+        const match = lang.simpleMatch (pattern, sexp);
+
+        if (! match.success) {
+            console.log ('rule mismatch', match);
+            return false;  // Rule mismatch
+        }
+
+        // Check if match filled out all of the variables
+        if (! (rule[0].every ((x) => match.map.has (x)))) {
+            console.log ('following vars are not matched',
+                         rule[0].filter ((x) => !match.map.has(x)),
+                        );
+        }
+
+        // Start replacement!
+        // The "nulls" are the new unproven / given rules.
+
+        const newNodeIns = lang.replaceAll (rule[1], match.map);
+        const newNodeOuts = lang.replaceAll (rule[2], match.map);
+        const newNode = [
+            'node',
+            this.gensym (),
+            newNodeIns,
+            newNodeOuts,
+        ];
+
+        // Compute residual node
+        // A residual node is one with inIndices
+
+        const newOuts = [];  // TODO
+        const newIns = [];  // TODO
+        const removeIndices = (x) => x;
+
+        const residueNode = [
+            'node',
+            this.gensym (),
+            targetNode.ins.concat (newOuts),
+            removeIndices (targetNode.outs, outIndices).concat (newIns),
+        ];
+        console.log (residueNode);
+        return true;
     }
 }
 
@@ -71,4 +122,4 @@ const cm = new Completer ({
 
 console.log ('cm =', cm);
 
-cm.applyRule ('and-intro', [null, null], [0]);
+console.log ('applyRule =', cm.applyRule ('and-intro', [null, null], [0]));

@@ -84,6 +84,14 @@ export function combineMatch (oldMatch, newMatch) {
     }
 }
 
+export function replaceAll (sexp, map) {
+    if (isAtom (sexp)) {
+        return map.has (sexp) ? map.get(sexp) : sexp;
+    } else {
+        return sexp.map ((child) => replaceAll (child, map));
+    }
+}
+
 export const folRulesSexp = new Map(parse (data.folRules).map (
     (line) => [line[0], line.slice(1)],
 ));
