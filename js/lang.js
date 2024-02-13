@@ -84,7 +84,7 @@ export function combineMatch (oldMatch, newMatch) {
     }
 }
 
-const folRulesSexp = new Map(parse (data.folRules).map (
+export const folRulesSexp = new Map(parse (data.folRules).map (
     (line) => [line[0], line.slice(1)],
 ));
 console.log ('folRulesSexp', folRulesSexp);

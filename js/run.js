@@ -1,5 +1,6 @@
 import * as data from  './data.js';
 import * as lang from  './lang.js';
+import * as breakdown from './breakdown.js';
 
 const $ = (x) => document.getElementById(x);
 
