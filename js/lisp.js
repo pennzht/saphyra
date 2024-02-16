@@ -81,7 +81,7 @@ function stepStack (stack) {
             // Args finished operating; go to function
         } else {
             stack.push (frame);
-            stack.push (frame.args[frame.subindex]);
+            stack.push ({type: 'expr', form: frame.args[frame.subindex], env: frame.env});
         }
     } else if (frame.type === 'macro') {
         // TODO - handle macros
@@ -89,7 +89,10 @@ function stepStack (stack) {
         // Done, go to previous one
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
-            if (parent.type !== 'fnop') console.log ('Error! Incorrect parent.type', parent.type, stack);
+            if (parent.type !== 'fnop' || 'macro') {
+                console.log ('Error! Incorrect parent.type', parent.type, stack);
+                return 'done';
+            }
             parent.args[parent.subindex] = frame;
             parent.subindex ++;
         } else {
