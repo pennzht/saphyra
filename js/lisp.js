@@ -57,20 +57,23 @@ const builtinFunctions = new Set(Object.keys(operators));
 // [frame ...]
 // Each frame:
 // {type: 'expr', form, env} - before expansion
-// {type: 'fnop', args: value[], subindex} - during expansion
+// {type: 'fnop', form: value[], env, subindex} - during expansion
     // Notice! For a fnop like (+ x y), args is [+, x, y], because the function head has to be evaluated too.
-// {type: 'macro', args: value[], subindex} - if, let, letrec, and, or
+// {type: 'macro', form: value[], env, subindex} - if, let, letrec, and, or
 // {type: 'literal', form} - after expansion
 // {type: 'closure', form, env} - lambda closure, cannot expand further
+// {type: 'error', form, env, reason} - error, stopping the evaluation
+//
+// General stack structure:
+// [fnop/macro . fnop/macro . . . fnop/macro . expr/literal/closure/error/fnop/macro]
 
 function stepStack (stack) {
     const frame = stack.pop ();
     if (frame.type === 'expr') {
         if (frame.form.length <= 0) {
-            frame.push ({type: 'literal', []});
-        } else if (frame.form.length === 4 && frame.form[0] === 'if') {
-            frame.push ({type: 'macro', args: frame.form, 1});
+            stack.push ({type: 'literal', []});
         } else {
+            // A possible macro or function evaluation.
             // TODO ...
         }
     } else if (frame.type === 'fnop') {
@@ -92,6 +95,8 @@ function stepStack (stack) {
         } else {
             return 'done';
         }
+    } else if (frame.type === 'error') {
+        return 'done';
     } else {
         console.log ('Error! Unrecognized frame type.');
     }
