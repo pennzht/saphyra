@@ -51,13 +51,15 @@ const operators = {
     'neg': ((a) => -a),
 };
 
+const builtinFunctions = new Set(Object.keys(operators));
+
 // Stack:
 // [frame ...]
 // Each frame:
 // {type: 'expr', form, env} - before expansion
 // {type: 'fnop', args: value[], subindex} - during expansion
     // Notice! For a fnop like (+ x y), args is [+, x, y], because the function head has to be evaluated too.
-// {type: 'macro', args: value[], subindex} - if, let, letrec
+// {type: 'macro', args: value[], subindex} - if, let, letrec, and, or
 // {type: 'literal', form} - after expansion
 // {type: 'closure', form, env} - lambda closure, cannot expand further
 
