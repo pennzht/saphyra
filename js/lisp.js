@@ -111,7 +111,24 @@ function stepStack (stack) {
         }
     } else if (type === 'macro') {
         const head = form[0];
-        // TODO - discussion by cases
+        if (head === 'if') {
+            // TODO - general cond situation
+            // (if cond1 val1 cond2 val2 ... condN valN valEnd)
+        } else if (head === 'let') {
+            // TODO
+            // (let x1 y1 x2 y2 x3 y3 ... xN yN expr)
+        } else if (head === 'letrec') {
+            // TODO
+            // (letrec x1 y1 x2 y2 x3 y3 ... xN yN expr)
+        } else if (head === 'and') {
+            // TODO
+            // (and a1 a2 a3 ... aN)
+        } else if (head === 'or') {
+            // TODO
+            // (or a1 a2 a3 ... aN)
+        } else {
+            throw new Exception ('Unrecognized macro.');
+        }
     } else if (type === 'literal' || type === 'closure') {
         // Done, go to previous one
         if (stack.length > 0) {
