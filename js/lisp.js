@@ -10,7 +10,12 @@ const arity = {
     'b<<': 2, 'b>>': 2, 'b&': 2, 'b|': 2, 'b^': 2,
     // Unary
     'b~': 1, 'neg': 1,
-}
+    // List-like
+    'range': 2, 'enum': 1, 'map': 2, 'filter': 2, 'foldl': 3, 'foldr': 3,
+    'get': 2, 'set': 3, 'joinall': 2,
+    // Map-like
+    'map->list': 1, 'list->map': 1, 'mapget': 2, 'mapset': 3,
+};
 
 const operators = {
     // Binary
