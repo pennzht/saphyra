@@ -53,6 +53,7 @@ const operators = {
         const ans = [];
         for (let i = 0; i < list.length; i++) ans.push ([[i, list[i]]]);
     },
+    // TODO: fix all things with functions.
     'map': (f, list) => list.map(f),
     'filter': (f, list) => list.filter(f),
     'foldl': (f, seed, list) => {
@@ -255,6 +256,7 @@ function visualizer (key, value) {
 function main () {
     evaluate (['+', '3', '4']);
     evaluate (['*', ['+', '1', '2'], ['-', '9', '3']]);
+    evaluate (['set', '1', '666', ['list:', '333', '444', '555']]);
 }
 
 main ();
