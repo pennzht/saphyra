@@ -17,6 +17,8 @@ const arity = {
     // Map-like
     'map->list': 1, 'list->map': 1,
     'map:': 'VARIABLE',  // map constructor
+    // Symbols
+    'sym->str': 1, 'str->sym': 1,
 };
 
 const operators = {
