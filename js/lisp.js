@@ -252,7 +252,9 @@ function withVal (env, key, val) {
 }
 
 function visualizer (key, value) {
-    return typeof value === 'bigint' ? 'bigint:'+value.toString() : value;
+    return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
+            value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
+            value);
 }
 
 function main () {
