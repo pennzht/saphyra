@@ -69,23 +69,44 @@ const builtinFunctions = new Set(Object.keys(operators));
 
 function stepStack (stack) {
     const frame = stack.pop ();
-    if (frame.type === 'expr') {
-        if (frame.form.length <= 0) {
+    const type = frame.type, form = frame.form, env = frame.env, subindex = frame.subindex;
+    if (type === 'expr') {
+        if (! isList(form)) {
+            // Atom
+            if (form.match (/^[+-]?[0-9]+$/)) {  // Number
+                frame.push ({type: 'literal', form: new BigInt(form)});
+            } else if (form.startsWith ('#')) {  // Symbol
+                frame.push ({type: 'literal', form});
+            } else {
+                // Look up in environment.
+                const value = findVal (env, form);
+            }
+        } else if (form.length <= 0) {
             stack.push ({type: 'literal', []});
         } else {
-            // A possible macro or function evaluation.
-            // TODO ...
+            const head = form[0];
+            if (['if', 'let', 'letrec', 'and', 'or'].includes (head)) {
+                // Macro.
+                stack.push ({type: 'macro', form, env, subindex: 1});
+            } else if ([':'].includes(head)) {
+                // Function definition.
+                stack.push ({type: 'closure', form, env});
+            } else {
+                // Function application.
+                stack.push ({type: 'fnop', form, env, subindex: 0});
+            }
         }
-    } else if (frame.type === 'fnop') {
-        if (frame.subindex >= frame.args.length) {
-            // Args finished operating; go to function
+    } else if (type === 'fnop') {
+        if (subindex >= form.length) {
+            // TODO: function application.
         } else {
             stack.push (frame);
-            stack.push ({type: 'expr', form: frame.args[frame.subindex], env: frame.env});
+            stack.push ({type: 'expr', form: form[subindex], env});
         }
-    } else if (frame.type === 'macro') {
-        // TODO - handle macros
-    } else if (frame.type === 'literal' || frame.type === 'closure') {
+    } else if (type === 'macro') {
+        const head = form[0];
+        // TODO - discussion by cases
+    } else if (type === 'literal' || type === 'closure') {
         // Done, go to previous one
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
@@ -98,7 +119,7 @@ function stepStack (stack) {
         } else {
             return 'done';
         }
-    } else if (frame.type === 'error') {
+    } else if (type === 'error') {
         return 'done';
     } else {
         console.log ('Error! Unrecognized frame type.');
@@ -121,4 +142,18 @@ function evaluate (sexp) {
 function isComplete (stack) {
     return stack.length === 1 && (stack[0].type === 'literal'
                                   || stack[0].type === 'closure');
+}
+
+function isVar (obj) { return isAtom(obj) && obj.startsWith('_'); }
+
+function isAtom (obj) { return typeof obj === 'string'; }
+
+function isList (obj) { return ! isAtom (obj); }
+
+function findVal (env, atom) { return env.get (atom) ?? null; }
+
+function withVal (env, key, val) {
+    const ans = new Map(env);
+    ans.set(key, val);
+    return ans;
 }
