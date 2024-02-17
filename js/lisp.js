@@ -12,9 +12,11 @@ const arity = {
     'b~': 1, 'neg': 1,
     // List-like
     'range': 2, 'enum': 1, 'map': 2, 'filter': 2, 'foldl': 3, 'foldr': 3,
-    'get': 2, 'set': 3, 'joinall': 2,
+    'get': 2, 'set': 3, 'joinall': 2, 'size': 1,
+    'list:': 'VARIABLE',  // list constructor
     // Map-like
-    'map->list': 1, 'list->map': 1, 'mapget': 2, 'mapset': 3,
+    'map->list': 1, 'list->map': 1,
+    'map:': 'VARIABLE',  // map constructor
 };
 
 const operators = {
