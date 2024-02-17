@@ -138,7 +138,7 @@ function stepStack (stack) {
                 return 'done';
             }
             parent.form[parent.subindex] = frame;
-            parent.subindex ++;
+            if (parent.type === 'fnop') parent.subindex ++;
         } else {
             stack.push (frame);
             return 'done';
