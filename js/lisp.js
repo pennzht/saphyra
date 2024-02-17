@@ -74,15 +74,17 @@ function stepStack (stack) {
         if (! isList(form)) {
             // Atom
             if (form.match (/^[+-]?[0-9]+$/)) {  // Number
-                frame.push ({type: 'literal', form: new BigInt(form)});
+                stack.push ({type: 'literal', form: BigInt(form)});
             } else if (form.startsWith ('#')) {  // Symbol
-                frame.push ({type: 'literal', form});
+                stack.push ({type: 'literal', form});
+            } else if (builtinFunctions.has (form)) {
+                stack.push ({type: 'closure', form, env: new Map()});
             } else {
                 // Look up in environment.
                 const value = findVal (env, form);
             }
         } else if (form.length <= 0) {
-            stack.push ({type: 'literal', []});
+            stack.push ({type: 'literal', form: []});
         } else {
             const head = form[0];
             if (['if', 'let', 'letrec', 'and', 'or'].includes (head)) {
@@ -98,7 +100,11 @@ function stepStack (stack) {
         }
     } else if (type === 'fnop') {
         if (subindex >= form.length) {
-            // TODO: function application.
+            const head = form[0];
+            if (head.type === 'closure' && builtinFunctions.has(head.form)) {
+                const answer = operators[head.form](... (form.slice(1).map((x) => x.form)));
+                stack.push ({type: 'literal', form: answer});
+            }
         } else {
             stack.push (frame);
             stack.push ({type: 'expr', form: form[subindex], env});
@@ -110,13 +116,14 @@ function stepStack (stack) {
         // Done, go to previous one
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
-            if (parent.type !== 'fnop' || 'macro') {
+            if (! ['fnop', 'macro'].includes(parent.type)) {
                 console.log ('Error! Incorrect parent.type', parent.type, stack);
                 return 'done';
             }
-            parent.args[parent.subindex] = frame;
+            parent.form[parent.subindex] = frame;
             parent.subindex ++;
         } else {
+            stack.push (frame);
             return 'done';
         }
     } else if (type === 'error') {
@@ -126,15 +133,18 @@ function stepStack (stack) {
     }
 }
 
-function evaluate (sexp) {
+function evaluate (sexp, limit=1000) {
     const stack = [{
         type: 'expr',
         form: sexp,
-        env: [],
+        env: new Map(),
     }];
-    while (true) {
+    while (limit > 0) {
         const status = stepStack (stack);
+        console.log (JSON.stringify(stack, visualizer, 2));
+        console.log ('================\n')
         if (status === 'done') break;
+        limit--;
     }
     return stack;
 }
@@ -150,10 +160,21 @@ function isAtom (obj) { return typeof obj === 'string'; }
 
 function isList (obj) { return ! isAtom (obj); }
 
-function findVal (env, atom) { return env.get (atom) ?? null; }
+function findVal (env, atom) { return env.get (atom); }
 
 function withVal (env, key, val) {
     const ans = new Map(env);
     ans.set(key, val);
     return ans;
 }
+
+function visualizer (key, value) {
+    return typeof value === 'bigint' ? 'bigint:'+value.toString() : value;
+}
+
+function main () {
+    evaluate (['+', '3', '4']);
+    evaluate (['*', ['+', '1', '2'], ['-', '9', '3']]);
+}
+
+main ();
