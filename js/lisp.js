@@ -11,8 +11,8 @@ const arity = {
     // Unary
     'b~': 1, 'neg': 1,
     // List-like
-    'range': 2, 'enum': 1, 'map': 2, 'filter': 2, 'foldl': 3, 'foldr': 3,
-    'get': 2, 'set': 3, 'joinall': 2, 'size': 1,
+    'range': 2, 'enum': 1, 'map': 2, 'filter': 2, 'foldl': 3,
+    'get': 2, 'set': 3, 'joinall': 1, 'size': 1,
     'list:': 'VARIABLE',  // list constructor
     // Map-like
     'map->list': 1, 'list->map': 1,
@@ -43,6 +43,75 @@ const operators = {
     // Unary
     'b~': ((a) => ~a),
     'neg': ((a) => -a),
+    // List-like
+    'range': (a, b) => {
+        const ans = [];
+        for (let i = a; i < b; i++) ans.push(i);
+        return ans;
+    },
+    'enum': (list) => {
+        const ans = [];
+        for (let i = 0; i < list.length; i++) ans.push ([[i, list[i]]]);
+    },
+    'map': (f, list) => list.map(f),
+    'filter': (f, list) => list.filter(f),
+    'foldl': (f, seed, list) => {
+        for (const y of list) seed = f(seed, y);
+        return seed;
+    },
+    'get': (ind, list) => {
+        if (list instanceof Array) {
+            return list[ind];
+        } else if (list instanceof Map) {
+            return list.get(ind);
+        }
+        throw Exception (`Cannot get index of ${list}`);
+    },
+    'set': (ind, elem, list) => {
+        if (list instanceof Array) {
+            if (ind >= list.length) {
+                return list.concat([elem]);
+            } else {
+                const ans = [...list];
+                ans[ind] = elem;
+                return ans;
+            }
+        } else if (list instanceof Map) {
+            const ans = new Map(list);
+            ans.set(ind, elem);
+            return ans;
+        }
+        throw Exception (`Cannot get index of ${list}`);
+    },
+    'joinall': (listOfLists) => {
+        const ans = [];
+        for (const list of listOfLists) {
+            for (const y of list) {
+                ans.push (y);
+            }
+        }
+        return ans;
+    },
+    'size': (list) => {
+        if (list instanceof Array) {
+            return list.length;
+        } else if (list instanceof Map) {
+            return list.size;
+        }
+        throw Exception (`${list} is not a collection`);
+    },
+    'list:': (...args) => args,
+    'map->list': (m) => [...m],
+    'list->map': (l) => new Map(l),
+    'map:': (...args) => {
+        const ans = new Map();
+        for (var i = 0; i < args.length; i += 2) {
+            ans.set(args[i], args[i+1]);
+        }
+        return ans;
+    },
+    'sym->str': (sym) => [...sym].map((x) => x.codePointAt(0)),
+    'str->sym': (str) => str.map(String.fromCodePoint).join(''),
 };
 
 const builtinFunctions = new Set(Object.keys(operators));
