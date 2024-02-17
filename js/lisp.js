@@ -151,7 +151,7 @@ function stepStack (stack) {
             stack.push ({type: 'literal', form: []});
         } else {
             const head = form[0];
-            if (['if', 'let', 'letrec', 'and', 'or'].includes (head)) {
+            if (['if', 'let', 'letrec', 'and', 'or', "'"].includes (head)) {
                 // Macro.
                 stack.push ({type: 'macro', form, env, subindex: 1});
             } else if ([':'].includes(head)) {
@@ -190,6 +190,8 @@ function stepStack (stack) {
         } else if (head === 'or') {
             // TODO
             // (or a1 a2 a3 ... aN)
+        } else if (head === "'") {
+            stack.push ({type: 'literal', form: form[1]});
         } else {
             throw new Exception ('Unrecognized macro.');
         }
@@ -257,6 +259,8 @@ function main () {
     evaluate (['+', '3', '4']);
     evaluate (['*', ['+', '1', '2'], ['-', '9', '3']]);
     evaluate (['set', '1', '666', ['list:', '333', '444', '555']]);
+    evaluate (["'", 'a']);
+    evaluate (['map:', ["'", 'a'], '3', ["'", 'b'], '4']);
 }
 
 main ();
