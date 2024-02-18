@@ -280,6 +280,9 @@ function main () {
     evaluate (["'", 'a']);
     evaluate (['map:', ["'", 'a'], '3', ["'", 'b'], '4']);
     evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], 'true', '4']);
+    evaluate ([
+        'set', ["'", 'b'], ["'", 'red'],
+        ['map:', ["'", 'a'], '3', ["'", 'b'], '4']]);
 }
 
 main ();
