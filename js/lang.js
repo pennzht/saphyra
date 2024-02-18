@@ -173,6 +173,11 @@ export function parseModule (lines) {
             if (nodes.has (name)) {
                 errors.push (`Name ${name} redefined at ${str(line)}`);
             }
+            for (const stmt of ins.concat(outs)) {
+                if (! wellTyped(stmt)) {
+                    errors.push (`Statement ${str(stmt)} is not well-typed.`);
+                }
+            }
 
             nodes.set (name, {ins, outs});
         } else if (line[0] === 'derive') {
@@ -227,6 +232,7 @@ export function parseModule (lines) {
         todos,
         source: lines,
         uplink,
+        order: [],  // not defined yet
     };
 }
 
@@ -350,4 +356,14 @@ console.log (
 /// TODO: type checking
 
 /// TODO: add labels for **statements**, because it becomes hard if they cannot be identified and named.
+
+export function wellTyped (sexp) {
+    if (isAtom(sexp)) {
+        return ['true', 'false'].includes (sexp) || isVar(sexp);
+    } else if (sexp.length === 3) {
+        const [head, a, b] = sexp;
+        return ['and', 'or', '->'].includes (head) && [a, b].every (wellTyped);
+    }
+    return false;
+}
 
