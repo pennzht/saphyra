@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Saphyra.js</title>
+    <script src="runlisp.js" type="module" defer=""></script>
+    <link rel="stylesheet" type="text/css"
+          href="style.css" />
+  </head>
+  <body>
+    <div><textarea id="input" rows="8" cols="80"></textarea></div>
+    <div><label for="command">Command: </label><input type="text" id="command"></input>
+      <input type="button" id="command-button" value="↑ Execute"></input></div>
+    <details><summary>Display</summary><div id="display"></div></details>
+    <details><summary>Visual order</summary><div id="visual"></div></details>
+    <div id="output" style="white-space: pre;"></div><!-- status -->
+  </body>
+</html>

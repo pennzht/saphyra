@@ -244,7 +244,7 @@ function stepStack (stack) {
     }
 }
 
-function evaluate (sexp, limit=1000) {
+export function evaluate (sexp, showSteps=true, limit=1000) {
     const stack = [{
         type: 'expr',
         form: sexp,
@@ -254,6 +254,11 @@ function evaluate (sexp, limit=1000) {
         const status = stepStack (stack);
         if (status === 'done') break;
         limit--;
+
+        if (showSteps) {
+            console.log (JSON.stringify(stack, visualizer, 2));
+            console.log ('================\n')
+        }
     }
     console.log (JSON.stringify(stack, visualizer, 2));
     console.log ('================\n')
@@ -312,4 +317,4 @@ function isResolved (type) {
     return ['closure', 'bigint', 'atom', 'list', 'map', 'bool'].includes (type);
 }
 
-main ();
+// main ();
