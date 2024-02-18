@@ -4,10 +4,11 @@
 // TODO - finish language implementation.
 
 // TODO - simplify by making each value a:
-// - literal
-// - closure
-// - expr
-// - fnop/macro
+// - literal     -> native type
+// - closure     -> {type: closure ...}
+// - expr        -> {type: expr ...}
+// - fnop        -> {type: fnop ...}
+// - macro       -> {type: macro ...}
 
 const arity = {
     // Binary
