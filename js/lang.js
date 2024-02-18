@@ -176,6 +176,7 @@ export function parseModule (lines) {
     const descs = new Map();  // Descendants: Map<name, name[]>
     const ances = new Map();  // Ancestors: Map<name, name[]>
     const derives = new Map();  // Reasons for each step
+    const uplink = new Map();  // Parent (encapsulated) of each node; must be unique if it exists
     const todos = [];  // Statements not proven yet
     // Not storing links for now.
 
@@ -207,14 +208,20 @@ export function parseModule (lines) {
             if (line.length < 3) {
                 errors.push (`Line ${str(line)} too short.`); continue;
             }
-            const [_, rule, child, ...parents] = line;
-            for (const p of parents) addLink (p, child);
-            if (derives.has(child)) {
+            const [_, rule, outer, ...inners] = line;
+            for (const i of inners) {
+                addLink (i, outer);
+                if (uplink.has (i)) {
+                    errors.push (`${i} has redefined outer.`);
+                }
+                uplink.set (i, outer);
+            }
+            if (derives.has(outer)) {
                 errors.push (`${str(line)} is a redefinition.`); continue;
             }
             derives.set (
-                child,
-                {rule, args: parents},
+                outer,
+                {rule, args: inners},
             );
         } else if (line[0] === 'link') {
             if (line.length !== 5) {
@@ -246,6 +253,7 @@ export function parseModule (lines) {
         // no links for now
         todos,
         source: lines,
+        uplink,
     };
 }
 
