@@ -223,6 +223,7 @@ export function parseModule (lines) {
                 outer,
                 {rule, args: inners},
             );
+            if (rule === 'todo') todos.push (outer);
         } else if (line[0] === 'link') {
             if (line.length !== 5) {
                 errors.push (`Line ${str(line)} length error.`); continue;
