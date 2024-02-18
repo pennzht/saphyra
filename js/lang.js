@@ -206,17 +206,8 @@ export function parseModule (lines) {
             }
             addLink (/*parent*/ line[3], /*child*/ line[1]);
             // passing linking for now.
-        } else if (line[0] === 'todo') {
-            // Something that should be proven later
-            if (line.length !== 2) {
-                errors.push (`Line ${str(line)} length != 2.`); continue;
-            }
-            const [_, name] = line;
-            if (derives.has(name)) {
-                errors.push (`${str(line)} is a redefinition.`); continue;
-            }
-            derives.set (name, {rule: 'todo', args: []});
-            todos.push (name);
+        } else {
+            errors.push (`Unrecognized line ${str(line)}`);
         }
     }
 
