@@ -9,6 +9,12 @@ sexp {
     display: inline-block;
 }
 
+node {
+    display: block;
+    margin: 10px;
+    border: 1px solid gray;
+}
+
 /* sexp:hover {
     background-color: #77777777;
 } */

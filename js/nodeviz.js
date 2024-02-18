@@ -5,24 +5,30 @@ const elem = (x) => document.createElement(x);
 
 /// Displays a node `nodeName` within the module `module`.
 export function displayNode (module, nodeName) {
-    const subNames = module.ances.get(nodeName);
-    const subs = subNames.map ((name) => display(module, name))
+    const subNames = (module.ances.get(nodeName) ?? []).filter ((x) => module.uplink.get(x) === nodeName);
+    const subs = subNames.map ((name) => displayNode(module, name))
           .join('');
 
     const ins = module.nodes.get(nodeName).ins;
     const outs = module.nodes.get(nodeName).outs;
 
-    return `<div>` +
+    return `<node>` +
         `<div>${nodeName}</div>` +
         `<div>${subs}</div>` +
         `${display(ins)}${display(outs)}` +
-        `</div>`;
+        `</node>`;
+}
+
+export function displayModule (module) {
+    const roots = module.order.filter ((x) => ! module.uplink.has(x));
+    return roots.map ((n) => displayNode(module, n)).join('');
 }
 
 export function display (sexp) {
     if (typeof sexp === 'string') {
         return sexp;
     } else {
+        console.log ('display:', sexp);
         const parts = sexp.map (display);
         return '<sexp> ' + parts.join(' ')  + '</sexp>';
     }

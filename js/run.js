@@ -28,7 +28,8 @@ function execute (e) {
         console.log ('string:', lang.str(ans));
         $('display').innerHTML = nodeviz.displayInRows (ans);
         const module = lang.isValidDeriv (ans);
-        $('visual').innerHTML = nodeviz.displayInRowsHuman(lang.visualize(module));
+        //        $('visual').innerHTML = nodeviz.displayInRowsHuman(lang.visualize(module));
+        $('visual').innerHTML = nodeviz.displayModule (module);
         $('output').innerText = JSON.stringify (module, null, 2);
     } catch (e) {
         if (e instanceof SyntaxError) {
