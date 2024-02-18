@@ -1,6 +1,7 @@
 import * as data from  './data.js';
 import * as lang from  './lang.js';
 import * as breakdown from './breakdown.js';
+import * as nodeviz from './nodeviz.js';
 
 const $ = (x) => document.getElementById(x);
 
@@ -25,9 +26,9 @@ function execute (e) {
         const ans = lang.parse (inValue);
         console.log (ans);
         console.log ('string:', lang.str(ans));
-        $('display').innerHTML = lang.displayInRows (ans);
+        $('display').innerHTML = nodeviz.displayInRows (ans);
         const module = lang.isValidDeriv (ans);
-        $('visual').innerHTML = lang.displayInRowsHuman(lang.visualize(module));
+        $('visual').innerHTML = nodeviz.displayInRowsHuman(lang.visualize(module));
         $('output').innerText = JSON.stringify (module, null, 2);
     } catch (e) {
         if (e instanceof SyntaxError) {
