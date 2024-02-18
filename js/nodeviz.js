@@ -1,21 +1,25 @@
 // TODO - visualization of a node, a theory
 
+import * as lang from './lang.js';
+
 const $ = (x) => document.getElementById(x);
 const elem = (x) => document.createElement(x);
 
 /// Displays a node `nodeName` within the module `module`.
 export function displayNode (module, nodeName) {
+    const derivation = module.derives.get(nodeName).rule;
+
     const subNames = (module.ances.get(nodeName) ?? []).filter ((x) => module.uplink.get(x) === nodeName);
     const subs = subNames.map ((name) => displayNode(module, name))
           .join('');
 
-    const ins = module.nodes.get(nodeName).ins;
-    const outs = module.nodes.get(nodeName).outs;
+    const ins = module.nodes.get(nodeName).ins.map ((x) => `<sexp class="shade">${lang.str(x)}</sexp>`).join('');
+    const outs = module.nodes.get(nodeName).outs.map ((x) => `<sexp class="shade">${lang.str(x)}</sexp>`).join('');
 
     return `<node>` +
-        `<div>${nodeName}</div>` +
+        `<div>${nodeName}: ${derivation}</div>` +
         `<div>${subs}</div>` +
-        `${display(ins)}${display(outs)}` +
+        `${ins}&rarr;${outs}` +
         `</node>`;
 }
 

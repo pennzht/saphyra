@@ -3,7 +3,7 @@
 }
 
 sexp {
-    border: 1px solid black;
+    border: 1px solid #aaa;
     padding: 3px;
     margin: 3px;
     display: inline-block;
@@ -12,10 +12,9 @@ sexp {
 node {
     display: block;
     margin: 10px;
-    border: 1px solid gray;
+    border: 1px solid #aaa;
 }
 
-/* sexp:hover {
-    background-color: #77777777;
-} */
-
+.shade {
+    background-color: #0087e27f;
+}
