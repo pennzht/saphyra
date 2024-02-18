@@ -180,7 +180,9 @@ function stepStack (stack) {
         if (head === 'if') {
             // TODO - general cond situation
             // (if cond1 val1 cond2 val2 ... condN valN valEnd)
-            if (subindex === 1 && ['literal','closure'].includes(form[1].type)) {
+            if (form.length === 2) {
+                stack.push ({type: 'expr', form: form[1], env});
+            } else if (subindex === 1 && ['literal','closure'].includes(form[1].type)) {
                 // Cond
                 if (form[1].type === 'literal' && form[1].form) {
                     // Evaluates to val1
@@ -279,10 +281,10 @@ function main () {
     evaluate (['set', '1', '666', ['list:', '333', '444', '555']]);
     evaluate (["'", 'a']);
     evaluate (['map:', ["'", 'a'], '3', ["'", 'b'], '4']);
-    evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], 'true', '4']);
     evaluate ([
         'set', ["'", 'b'], ["'", 'red'],
         ['map:', ["'", 'a'], '3', ["'", 'b'], '4']]);
+    evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], '5']);
 }
 
 main ();
