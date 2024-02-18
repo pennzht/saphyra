@@ -140,7 +140,7 @@ const builtinFunctions = new Set(Object.keys(operators));
 
 function stepStack (stack) {
     const frame = stack.pop ();
-    const type = frame.type, form = frame.form, env = frame.env, subindex = frame.subindex;
+    const type = valType(frame), form = frame.form, env = frame.env, subindex = frame.subindex;
     if (type === 'expr') {
         if (! isList(form)) {
             // Atom
@@ -249,11 +249,11 @@ function evaluate (sexp, limit=1000) {
     }];
     while (limit > 0) {
         const status = stepStack (stack);
-        console.log (JSON.stringify(stack, visualizer, 2));
-        console.log ('================\n')
         if (status === 'done') break;
         limit--;
     }
+    console.log (JSON.stringify(stack, visualizer, 2));
+    console.log ('================\n')
     return stack;
 }
 
@@ -292,6 +292,17 @@ function main () {
         'set', ["'", 'b'], ["'", 'red'],
         ['map:', ["'", 'a'], '3', ["'", 'b'], '4']]);
     evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], '5']);
+}
+
+// Returns the type of a value.
+function valType (val) {
+    if (typeof val.type === 'string') return val.type;
+    if (typeof val === 'bigint') return 'bigint';
+    if (typeof val === 'string') return 'atom';
+    if (val instanceof Array) return 'list';
+    if (val instanceof Map) return 'map';
+    if (val === true || val === false) return 'bool';
+    throw new Exception (`Unrecognized type ${val}`);
 }
 
 main ();
