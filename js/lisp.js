@@ -3,6 +3,12 @@
 
 // TODO - finish language implementation.
 
+// TODO - simplify by making each value a:
+// - literal
+// - closure
+// - expr
+// - fnop/macro
+
 const arity = {
     // Binary
     '+': 2, '-': 2, '*': 2, '/': 2, '^': 2, '%': 2,
