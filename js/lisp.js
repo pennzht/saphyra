@@ -157,6 +157,11 @@ function stepStack (stack) {
             } else {
                 // Look up in environment.
                 const value = findVal (env, form);
+                if (value === undefined || value === null) {
+                    stack.push ({type: 'error', reason: `Variable ${form} not found in environment ${env}.`});
+                } else {
+                    stack.push (value);
+                }
             }
         } else if (form.length <= 0) {
             stack.push ([]);
@@ -244,11 +249,14 @@ function stepStack (stack) {
     }
 }
 
-export function evaluate (sexp, showSteps=true, limit=1000) {
+export function evaluate (sexp, options) {
+    options = options || {};
+    var limit = options.limit || 1000;
+    const showSteps = [true, false].includes(options.showSteps) ? options.showSteps : false;
     const stack = [{
         type: 'expr',
         form: sexp,
-        env: new Map(),
+        env: options.env || new Map(),
     }];
     while (limit > 0) {
         const status = stepStack (stack);
@@ -300,6 +308,7 @@ function main () {
         'set', ["'", 'b'], ["'", 'red'],
         ['map:', ["'", 'a'], '3', ["'", 'b'], '4']]);
     evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], '5']);
+    evaluate (['+', 'x', 'x'], {env: new Map([['x', 17n]])});
 }
 
 // Returns the type of a value.
@@ -310,11 +319,11 @@ function valType (val) {
     if (val instanceof Array) return 'list';
     if (val instanceof Map) return 'map';
     if (val === true || val === false) return 'bool';
-    throw new Exception (`Unrecognized type ${val}`);
+    throw new Error (`Unrecognized type ${val}`);
 }
 
 function isResolved (type) {
     return ['closure', 'bigint', 'atom', 'list', 'map', 'bool'].includes (type);
 }
 
-// main ();
+main ();
