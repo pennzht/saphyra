@@ -137,7 +137,9 @@ function stepStack (stack) {
     if (type === 'expr') {
         if (! isList(form)) {
             // Atom
-            if (form.match (/^[+-]?[0-9]+$/)) {  // Number
+            if (['true', 'false'].includes(form)) {
+                stack.push ({type: 'literal', form: form === 'true'});
+            } else if (form.match (/^[+-]?[0-9]+$/)) {  // Number
                 stack.push ({type: 'literal', form: BigInt(form)});
             } else if (form.startsWith ('#')) {  // Symbol
                 stack.push ({type: 'literal', form});
@@ -178,6 +180,20 @@ function stepStack (stack) {
         if (head === 'if') {
             // TODO - general cond situation
             // (if cond1 val1 cond2 val2 ... condN valN valEnd)
+            if (subindex === 1 && ['literal','closure'].includes(form[1].type)) {
+                // Cond
+                if (form[1].type === 'literal' && form[1].form) {
+                    // Evaluates to val1
+                    stack.push ({type: 'expr', form: form[2], env});
+                } else {
+                    // Evaluates to rest
+                    stack.push ({type: 'expr', form: ['if'].concat(form.slice(3)), env});
+                }
+            } else {
+                // Unevaluated yet
+                stack.push (frame);
+                stack.push ({type: 'expr', form: form[1], env});
+            }
         } else if (head === 'let') {
             // TODO
             // (let x1 y1 x2 y2 x3 y3 ... xN yN expr)
@@ -263,6 +279,7 @@ function main () {
     evaluate (['set', '1', '666', ['list:', '333', '444', '555']]);
     evaluate (["'", 'a']);
     evaluate (['map:', ["'", 'a'], '3', ["'", 'b'], '4']);
+    evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], 'true', '4']);
 }
 
 main ();
