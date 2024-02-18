@@ -142,14 +142,14 @@ function stepStack (stack) {
     const frame = stack.pop ();
     const type = valType(frame), form = frame.form, env = frame.env, subindex = frame.subindex;
     if (type === 'expr') {
-        if (! isList(form)) {
+        if (! Array.isArray(form)) {
             // Atom
             if (['true', 'false'].includes(form)) {
-                stack.push ({type: 'literal', form: form === 'true'});
+                stack.push (form === 'true');
             } else if (form.match (/^[+-]?[0-9]+$/)) {  // Number
-                stack.push ({type: 'literal', form: BigInt(form)});
+                stack.push (BigInt(form));
             } else if (form.startsWith ('#')) {  // Symbol
-                stack.push ({type: 'literal', form});
+                stack.push (form);
             } else if (builtinFunctions.has (form)) {
                 stack.push ({type: 'closure', form, env: new Map()});
             } else {
@@ -157,7 +157,7 @@ function stepStack (stack) {
                 const value = findVal (env, form);
             }
         } else if (form.length <= 0) {
-            stack.push ({type: 'literal', form: []});
+            stack.push ([]);
         } else {
             const head = form[0];
             if (['if', 'let', 'letrec', 'and', 'or', "'"].includes (head)) {
@@ -175,8 +175,8 @@ function stepStack (stack) {
         if (subindex >= form.length) {
             const head = form[0];
             if (head.type === 'closure' && builtinFunctions.has(head.form)) {
-                const answer = operators[head.form](... (form.slice(1).map((x) => x.form)));
-                stack.push ({type: 'literal', form: answer});
+                const answer = operators[head.form](... form.slice(1));
+                stack.push (answer);
             }
         } else {
             stack.push (frame);
@@ -189,9 +189,9 @@ function stepStack (stack) {
             // (if cond1 val1 cond2 val2 ... condN valN valEnd)
             if (form.length === 2) {
                 stack.push ({type: 'expr', form: form[1], env});
-            } else if (subindex === 1 && ['literal','closure'].includes(form[1].type)) {
+            } else if (subindex === 1 && isResolved(valType(form[1]))) {
                 // Cond
-                if (form[1].type === 'literal' && form[1].form) {
+                if (form[1].form) {
                     // Evaluates to val1
                     stack.push ({type: 'expr', form: form[2], env});
                 } else {
@@ -216,19 +216,20 @@ function stepStack (stack) {
             // TODO
             // (or a1 a2 a3 ... aN)
         } else if (head === "'") {
-            stack.push ({type: 'literal', form: form[1]});
+            stack.push (form[1]);
         } else {
             throw new Exception ('Unrecognized macro.');
         }
-    } else if (type === 'literal' || type === 'closure') {
+    } else if (isResolved(type)) {
         // Done, go to previous one
+        const value = frame;
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
             if (! ['fnop', 'macro'].includes(parent.type)) {
                 console.log ('Error! Incorrect parent.type', parent.type, stack);
                 return 'done';
             }
-            parent.form[parent.subindex] = frame;
+            parent.form[parent.subindex] = value;
             if (parent.type === 'fnop') parent.subindex ++;
         } else {
             stack.push (frame);
@@ -303,6 +304,10 @@ function valType (val) {
     if (val instanceof Map) return 'map';
     if (val === true || val === false) return 'bool';
     throw new Exception (`Unrecognized type ${val}`);
+}
+
+function isResolved (type) {
+    return ['closure', 'bigint', 'atom', 'list', 'map', 'bool'].includes (type);
 }
 
 main ();
