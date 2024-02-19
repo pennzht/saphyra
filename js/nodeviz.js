@@ -7,7 +7,7 @@ const elem = (x) => document.createElement(x);
 
 /// Displays a node `nodeName` within the module `module`.
 export function displayNode (module, nodeName) {
-    const derivation = module.derives.get(nodeName).rule;
+    const derivation = module.derives?.get(nodeName)?.rule ?? '(?)';
 
     const subNamesUnsorted = (module.ances.get(nodeName) ?? []).filter ((x) => module.uplink.get(x) === nodeName);
     // sort according to order
