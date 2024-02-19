@@ -35,7 +35,6 @@ export function display (sexp) {
     if (typeof sexp === 'string') {
         return sexp;
     } else {
-        console.log ('display:', sexp);
         const parts = sexp.map (display);
         return '<sexp> ' + parts.join(' ')  + '</sexp>';
     }
