@@ -30,7 +30,7 @@ function execute (e) {
         const module = lang.isValidDeriv (ans);
         //        $('visual').innerHTML = nodeviz.displayInRowsHuman(lang.visualize(module));
         $('visual').innerHTML = nodeviz.displayModule (module);
-        $('output').innerText = JSON.stringify (module, null, 2);
+        $('output').innerText = JSON.stringify (module, nodeviz.visualizer, 2);
     } catch (e) {
         if (e instanceof SyntaxError) {
             $('output').innerText = 'parsing error';

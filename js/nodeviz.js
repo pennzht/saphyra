@@ -60,3 +60,9 @@ export function displayInRowsHuman (sexpList) {
     return sexpList.map ((x) => `<div>${displayHuman(x)}</div>`).join('');
 }
 
+export function visualizer (key, value) {
+    return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
+            value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
+            value);
+}
+
