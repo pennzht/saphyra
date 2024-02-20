@@ -26,11 +26,20 @@ function execute (e) {
         const ans = lang.parse (inValue);
         console.log (ans);
         console.log ('string:', lang.str(ans));
-        $('display').innerHTML = nodeviz.displayInRows (ans);
+        // TODO: use $('display') for better options.
+        // $('display').innerHTML = nodeviz.displayInRows (ans);
         const module = lang.isValidDeriv (ans);
         //        $('visual').innerHTML = nodeviz.displayInRowsHuman(lang.visualize(module));
         $('visual').innerHTML = nodeviz.displayModule (module);
         $('output').innerText = JSON.stringify (module, nodeviz.visualizer, 2);
+
+        // Set actions
+        for(const sexp of document.getElementsByClassName('shade')) {
+            sexp.onclick = (e) => {
+                console.log (e.target.getAttribute('data-pos'),
+                             lang.parse(e.target.innerText));
+            };
+        }
     } catch (e) {
         if (e instanceof SyntaxError) {
             $('output').innerText = 'parsing error';
