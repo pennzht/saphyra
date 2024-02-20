@@ -16,8 +16,12 @@ export function displayNode (module, nodeName) {
     const subs = subNames.map ((name) => displayNode(module, name))
           .join('');
 
-    const ins = module.nodes.get(nodeName).ins.map ((x) => `<sexp class="shade">${lang.str(x)}</sexp>`).join('');
-    const outs = module.nodes.get(nodeName).outs.map ((x) => `<sexp class="shade">${lang.str(x)}</sexp>`).join('');
+    const ins = module.nodes.get(nodeName).ins.map (
+        (x, i) => `<sexp class="shade" data-pos="${nodeName}-in-${i}">${lang.str(x)}</sexp>`
+    ).join('');
+    const outs = module.nodes.get(nodeName).outs.map (
+        (x, i) => `<sexp class="shade" data-pos="${nodeName}-out-${i}">${lang.str(x)}</sexp>`
+    ).join('');
 
     return `<node>` +
         `<div>${nodeName}: ${derivation}</div>` +
