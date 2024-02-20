@@ -11,7 +11,7 @@ console.log ('input value is', $('input').value);
 
 window.onload = (e) => {
     /* example input */
-    $('input').value = data.sampleDeriv1;
+    $('input').value = data.incomplete1;
     execute(e);
 }
 

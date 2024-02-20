@@ -108,3 +108,9 @@ export const sampleDeriv3 = `[comment - this proof is written purely in the <tex
 
 [derive and-intro #sub1]
 `;
+
+export const incomplete1 = `
+[node #target
+  [(-> _A _X) (-> _X _Y) (-> _B _Y)]
+  [(-> (or _A _B) _Y)]]
+`;

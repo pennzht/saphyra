@@ -5,6 +5,9 @@ import * as data from './data.js';
 /// To simplify: a `Completer` only completes a node.
 /// Sole purpose is to replace a (todo #node) with either (join ...) or a singular node.
 
+/// TODO: Instead of using `todo` nodes, start simple.
+/// Use unfinished blocks and let visualizer show which parts are missing.
+
 export class Completer {
     // args: {prefix: string[startsWith'#'], target: string(node)}
     constructor (module, args) {
