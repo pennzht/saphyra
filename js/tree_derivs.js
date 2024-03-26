@@ -33,3 +33,19 @@ export const sampleDeriv1 = `
 ))
 
 `;
+
+export const sampleDeriv2 = `
+(comment - format is
+  (node #label [ins] [outs] [justification args.optional] (subs.optional))
+)
+
+(node #t/switch [] [(-> (and _A _B) (and _B _A))]
+  [impl-intro] (
+  (node #t/switch/1 [(and _A _B)] [(and _B _A)] [join] (
+    (node #t/switch/1/1 [(and _A _B)] [_A _B] [and-elim])
+    (node #t/switch/1/2 [_B _A] [(and _B _A)] [and-intro])
+    (link #t/switch/1/1 out 0 #t/switch/1/2 in 1)
+    (link #t/switch/1/1 out 1 #t/switch/1/2 in 0)
+  ))
+))
+`;
