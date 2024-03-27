@@ -1,7 +1,7 @@
 // A tiny lisp for scripting purposes.
 // Emulate a stack to avoid infinite loops.
 
-// TODO - finish language implementation.
+// TODO - replace with full-implemented lisp.
 
 // Valid types
 /*
