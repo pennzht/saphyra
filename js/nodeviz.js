@@ -3,7 +3,7 @@
 // import * as lang from './lang.js';
 
 const $ = (x) => document.getElementById(x);
-const elem = (x) => document.createElement(x);
+// const elem = (x) => document.createElement(x);
 
 /// Displays a node `nodeName` within the module `module`.
 function displayNode (module, nodeName) {
@@ -68,4 +68,74 @@ function visualizer (key, value) {
     return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
             value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
             value);
+}
+
+// Sync with visual.js (with dispCons removed)
+
+// Visualization of data structures.
+
+function text(t) {
+  return document.createTextNode(t);
+}
+
+function elem(tag, attrs, children) {
+  const e = document.createElement(tag);
+  if (typeof attrs === 'object') {
+    for (const k of (Object.keys(attrs) || [])) {
+      e.setAttribute(k, attrs[k]);
+    }
+  }
+  for (const child of (children || [])) {
+      if (child instanceof Node) {
+        e.appendChild(child);
+      } else if (typeof child === 'string') {
+        e.appendChild(text(child));
+      }
+  }
+  return e;
+}
+
+function dispStack (stack) {
+  return elem('div', [], stack.map(dispFrame));
+}
+
+function dispFrame(frame) {
+  var ans;
+  if (isCompoundFrame(frame)) {
+    ans = elem('div', {class: 'frame'}, [frame.type, ' ',  dispSexp(frame.form), ' ', dispMap(frame.env), ' ', dispNum(frame.subindex)]);
+  } else {
+    ans = dispSexp(frame);
+  }
+  return ans;
+}
+
+function dispNum(number) {
+  if ((number ?? 'x') === 'x') return elem('span', {class: 'null'}, ['—']);
+  return elem('span', {class: 'index'}, [number.toString()]);
+}
+
+function dispSexp(obj) {
+  const type = valType(obj);
+  /*
+  if (obj instanceof Cons) {
+    return dispCons(obj);
+  }
+  */
+  if (type === 'special') {
+      return elem('span', {class: obj === null ? 'null' : 'bool'}, [`${obj}`]);
+  }
+  if (type === 'bigint') return elem('span', {class: 'number'}, [obj.toString()]);
+  if (type === 'atom') return elem('span', {class: 'atom'}, [obj]);
+  if (type === 'list') return elem('div', {class: 'list'}, obj.map(dispSexp));
+  if (type === 'cons' && obj.kind === 'list') return elem('div', {class: 'list'}, obj.obj.map(dispSexp));
+  if (type === 'map') return dispMap(obj);
+  if (isCompoundFrame(obj)) return dispFrame(obj);
+}
+
+function dispMap(map) {
+  if (! (map instanceof Map)) return dispSexp(map);
+  if (map.size === 0) return elem('span', {class: 'null'}, ['empty']);
+  return elem('table', {class: 'map'}, [...map.entries()].map(
+    (entr) => elem('tr', {}, [elem('td', {}, [text(`${entr[0]}`)]),     elem('td', {}, [dispSexp(entr[1])])])
+  ));
 }
