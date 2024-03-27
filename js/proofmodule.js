@@ -3,6 +3,9 @@ const folRulesSexp = new Map(parse (folRules).map (
 ));
 console.log ('folRulesSexp', folRulesSexp);
 
+// Sync with axioms.js
+const folAxioms = deepParse(folRules);
+
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
 function isValidStep (rule, ins, outs, subs = null, order = null) {
