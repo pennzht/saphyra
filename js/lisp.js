@@ -496,7 +496,7 @@ function prepro_1(code) {
 
   // Handle cond => can replace with if
   // Handle and, or
-  return parts;
+  // return parts;
 }
 
 function prepro_2(code) {
