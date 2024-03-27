@@ -1,7 +1,7 @@
-// A tiny lisp for scripting purposes.
+// A tiny lisp for scripting purposes. Sync with lisp.js
 // Emulate a stack to avoid infinite loops.
 
-// TODO - replace with full-implemented lisp.
+// TODO - finish language implementation.
 
 // Valid types
 /*
@@ -9,7 +9,7 @@
     expr  fnop  macro  (error)
 
     native:
-    bigint  atom  list  map  bool
+    bigint  atom  list  map  bool  null
 */
 
 const arity = {
@@ -20,67 +20,93 @@ const arity = {
     // Unary
     'b~': 1, 'neg': 1,
     // List-like
-    'range': 2, 'enum': 1, 'map': 2, 'filter': 2, 'foldl': 3,
-    'get': 2, 'set': 3, 'joinall': 1, 'size': 1,
+    'range': 2, 'enum': 1, /* 'map': 2, 'filter': 2, 'foldl': 3, */
+    'get': 2, 'set': 3, 'joinall': 1, 'size': 1, 'slice': 3,
     'list:': 'VARIABLE',  // list constructor
     // Map-like
     'map->list': 1, 'list->map': 1,
     'map:': 'VARIABLE',  // map constructor
     // Symbols
     'sym->str': 1, 'str->sym': 1,
+    'atom?': 1, 'list?': 1, 'map?': 1,
+    'list->cons': 1, 'cons->list': 1,
 };
+
+function numericFunction(fn) {
+    return (...args) => {
+        if (args.every((x) => typeof x === 'bigint')) {
+            return fn(...args);
+        } else {
+            return '#err/needs-numeric-inputs';
+        }
+    };
+}
+
+function atomicFunction(fn) {
+    return (...args) => {
+        if (args.every(isAtomic)) {
+            return fn(...args);
+        } else {
+            return '#err/needs-atomic-inputs';
+        }
+    };
+}
 
 const operators = {
     // Binary
-    '+': ((a, b) => a + b),
-    '-': ((a, b) => a - b),
-    '*': ((a, b) => a * b),
-    '/': ((a, b) => a / b),
-    '^': ((a, b) => a ** b),
-    '%': ((a, b) => a % b),
-    '>': ((a, b) => a > b),
-    '<': ((a, b) => a < b),
-    '=': ((a, b) => a == b),
-    '>=': ((a, b) => a >= b),
-    '<=': ((a, b) => a <= b),
-    '!=': ((a, b) => a != b),
-    'b<<': ((a, b) => a << b),
-    'b>>': ((a, b) => a >> b),
-    'b&': ((a, b) => a & b),
-    'b|': ((a, b) => a | b),
-    'b^': ((a, b) => a ^ b),
+    '+': numericFunction((a, b) => a + b),
+    '-': numericFunction((a, b) => a - b),
+    '*': numericFunction((a, b) => a * b),
+    '/': numericFunction((a, b) => b === 0n ? '#err/div-0' : a / b),
+    '%': numericFunction((a, b) => b === 0n ? '#err/mod-0' : a % b),
+    '^': numericFunction((a, b) => a ** b),
+    '>': atomicFunction((a, b) => a > b),
+    '<': atomicFunction((a, b) => a < b),
+    '=': atomicFunction((a, b) => a === b),
+    '>=': atomicFunction((a, b) => a >= b),
+    '<=': atomicFunction((a, b) => a <= b),
+    '!=': atomicFunction((a, b) => a !== b),
+    'b<<': numericFunction((a, b) => a << b),
+    'b>>': numericFunction((a, b) => a >> b),
+    'b&': numericFunction((a, b) => a & b),
+    'b|': numericFunction((a, b) => a | b),
+    'b^': numericFunction((a, b) => a ^ b),
     // Unary
-    'b~': ((a) => ~a),
-    'neg': ((a) => -a),
+    'b~': numericFunction((a) => ~a),
+    'neg': numericFunction((a) => -a),
     // List-like
-    'range': (a, b) => {
+    'range': numericFunction((a, b) => {
         const ans = [];
         for (let i = a; i < b; i++) ans.push(i);
         return ans;
-    },
+    }),
     'enum': (list) => {
+        if (! isList(list)) return '#err/enum-non-list';
         const ans = [];
         for (let i = 0; i < list.length; i++) ans.push ([[i, list[i]]]);
     },
     // TODO: fix all things with functions.
-    'map': (f, list) => list.map(f),
+    /* 'map': (f, list) => list.map(f),
     'filter': (f, list) => list.filter(f),
     'foldl': (f, seed, list) => {
         for (const y of list) seed = f(seed, y);
         return seed;
-    },
+    }, */
     'get': (ind, list) => {
         if (list instanceof Array) {
-            return list[ind];
+            return list[ind] ?? null;
         } else if (list instanceof Map) {
-            return list.get(ind);
+            return list.get(ind) ?? null;
+        } else {
+            return '#err/attempted-get';
         }
-        throw Exception (`Cannot get index of ${list}`);
     },
     'set': (ind, elem, list) => {
         if (list instanceof Array) {
-            if (ind >= list.length) {
+            if (ind >= Number(list.length)) {
                 return list.concat([elem]);
+            } else if (ind < 0n) {
+                return [elem].concat(list);
             } else {
                 const ans = [...list];
                 ans[ind] = elem;
@@ -90,13 +116,20 @@ const operators = {
             const ans = new Map(list);
             ans.set(ind, elem);
             return ans;
+        } else {
+            return '#err/attempted-set';
         }
-        throw Exception (`Cannot get index of ${list}`);
+    },
+    'slice': (from, to, list) => {
+        if (from instanceof BigInt && to instanceof BigInt && isList(list))
+            return list.slice(Number(from), Number(to));
+        else return '#err/attempted-slice';
     },
     'joinall': (listOfLists) => {
+        if (! isList(listOfLists)) return '#err/attempted-joinall';
         const ans = [];
         for (const list of listOfLists) {
-            for (const y of list) {
+            if (isList(list)) for (const y of list) {
                 ans.push (y);
             }
         }
@@ -104,11 +137,10 @@ const operators = {
     },
     'size': (list) => {
         if (list instanceof Array) {
-            return list.length;
+            return BigInt(list.length);
         } else if (list instanceof Map) {
-            return list.size;
-        }
-        throw Exception (`${list} is not a collection`);
+            return BigInt(list.size);
+        } else return '#err/sizeof-non-collection';
     },
     'list:': (...args) => args,
     'map->list': (m) => [...m],
@@ -120,90 +152,155 @@ const operators = {
         }
         return ans;
     },
-    'sym->str': (sym) => [...sym].map((x) => x.codePointAt(0)),
-    'str->sym': (str) => str.map(String.fromCodePoint).join(''),
+    'sym->str': (sym) => [...sym].map((x) => BigInt(x.codePointAt(0))),
+    'str->sym': (str) => str.map((x) => String.fromCodePoint(Number(x))).join(''),
+    'list->cons': (list) => {
+        if (! isList(list)) return '#err/list->cons-non-list';
+        let ans = null;
+        for (let i = list.length - 1; i >= 0; i--) ans = [list[i], ans];
+        return ans;
+    },
+    'cons->list': (cons) => {
+        let ans = [], head = cons;
+        while(isList(head) && head.length === 2) {
+            ans.push(head[0]);
+            head = head[1];
+        }
+        return ans;
+    },
+    'atom?' : isAtomic,
+    'list?' : isList,
+    'map?' : isMap,
 };
 
 const builtinFunctions = new Set(Object.keys(operators));
 
+// Alternate frame structure:
+// [type form env subindex]
+// env may be null for literals
+// subindex may be null for those that won't matter
+
 // Stack:
 // [frame ...]
 // Each frame:
-// {type: 'expr', form, env} - before expansion
-// {type: 'fnop', form: value[], env, subindex} - during expansion
+// [expr form env -] :: before evaluation
+// [fnop form env index] :: during evaluation
     // Notice! For a fnop like (+ x y), args is [+, x, y], because the function head has to be evaluated too.
-// {type: 'macro', form: value[], env, subindex} - if, let, letrec, and, or
-// {type: 'literal', form} - after expansion
-// {type: 'closure', form, env} - lambda closure, cannot expand further
-// {type: 'error', form, env, reason} - error, stopping the evaluation
+// [macro form env index] - if, let, letrec, and, or
+// [literal form - -] - after expansion
+// [closure form env -] - lambda closure, cannot expand further
+// [error reason - -] - error, stopping the evaluation
 //
 // General stack structure:
-// [fnop/macro . fnop/macro . . . fnop/macro . expr/literal/closure/error/fnop/macro]
+// [fnop/macro . fnop/macro . . . fnop/macro . <any>]
+
+/*
+Structure of a general program.
+atom : atomic literals
+(fn ...args) : function application
+(apply fn list) : apply list
+(list ...args) : list generation
+(' x) : literal
+([and, or] ...args) : boolean operation
+(if p1 a1 p2 a2 p3 a3 ... pn an xn) : cond
+(let x1 y1 x2 y2 ... xn yn body) : let
+(letrec x1 f1 x2 f2 ... xn fn body) : let recursive
+(: arglist body) : function with argument list
+(get nth list), (set nth list obj) : list operation
+
+Ideally built-in things: map, filter, fold(l/r)
+*/
 
 function stepStack (stack) {
     const frame = stack.pop ();
-    const type = valType(frame), form = frame.form, env = frame.env, subindex = frame.subindex;
+    // if (valType(frame) === null) {stack.push(frame); return;}
+    const type = valType(frame);
+    let form = null, env = null, subindex = null;
+    if (isCompoundFrame(frame)) {
+        form = frame.form; env = frame.env; subindex = frame.subindex;
+    }
+    // Handle each case.
     if (type === 'expr') {
-        if (! Array.isArray(form)) {
+        if (! isList(form)) {
             // Atom
-            if (['true', 'false'].includes(form)) {
+            if (typeof form !== 'string') {
+                // Literal
+                stack.push (form);
+            } else if (['true', 'false'].includes(form)) {
                 stack.push (form === 'true');
             } else if (form.match (/^[+-]?[0-9]+$/)) {  // Number
                 stack.push (BigInt(form));
             } else if (form.startsWith ('#')) {  // Symbol
                 stack.push (form);
             } else if (builtinFunctions.has (form)) {
-                stack.push ({type: 'closure', form, env: new Map()});
+                stack.push (form);  // Built-in function.
             } else {
                 // Look up in environment.
-                const value = findVal (env, form);
-                if (value === undefined || value === null) {
-                    stack.push ({type: 'error', reason: `Variable ${form} not found in environment ${env}.`});
+                if (! env.has(form)) {
+                    stack.push(frame);
+                    stack.push('#err/var-unfound');
                 } else {
-                    stack.push (value);
+                    stack.push (env.get(form));
                 }
             }
         } else if (form.length <= 0) {
             stack.push ([]);
         } else {
             const head = form[0];
-            if (['if', 'let', 'letrec', 'and', 'or', "'"].includes (head)) {
+            if (['if', 'let', "'"].includes (head)) {
                 // Macro.
-                stack.push ({type: 'macro', form, env, subindex: 1});
+                stack.push ({type: 'macro', form: [... form], env, subindex: 1});
             } else if ([':'].includes(head)) {
                 // Function definition.
-                stack.push ({type: 'closure', form, env});
+                const [_colon, fnvars, fnbody, fncaptures] = form;
+                const newEnv = new Map();
+                for (const varName of (fncaptures || [])) {
+                    newEnv.set(varName, env.get(varName));
+                }
+                stack.push ([_colon, fnvars, fnbody, newEnv]);
             } else {
                 // Function application.
-                stack.push ({type: 'fnop', form, env, subindex: 0});
+                stack.push ({type: 'fnop', form: [... form], env, subindex: 0});
             }
         }
     } else if (type === 'fnop') {
         if (subindex >= form.length) {
             const head = form[0];
-            if (head.type === 'closure' && builtinFunctions.has(head.form)) {
-                const answer = operators[head.form](... form.slice(1));
+            if (builtinFunctions.has(head)) {
+                const answer = operators[head](... form.slice(1));
+                if (isErr(answer)) stack.push(frame);
                 stack.push (answer);
+            } else if (head[0] === ':' && head.length >= 3) {
+                // Custom-defined function
+                const [_colon, fnvars, fnbody, fncaptures] = head;
+                const env = fncaptures ? new Map(fncaptures) : new Map();
+                for (var i = 0; i < fnvars.length; i++) {
+                    env.set(fnvars[i], form[i]);
+                }
+                stack.push({type: 'expr', form: fnbody, env});
             }
         } else {
+            const subform = frame.form[subindex];
+            frame.form[subindex] = '.wait';
             stack.push (frame);
-            stack.push ({type: 'expr', form: form[subindex], env});
+            stack.push ({type: 'expr', form: subform, env});
         }
     } else if (type === 'macro') {
         const head = form[0];
         if (head === 'if') {
-            // TODO - general cond situation
-            // (if cond1 val1 cond2 val2 ... condN valN valEnd)
-            if (form.length === 2) {
-                stack.push ({type: 'expr', form: form[1], env});
-            } else if (subindex === 1 && isResolved(valType(form[1]))) {
+            if (form.length !== 4) {
+                stack.push(frame);
+                stack.push('#err/if-length-error');
+                return 'done';
+            }
+            if (subindex === 2) {
                 // Cond
-                if (form[1].form) {
+                if (form[1]) {
                     // Evaluates to val1
                     stack.push ({type: 'expr', form: form[2], env});
                 } else {
                     // Evaluates to rest
-                    stack.push ({type: 'expr', form: ['if'].concat(form.slice(3)), env});
+                    stack.push ({type: 'expr', form: form[3], env});
                 }
             } else {
                 // Unevaluated yet
@@ -211,33 +308,47 @@ function stepStack (stack) {
                 stack.push ({type: 'expr', form: form[1], env});
             }
         } else if (head === 'let') {
-            // TODO
-            // (let x1 y1 x2 y2 x3 y3 ... xN yN expr)
-        } else if (head === 'letrec') {
-            // TODO
-            // (letrec x1 y1 x2 y2 x3 y3 ... xN yN expr)
-        } else if (head === 'and') {
-            // TODO
-            // (and a1 a2 a3 ... aN)
-        } else if (head === 'or') {
-            // TODO
-            // (or a1 a2 a3 ... aN)
+            // (let x y expr)
+            if (form.length !== 4) {
+                stack.push(frame);
+                stack.push('#err/let-length-error');
+                return 'done';
+            }
+            const [_, x, y, expr] = form;
+            if (subindex === 1) {
+                // compute y first
+                stack.push({type, form, env, subindex: 2});
+                stack.push({type: 'expr', form: y, env, subindex: 0});
+            } else if (subindex === 2) {
+                // can move forward
+                const nextFrame = {type: 'expr', form: expr, env: withVal(env, x, y)};
+                stack.push(nextFrame);
+            }
         } else if (head === "'") {
+            if (form.length !== 2) {
+                stack.push(frame);
+                stack.push("#err/'-length-error");
+                return 'done';
+            }
             stack.push (form[1]);
         } else {
-            throw new Exception ('Unrecognized macro.');
+            stack.push(frame); stack.push("#err/unrecognized-macro");
+            return 'done';
         }
-    } else if (isResolved(type)) {
+    } else if (isErr(frame)) {
+        stack.push(frame);
+        return 'done';
+    } else if (isLiteralFrame(type)) {
         // Done, go to previous one
         const value = frame;
         if (stack.length > 0) {
             const parent = stack[stack.length - 1];
             if (! ['fnop', 'macro'].includes(parent.type)) {
-                console.log ('Error! Incorrect parent.type', parent.type, stack);
+                throw new Error ('Error! Incorrect parent.type', parent.type, stack);
                 return 'done';
             }
             parent.form[parent.subindex] = value;
-            if (parent.type === 'fnop') parent.subindex ++;
+            if (parent.type === 'fnop' || parent.form[0] === 'if') parent.subindex ++;
         } else {
             stack.push (frame);
             return 'done';
@@ -245,14 +356,14 @@ function stepStack (stack) {
     } else if (type === 'error') {
         return 'done';
     } else {
-        console.log ('Error! Unrecognized frame type.');
+        throw new Error ('Error! Unrecognized frame type.');
     }
 }
 
 function evaluate (sexp, options) {
     options = options || {};
-    var limit = options.limit || 1000;
-    const showSteps = [true, false].includes(options.showSteps) ? options.showSteps : false;
+    var limit = options.limit || 2000;
+    const showSteps = [true, false].includes(options.showSteps) ? options.showSteps : true;
     const stack = [{
         type: 'expr',
         form: sexp,
@@ -264,27 +375,40 @@ function evaluate (sexp, options) {
         limit--;
 
         if (showSteps) {
-            console.log (JSON.stringify(stack, visualizer, 2));
-            console.log ('================\n')
+            // console.log (dispStack(stack));
+            // console.log (elem('hr'));
         }
     }
-    console.log (JSON.stringify(stack, visualizer, 2));
-    console.log ('================\n')
     return stack;
 }
 
-function isComplete (stack) {
-    return stack.length === 1 && (stack[0].type === 'literal'
-                                  || stack[0].type === 'closure');
-}
+function isAtom (obj) { return typeof obj === 'string'; }
+
+function isList (obj) { return obj instanceof Array; }
+
+function isMap (obj) { return obj instanceof Map; }
 
 function isVar (obj) { return isAtom(obj) && obj.startsWith('_'); }
 
-function isAtom (obj) { return typeof obj === 'string'; }
+function isSym (obj) { return isAtom(obj) && obj.startsWith('#'); }
 
-function isList (obj) { return ! isAtom (obj); }
+function isErr (obj) { return isAtom(obj) && obj.startsWith('#err/'); }
 
 function findVal (env, atom) { return env.get (atom); }
+
+function isAtomic (val) {
+    return ! (isList(val) || isMap(val));
+}
+
+function isCompoundFrame (val) {
+    return ['macro', 'fnop', 'expr'].includes(valType(val));
+}
+
+function isLiteralFrame (val) { return ! isCompoundFrame(val); }
+
+function isComplete (stack) {
+    return stack.length === 1 && (stack[0].type || null === null);
+}
 
 function withVal (env, key, val) {
     const ans = new Map(env);
@@ -292,38 +416,28 @@ function withVal (env, key, val) {
     return ans;
 }
 
+// Unused.
 function visualizer (key, value) {
     return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
             value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
             value);
 }
 
-function main () {
-    evaluate (['+', '3', '4']);
-    evaluate (['*', ['+', '1', '2'], ['-', '9', '3']]);
-    evaluate (['set', '1', '666', ['list:', '333', '444', '555']]);
-    evaluate (["'", 'a']);
-    evaluate (['map:', ["'", 'a'], '3', ["'", 'b'], '4']);
-    evaluate ([
-        'set', ["'", 'b'], ["'", 'red'],
-        ['map:', ["'", 'a'], '3', ["'", 'b'], '4']]);
-    evaluate (['if', 'false', '3', 'false', ['+', '3', '1'], '5']);
-    evaluate (['+', 'x', 'x'], {env: new Map([['x', 17n]])});
-}
-
 // Returns the type of a value.
 function valType (val) {
-    if (typeof val.type === 'string') return val.type;
-    if (typeof val === 'bigint') return 'bigint';
-    if (typeof val === 'string') return 'atom';
-    if (val instanceof Array) return 'list';
-    if (val instanceof Map) return 'map';
-    if (val === true || val === false) return 'bool';
-    throw new Error (`Unrecognized type ${val}`);
+    if ([true, false, null, undefined].includes(val)) {
+        return 'special';
+    } else if (typeof val === 'bigint') {
+        return 'bigint';
+    } else if (typeof val === 'string') {
+        return 'atom';
+    } else if (val instanceof Array) {
+        return 'list';
+    } else if (val instanceof Map) {
+        return 'map';
+    } else if (typeof val === 'object') {
+        if (typeof val.type === 'string') return val.type;
+    } else {
+        throw new Error (`Unrecognized type ${val}: ${typeof val}`);
+    }
 }
-
-function isResolved (type) {
-    return ['closure', 'bigint', 'atom', 'list', 'map', 'bool'].includes (type);
-}
-
-main ();
