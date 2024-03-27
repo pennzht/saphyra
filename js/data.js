@@ -179,3 +179,22 @@ programs = [
   `+ 5 @ + 5 @ + 7 9`,
   `let n 5 @ + 3 @ if (> n 3) #err/over #under`,
 ];
+
+// Sync with theories.js
+
+theories = [`
+(// comments start with //)
+(// format is
+  (node #label [ins] [outs] [justification args.optional] (subs.optional))
+)
+
+(node #t/switch [] [(-> (and _A _B) (and _B _A))]
+  [impl-intro] (
+  (node #1 [(and _A _B)] [(and _B _A)] [join] (
+    (node #elim [(and _A _B)] [_A _B] [and-elim])
+    (node #intro [_B _A] [(and _B _A)] [and-intro])
+    (link #elim out 0 #intro in 1)
+    (link #elim out 1 #intro in 0)
+  ))
+))
+`];
