@@ -139,3 +139,5 @@ function dispMap(map) {
     (entr) => elem('tr', {}, [elem('td', {}, [text(`${entr[0]}`)]),     elem('td', {}, [dispSexp(entr[1])])])
   ));
 }
+
+// TODO - add sexp to html converter.
