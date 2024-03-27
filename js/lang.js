@@ -1,6 +1,4 @@
-// Parsing a sexp, using only square brackets
-
-// import * as data from './data.js';
+// Sexp operations. Sync with sexp.js
 
 function parse (input) {
     input = input.replaceAll ('(', ' [ ');
@@ -19,6 +17,20 @@ function parse (input) {
     input = input.replaceAll (/, *\]/g, ' ]');
     return JSON.parse (input);
 }
+
+function translateLiteral(expr) {
+  if (expr instanceof Array) {
+    return expr.map(translateLiteral);
+  } else if (typeof(expr) === 'string') {
+    if (expr.match(/^[-]?[0-9]+$/)) return BigInt(expr);
+    if (['true', 'false', 'null'].includes(expr)) return {'true': true, 'false': false, 'null': null}[expr];
+    return expr;
+  } else {
+    return expr;
+  }
+}
+
+function deepParse(input) { return translateLiteral(parse(input)); }
 
 /// Performs a simple match between pattern and sexp.
 function simpleMatch (pattern, sexp) {
