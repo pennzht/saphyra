@@ -249,7 +249,7 @@ function stepStack (stack) {
     }
 }
 
-export function evaluate (sexp, options) {
+function evaluate (sexp, options) {
     options = options || {};
     var limit = options.limit || 1000;
     const showSteps = [true, false].includes(options.showSteps) ? options.showSteps : false;

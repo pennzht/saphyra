@@ -1,12 +1,12 @@
 // TODO - visualization of a node, a theory
 
-import * as lang from './lang.js';
+// import * as lang from './lang.js';
 
 const $ = (x) => document.getElementById(x);
 const elem = (x) => document.createElement(x);
 
 /// Displays a node `nodeName` within the module `module`.
-export function displayNode (module, nodeName) {
+function displayNode (module, nodeName) {
     const derivation = module.derives?.get(nodeName)?.rule ?? '(?)';
 
     const subNamesUnsorted = (module.ances.get(nodeName) ?? []).filter ((x) => module.uplink.get(x) === nodeName);
@@ -17,10 +17,10 @@ export function displayNode (module, nodeName) {
           .join('');
 
     const ins = module.nodes.get(nodeName).ins.map (
-        (x, i) => `<sexp class="shade" data-pos="${nodeName}-in-${i}">${lang.str(x)}</sexp>`
+        (x, i) => `<sexp class="shade" data-pos="${nodeName}-in-${i}">${str(x)}</sexp>`
     ).join('');
     const outs = module.nodes.get(nodeName).outs.map (
-        (x, i) => `<sexp class="shade" data-pos="${nodeName}-out-${i}">${lang.str(x)}</sexp>`
+        (x, i) => `<sexp class="shade" data-pos="${nodeName}-out-${i}">${str(x)}</sexp>`
     ).join('');
 
     return `<node>` +
@@ -30,12 +30,12 @@ export function displayNode (module, nodeName) {
         `</node>`;
 }
 
-export function displayModule (module) {
+function displayModule (module) {
     const roots = module.order.filter ((x) => ! module.uplink.has(x));
     return roots.map ((n) => displayNode(module, n)).join('');
 }
 
-export function display (sexp) {
+function display (sexp) {
     if (typeof sexp === 'string') {
         return sexp;
     } else {
@@ -44,7 +44,7 @@ export function display (sexp) {
     }
 }
 
-export function displayHuman (sexp) {
+function displayHuman (sexp) {
     if (typeof sexp === 'string') {
         return sexp;
     } else {
@@ -56,17 +56,16 @@ export function displayHuman (sexp) {
     }
 }
 
-export function displayInRows (sexpList) {
+function displayInRows (sexpList) {
     return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
 }
 
-export function displayInRowsHuman (sexpList) {
+function displayInRowsHuman (sexpList) {
     return sexpList.map ((x) => `<div>${displayHuman(x)}</div>`).join('');
 }
 
-export function visualizer (key, value) {
+function visualizer (key, value) {
     return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
             value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
             value);
 }
-

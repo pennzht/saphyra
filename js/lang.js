@@ -1,8 +1,8 @@
 // Parsing a sexp, using only square brackets
 
-import * as data from './data.js';
+// import * as data from './data.js';
 
-export function parse (input) {
+function parse (input) {
     input = input.replaceAll ('(', ' [ ');
     input = input.replaceAll (')', ' ] ');
     input = input.replaceAll ('[', ' [ ');
@@ -21,7 +21,7 @@ export function parse (input) {
 }
 
 /// Performs a simple match between pattern and sexp.
-export function simpleMatch (pattern, sexp) {
+function simpleMatch (pattern, sexp) {
     if (isVar (pattern)) {
         return {success: true, map: new Map([[pattern, sexp]])};
     } else if (isAtom (pattern)) {
@@ -50,7 +50,7 @@ export function simpleMatch (pattern, sexp) {
     }
 }
 
-export function combineMatch (oldMatch, newMatch) {
+function combineMatch (oldMatch, newMatch) {
     if (! oldMatch.success) return;
     if (! newMatch.success) {
         oldMatch.success = false;
@@ -71,7 +71,7 @@ export function combineMatch (oldMatch, newMatch) {
     }
 }
 
-export function replaceAll (sexp, map) {
+function replaceAll (sexp, map) {
     if (isAtom (sexp)) {
         return map.has (sexp) ? map.get(sexp) : sexp;
     } else {
@@ -79,17 +79,17 @@ export function replaceAll (sexp, map) {
     }
 }
 
-export const folRulesSexp = new Map(parse (data.folRules).map (
+const folRulesSexp = new Map(parse (folRules).map (
     (line) => [line[0], line.slice(1)],
 ));
 console.log ('folRulesSexp', folRulesSexp);
 
 /// If it is a valid derivation from [ins] to [outs] via [rule].
 /// Applies to one rule only.
-export function isValidStep (rule, ins, outs, subs = null, order = null) {
+function isValidStep (rule, ins, outs, subs = null, order = null) {
     try {
         const i = ins, o = outs;
-        
+
         const folRule = folRulesSexp.get(rule) ?? null;
         if (folRule !== null) {
             // Rule defined
@@ -142,7 +142,7 @@ export function isValidStep (rule, ins, outs, subs = null, order = null) {
 }
 
 /// Parses a module.
-export function parseModule (lines) {
+function parseModule (lines) {
     const nodes = new Map();  // Map<name, {ins, outs}>
     const descs = new Map();  // Descendants: Map<name, name[]>
     const ances = new Map();  // Ancestors: Map<name, name[]>
@@ -228,14 +228,14 @@ export function parseModule (lines) {
 }
 
 /// Performs a toposort (topological sorting) of the nodes of the module.
-export function toposort (module) {
+function toposort (module) {
     const names = [... module.nodes.keys()];
 
     const indegree = new Map(
         names.map ((name) =>
             [name, module.ances.get(name)?.length ?? 0])
     );
-    
+
     const starts = names.filter ((name) => indegree.get(name) === 0);
     starts.reverse();
 
@@ -264,7 +264,7 @@ export function toposort (module) {
     return module;
 }
 
-export function verifyEachStep (module) {
+function verifyEachStep (module) {
     for (const name of module.order) {
         const node = module.nodes.get(name);
         const deriv = module.derives.get(name);
@@ -286,7 +286,7 @@ export function verifyEachStep (module) {
 
 /// TODO - visualizes the order of a module
 /// including the order of blocks, order of statements
-export function visualize (module) {
+function visualize (module) {
     const ans = [];
     for (const nodeName of module.order) {
         ans.push ([
@@ -300,7 +300,7 @@ export function visualize (module) {
 
 /// If a sequence of items (in correct order) is a valid derivation.
 /// Applies to a system.
-export function isValidDeriv (lines) {
+function isValidDeriv (lines) {
     const module = parseModule(lines);
 
     if (!module.success) {
@@ -326,7 +326,7 @@ function eq (a, b) {
 }
 
 // Sexp to string.
-export function str (obj) {
+function str (obj) {
     if (isAtom(obj)) return obj;
     else return '[' + obj.map (str).join(' ') + ']';
 }
@@ -348,7 +348,7 @@ console.log (
 
 /// TODO: add labels for **statements**, because it becomes hard if they cannot be identified and named.
 
-export function wellTyped (sexp) {
+function wellTyped (sexp) {
     if (isAtom(sexp)) {
         return ['true', 'false'].includes (sexp) || isVar(sexp);
     } else if (sexp.length === 3) {
@@ -357,4 +357,3 @@ export function wellTyped (sexp) {
     }
     return false;
 }
-

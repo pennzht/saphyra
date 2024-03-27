@@ -1,4 +1,4 @@
-export const sampleDeriv1 = `
+sampleTreeDeriv1 = `
 
 (comment - format is
   (stmt #label content) or
@@ -34,7 +34,7 @@ export const sampleDeriv1 = `
 
 `;
 
-export const sampleDeriv2 = `
+sampleTreeDeriv2 = `
 (comment - format is
   (node #label [ins] [outs] [justification args.optional] (subs.optional))
 )

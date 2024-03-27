@@ -1,4 +1,4 @@
-export const folRules = `
+folRules = `
 (and-intro
   [_A _B]
   [_A _B] [(and _A _B)])
@@ -41,7 +41,7 @@ export const folRules = `
   [_A] [_A])
 `;
 
-export const sampleDeriv1 = `(comment - node data)
+sampleDeriv1 = `(comment - node data)
 (node #ans
   []
   [(-> (-> (and _A _B) _C)
@@ -77,20 +77,20 @@ export const sampleDeriv1 = `(comment - node data)
 (link #mp 0 #and-intro 0)
 `;
 
-export const sampleDeriv2 = `(node #1 [_B _A] [(and _B _A)])
+sampleDeriv2 = `(node #1 [_B _A] [(and _B _A)])
 (derive and-intro #1)
 
 (node #2 [(and _A _B)] [_A _B])
 (derive and-elim #2)
 
+(link #1 1 #2 0)
+(link #1 0 #2 1)
+
 (node #3 [(and _A _B)] [(and _B _A)])
 (derive join #3 #2 #1)
-
-(node #4 [] [(-> (and _A _B) (and _B _A))])
-(derive impl-intro #4 #3)
 `;
 
-export const sampleDeriv3 = `[comment - this proof is written purely in the <textarea> text box.]
+sampleDeriv3 = `[comment - this proof is written purely in the <textarea> text box.]
 
 [node #target [] [(and true [-> false false])]]
 
@@ -109,7 +109,7 @@ export const sampleDeriv3 = `[comment - this proof is written purely in the <tex
 [derive and-intro #sub1]
 `;
 
-export const incomplete1 = `
+incomplete1 = `
 [node #target
   [(-> _A _X) (-> _X _Y) (-> _B _Y)]
   [(-> (or _A _B) _Y)]]
