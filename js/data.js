@@ -114,3 +114,68 @@ incomplete1 = `
   [(-> _A _X) (-> _X _Y) (-> _B _Y)]
   [(-> (or _A _B) _Y)]]
 `;
+
+// Sync with programs.js
+
+programs = [
+  `sym->str (' Hello_World!)`,
+  `size (' [3 4 5 a b null zzz])`,
+  `joinall (' [[1 2 3] [4 5 6] [7 8 9]])`,
+  `+ 3 4`,
+  `= 3 3`,
+  `* (+ 1 2) (- 9 3)`,
+  `set 1 666 [list: 333 444 555]`,
+  `' a`,
+  `map: [' a] 3 [' b] 4`,
+  `set [' b] [' red] [map: [' a] 3 [' b] 4]`,
+  `if false 3 [if false [+ 3 1] 5]`,
+  `let x 17 (+ x x)`,
+  `let x 17 [let y 5 (* x y)]`,
+  `let x 17 [let x (* x x) x]`,
+  `(: [_ x] [+ x 5]) 7`,
+  `(: [_ x] [(: [_ y] [+ x y] [x]) 13]) 12`,
+  `let 2xp (: [2xp x] (if (= x 0) 1 (* 2 (2xp (- x 1))))) [2xp 3]`,
+  `let rsp (: [rsp x] (if (= x 0) 7 (rsp (- x 1)))) [rsp 2]`,
+  `let fact (: [fact x] (if (= x 0) 1 (* x (fact (- x 1))))) [fact 5]`,
+  `let prefix-with-size (: [_ list] [joinall [list: [list: (size list)] list]]) [prefix-with-size [' (3 4 5 6 7 abc def)]]`,
+  `let x (+ 2 1) [let y (* x x) (- y 1)]`,
+  `(: [_ x] [+ x x] []) 3`,
+  `(: [_ x y z] [* x [+ y z]]) 3 4 5`,
+  `(: [self x y] (if x [self (- x 1) (+ y 1)] y)) 3 5`,
+  `(: [self a b] [if (= b 0) 1 (* a [self a (- b 1)])]) 3 5`,
+  `(: [^ a b acc] [if (= b 0) acc (^ a (- b 1) (* acc a))]) 3 5 1`,
+  `[(: [_ a] (: [_ b] [+ a b] [a])) 3] 9`,
+  `
+    let fact-acc (: [fact-acc x acc]
+                    (if (= x 0) acc [fact-acc (- x 1) (* x acc)]))
+    [
+      let fact (: [_ x] [fact-acc x 1] [fact-acc])
+      [fact 5]
+    ]
+  `,
+  `+ 3 #xyz`,
+  `* 5 (+ 3 false)`,
+  `and (= 3 3) (< 4 5)`,
+  `if (and (= 3 3) (< 4 5)) #yes #no`,
+  `
+    let isprime-factor [: (isprime-factor n f)
+                          (if (> (* f f) n) true
+                            (if (= 0 (% n f)) false
+                              (isprime-factor n (+ 1 f))))]
+    (let isprime [: (_ n) (if (< n 2) false (isprime-factor n 2)) [isprime-factor]]
+      [isprime 5])
+  `,
+  `
+    let isprime-factor
+      [: (isprime-factor n f) @
+        if (> (* f f) n) true @
+        if (= 0 @ % n f) false @
+        isprime-factor n (+ 1 f)] @
+    let isprime
+      [: (__ n) _ [isprime-factor] @
+        if (< n 2) false (isprime-factor n 2)] @
+    isprime 5`,
+  `+ 3 7`,
+  `+ 5 @ + 5 @ + 7 9`,
+  `let n 5 @ + 3 @ if (> n 3) #err/over #under`,
+];
