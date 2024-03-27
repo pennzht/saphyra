@@ -18,3 +18,34 @@ node {
 .shade {
     background-color: #93efff;
 }
+
+/* Styles for expressions */
+.number { color: red; }
+.atom { color: blue; }
+.bool { color: green; }
+.null { color: gray; }
+
+.list { border: 1px solid black; }
+.frame { border: 1px solid gray; }
+.map { border: 1px solid orange; }
+.cons { border: 1px solid #77777777; }
+
+.list, .map, .frame, .cons {
+    display: inline-block;
+}
+
+.number, .atom, .bool, .null, .list, .map, .index, .frame {
+    margin: 0.2em;
+}
+
+table#two-columns td {
+    vertical-align: top;
+}
+
+hr {
+    color: #ff4222;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+/* Sync with style.css */
