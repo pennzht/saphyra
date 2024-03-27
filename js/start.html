@@ -15,12 +15,25 @@
           href="style.css" />
   </head>
   <body>
-    <!-- TODO: add items from home.html -->
     <div><textarea id="input" rows="8" cols="80"></textarea></div>
+    <input type="button" id="savedata-button" value="· Save"></input>
+    <input type="button" id="loaddata-button" value="· Load"></input>
     <div><label for="command">Command: </label><input type="text" id="command"></input>
       <input type="button" id="command-button" value="↑ Execute"></input></div>
     <details open><summary>Visual order</summary><div id="visual"></div></details>
     <details open><summary>Display</summary><div id="display"></div></details>
     <details><summary>Output</summary><div id="output" style="white-space: pre;"></div></details>
+    <hr/>
+    <table id="two-columns">
+      <tr>
+        <td>
+          <div><textarea id="input" spellcheck="false" rows="16" cols="50"></textarea></div>
+        </td>
+        <td><details open><summary>Display</summary>
+          <div class="output-cell output-error" id="error-0"></div>
+          <div class="output-cell output-display" id="display-0"></div>
+        </details></td>
+      </tr>
+    </table>
   </body>
 </html>
