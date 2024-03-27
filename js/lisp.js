@@ -441,3 +441,78 @@ function valType (val) {
         throw new Error (`Unrecognized type ${val}: ${typeof val}`);
     }
 }
+
+// Sync with prepro.js
+
+// Lisp preprocessor.
+
+/** TODO - Preprocessor format
+  (part1 | part2 | ... | partn) <-- ignored for now.
+  => (partn (partn-1 ... (part2 part1)))
+  (part1 @ part2 @ ... @ partn)
+  => (part1 (part2 ... (partn-1 partn)))
+  if _ exists, replaces _.
+
+  (cond c1 a1 c2 a2 ... cn an) <-- can be if c1 a2 @ if c2 a2 @ ...
+  (and c1 c2 ... cn)
+  (or c1 c2 ... cn)
+
+  Example for recursion.
+  let 2xp (: [2xp x] @ if (= x 0) 1 @ * 2 @ 2xp @ - x 1) (2xp 3)
+
+  let fact-primitive (: [fact-prim x acc] @ if (= x 0) acc @ fact-prim (- x 1) (* x acc)) @
+  let fact (: [null x] [fact-prim x 1] [fact-prim]) @
+  fact 5
+**/
+
+function hasUnder(sexp) {
+  return sexp === '_' || isList(sexp) && sexp.some(hasUnder);
+}
+
+function replaceUnder(sexp, w) {
+  if (isList(sexp)) return sexp.map((x) => replaceUnder(x, w));
+  return sexp === '_' ? w : sexp;
+}
+
+function prepro(code) { return prepro_2(prepro_1(code)); }
+
+function prepro_1(code) {
+  if (isAtomic(code)) return code;
+  const parts = code.map(prepro_1);
+
+  // Handle @
+  const stack = [[]];
+  for (const y of parts) {
+    if (y !== '@') stack[stack.length-1].push(y);
+    else stack.push([]);
+  }
+  while(stack.length > 1) {
+    const tail = stack.pop();
+    const pretail = stack.pop();
+    const newtail = hasUnder(pretail) ? replaceUnder(pretail, tail) : pretail.concat([tail]);
+    stack.push(newtail);
+  }
+  return stack[0];
+
+  // Handle cond => can replace with if
+  // Handle and, or
+  return parts;
+}
+
+function prepro_2(code) {
+  if (isAtomic(code)) return code;
+  const parts = code.map(prepro_2);
+  if (parts[0] === 'and') {
+    let ans = true;
+    for (let i = parts.length-1; i >= 1; i--) {
+      ans = ['if', parts[i], ans, false];
+    }
+    return ans;
+  } else if (parts[0] === 'or') {
+    let ans = false;
+    for (let i = parts.length-1; i >= 1; i--) {
+      ans = ['if', parts[i], true, ans];
+    }
+    return ans;
+  } else return parts;
+}
