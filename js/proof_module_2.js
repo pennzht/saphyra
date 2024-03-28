@@ -130,7 +130,6 @@ function verifyNode (node) {
                     conseq.set(n, [...(nodeRefs.get(n)[3])]);
                 }
             }
-            console.log(assump, conseq);
 
             const failures = [];
 
@@ -144,11 +143,10 @@ function verifyNode (node) {
                             assump.set(b,
                                 delMember (assump.get(b), stmt)
                             );
-                            console.log('removed stmt', a, b, str(stmt));
                         }
                     }
                 }
-                console.log('at', n, assump.get(n));
+
                 if (assump.get(n).length > 0) {
                     failures.push([n, [...assump.get(n)]]);
                 }
