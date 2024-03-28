@@ -152,6 +152,8 @@ function verifyNode (node) {
 
                 if (assump.get(n).length > 0) {
                     failures.push([n, [...assump.get(n)]]);
+                    // Push them to display too
+                    outSubs.push(...assump.get(n).map((st) => ['stmt', st]));
                 }
 
                 if (! n.startsWith('^')) {

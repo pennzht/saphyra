@@ -170,6 +170,10 @@ function dispNode(node) {
     ]);
   } else if (isErr(head)) {
     return dispSexp(node);
+  } else if (head === 'stmt') {
+    return elem('div', [], [
+      text('unproven'), dispStmt(node[1]),
+    ]);
   }
 }
 

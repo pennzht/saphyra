@@ -13,7 +13,7 @@ $('lisp-input').oninput = executeLisp;
 window.onload = (e) => {
     /* example input */
     // $('input').value = incomplete1;
-    $('input').value = sampleTreeDeriv2;
+    $('input').value = sampleTreeDeriv3;
     execute(e);
     executeLisp(e);
 }
