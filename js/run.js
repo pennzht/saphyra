@@ -56,7 +56,8 @@ function execute (e) {
                 $('display').innerHTML = '';
                 $('display').appendChild(elem('div', [],
                     matchedRules.map((mr) => elem('div',
-                        {'data-rule': mr.rule,
+                        {class: 'matched-rule',
+                         'data-rule': mr.rule,
                          'data-map': str([... mr.map]),
                          'data-trace': str(trace),
                          'data-io': io,
@@ -64,6 +65,11 @@ function execute (e) {
                         [dispSexp(mr.rule), dispMap(mr.map)],
                     )),
                 ));
+                for (const mrElement of document.getElementsByClassName('matched-rule')) {
+                    mrElement.onclick = (e) => {
+                        console.log('matched-rule', e.target);
+                    }
+                }
             };
         }
     } catch (e) {
