@@ -630,6 +630,12 @@ function delMember(arr, elem) {
     return arr.filter((x) => !eq(x, elem));
 }
 
+const globalCounter = {count: 0n};
+function gensym (prefix = '') {
+    count++;
+    return `${prefix}${count}`;
+}
+
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
 if (false) {
     console.log (
