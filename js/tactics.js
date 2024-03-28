@@ -29,11 +29,10 @@ function showMatchedRules(trace, io, content){
     return applicableRules;
 }
 
-function applyMatchedRule(
-    // These parameters are to _locate_ the statement.
-    trace, io, content,
-    // These parameters decide which rule to use.
-    rule, map,
-) {
-    // TODO - apply matched rule (to parent `join`).
+function applyMatchedRule(code, matchedRule) {
+    const [trace, io, content, rule, replacementMap] = matchedRule;
+    console.log('trace', trace, 'io', io, 'content', content, 'rule', rule, 'replacementMap', new Map(replacementMap));
+    console.log('code', str(code));
+
+    // TODO - return a replaced rule.
 }

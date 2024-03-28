@@ -26,11 +26,8 @@ function execute (e) {
     const inValue = $('input').value;
 
     try {
-        const ans = deepParse (inValue);
-        // TODO: use $('display') for better options.
-        // $('display').innerHTML = displayInRows (ans);
-        const module = verifyModule (ans);
-        //        $('visual').innerHTML = displayInRowsHuman(visualize(module));
+        const code = deepParse (inValue);
+        const module = verifyModule (code);
         $('visual').innerHTML = '';
         $('visual').appendChild(dispModule (module));
         $('output').innerText = '';
@@ -66,7 +63,7 @@ function execute (e) {
                 ));
                 for (const mrElement of document.getElementsByClassName('matched-rule')) {
                     mrElement.onclick = (e) => {
-                        console.log('matched-rule', mrElement.getAttribute('data-rule'));
+                        applyMatchedRule(code, deepParse(mrElement.getAttribute('data-rule'))[0]);
                     }
                 }
             };
