@@ -1,4 +1,4 @@
-// TODO - visualization of a node, a theory
+// Visualization utilities. Browser-only.
 
 // import * as lang from './lang.js';
 
