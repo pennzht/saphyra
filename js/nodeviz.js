@@ -170,11 +170,12 @@ function dispNode(node) {
 }
 
 function dispStmt(stmt) {
-  if (isAtomic(stmt)) return dispSexp(stmt);
-  const op = stmt[0];
-  if (stmt.length === 3) {
-    return dispSexp([stmt[1], op, stmt[2]]);
-  } else {
-    return dispSexp(stmt);
+  function transformStmt(stmt) {
+    if (isList(stmt) && stmt.length === 3) {
+      return [transformStmt(stmt[1]), stmt[0], transformStmt(stmt[2])];
+    }
+    return stmt;
   }
+
+  return dispSexp(transformStmt(stmt));
 }
