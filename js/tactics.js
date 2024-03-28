@@ -5,6 +5,8 @@ function showMatchedRules(trace, io, content){
 
     const stmt = deepParse(content)[0];
 
+    const applicableRules = [];
+
     for (const [ruleName, [vars, ins, outs]] of folAxiomsMap.entries()) {
         const targets = io === 'in' ? outs : ins;
 
@@ -12,10 +14,23 @@ function showMatchedRules(trace, io, content){
             let match = simpleMatch(pattern, stmt);
             if (match.success) {
                 console.log(`Match found: ${str(pattern)} -> ${str(stmt)} @ rule ${ruleName}`);
-                console.log(match);
+                console.log(match.map);
+                applicableRules.push(
+                    {rule: ruleName, map: match.map}
+                );
             }
         }
     }
 
     console.log("---end---");
+    return applicableRules;
+}
+
+function applyMatchedRule(
+    // These parameters are to _locate_ the statement.
+    trace, io, content,
+    // These parameters decide which rule to use.
+    rule, map,
+) {
+    // TODO - apply matched rule (to parent `join`).
 }

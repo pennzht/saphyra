@@ -632,8 +632,8 @@ function delMember(arr, elem) {
 
 const globalCounter = {count: 0n};
 function gensym (prefix = '') {
-    count++;
-    return `${prefix}${count}`;
+    globalCounter.count++;
+    return `${prefix}${globalCounter.count}`;
 }
 
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
