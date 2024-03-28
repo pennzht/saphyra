@@ -153,8 +153,8 @@ function dispNode(node) {
   if (head === 'node') {
     const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
     return elem('node', [], [
-      text('node'), text(label),
-      ... conclusion.map(dispSexp),
+      text('node '), text(label),
+      dispConclusion(conclusion),
       ... ins.map(dispStmt),
       text('→'), ...outs.map(dispStmt), dispSexp(justification),
       ... subsVerified.map(dispNode),
@@ -162,7 +162,7 @@ function dispNode(node) {
   } else if (head === 'link') {
     const [_, a, b, stmt] = node;
     return elem('div', [], [
-      text('link'), text(a), text('~→~'), text(b),
+      text('link '), text(a), text(' → '), text(b),
     ]);
   } else if (isErr(head)) {
     return dispSexp(node);
@@ -178,4 +178,15 @@ function dispStmt(stmt) {
   }
 
   return dispSexp(transformStmt(stmt));
+}
+
+function dispConclusion(conclusion) {
+  if (conclusion[0] === '#good') {
+    return elem('span', {style: 'color:#00ab32;'}, [text('\u2713')]);  // check mark.
+  } else {
+    return elem('sexp', [], [
+      elem('span', {style: 'color:red;'}, [text('\u2717')]),  // cross.
+      dispSexp(conclusion),
+    ]);
+  }
 }
