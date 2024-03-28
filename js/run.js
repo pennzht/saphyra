@@ -8,8 +8,6 @@
 $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 
-console.log ('input value is', $('input').value);
-
 window.onload = (e) => {
     /* example input */
     // $('input').value = incomplete1;
@@ -27,8 +25,6 @@ function execute (e) {
 
     try {
         const ans = deepParse (inValue);
-        console.log (ans);
-        console.log ('string:', str(ans));
         // TODO: use $('display') for better options.
         // $('display').innerHTML = displayInRows (ans);
         const module = verifyModule (ans);

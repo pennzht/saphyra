@@ -42,9 +42,10 @@ function verifyNode (node) {
             return node.slice(0, 6).concat(['#err/subs-not-list']);
         }
 
+        const subsVerified = subs.map(verifyNode);
+
         const nodeProper = [
-            'node', label, ins, outs, justification,
-            subs.map(verifyNode),
+            'node', label, ins, outs, justification, subsVerified,
         ];
 
         const [rule, ...args] = justification;
@@ -65,10 +66,10 @@ function verifyNode (node) {
                 return nodeProper.concat(['#err/too-long']);
             }
             const [out] = outs;
-            if (subs.length !== 1) {
+            if (subsVerified.length !== 1) {
                 return nodeProper.concat(['#err/too-many-subs']);
             }
-            const [sub] = subs.map(verifyNode);  // Verify node.
+            const [sub] = subsVerified;  // Verify node.
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
@@ -78,9 +79,13 @@ function verifyNode (node) {
                 eq (subOuts, [out[2]]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
+            // Node name should be unique
             // TODO: verify, with TOPOSORT.
             // TODO: assign order to nodes.
-            const subsVerified = subs.map(verifyNode);
+            const nodes = subs.filter((x) => x[0] === 'node');
+            const links = subs.filter((x) => x[0] === 'link');
+            console.log(nodes, links);
+
             return nodeProper.concat(['#todo']);
         } else {
             return nodeProper.concat(['#err/no-such-rule']);

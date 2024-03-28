@@ -622,9 +622,12 @@ function str (obj) {
     else return '[' + obj.map (str).join(' ') + ']';
 }
 
-console.log (
-    simpleMatch (
-        parse ('[_A _B [and _A _B]]'),
-        parse ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
-    )
-);
+// Returns {success: true, map: map:{_A => ..., _B => ...}}
+if (false) {
+    console.log (
+        simpleMatch (
+            parse ('[_A _B [and _A _B]]'),
+            parse ('[_x:P [-> _x:P _y:P] [and _x:P [-> _x:P _y:P]]]'),
+        )
+    );
+}

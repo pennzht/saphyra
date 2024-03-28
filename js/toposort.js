@@ -88,23 +88,25 @@ function toposort (nodes, edges) {
     return {success: false, loop};
 }
 
-console.log('Toposort result',
-  toposort(
-    deepParse(`2 3 5 7 8 9 10 11`),
-    deepParse(`[5 11] [11 2] [11 9] [8 9] [11 10] [3 8] [3 10] [7 8] [7 11]`),
-  ),
-);
+if (false) {
+  console.log('Toposort result',
+    toposort(
+      deepParse(`2 3 5 7 8 9 10 11`),
+      deepParse(`[5 11] [11 2] [11 9] [8 9] [11 10] [3 8] [3 10] [7 8] [7 11]`),
+    ),
+  );
 
-console.log('Toposort result',
-  toposort(
-    deepParse(`a b c d`),
-    deepParse(`[c d] [a b] [b c] [c b]`),
-  ),
-);
+  console.log('Toposort result',
+    toposort(
+      deepParse(`a b c d`),
+      deepParse(`[c d] [a b] [b c] [c b]`),
+    ),
+  );
 
-console.log('Toposort result',
-  toposort(
-    deepParse(`a b c d`),
-    deepParse(`[c d] [a b] [b c] [d a]`),
-  ),
-);
+  console.log('Toposort result',
+    toposort(
+      deepParse(`a b c d`),
+      deepParse(`[c d] [a b] [b c] [d a]`),
+    ),
+  );
+}
