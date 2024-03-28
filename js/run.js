@@ -57,17 +57,13 @@ function execute (e) {
                 $('display').appendChild(elem('div', [],
                     matchedRules.map((mr) => elem('div',
                         {class: 'matched-rule',
-                         'data-rule': mr.rule,
-                         'data-map': str([... mr.map]),
-                         'data-trace': str(trace),
-                         'data-io': io,
-                         'data-sexp': content},
-                        [dispSexp(mr.rule), dispMap(mr.map)],
+                         'data-rule': str(mr)},
+                        [dispSexp(mr)],
                     )),
                 ));
                 for (const mrElement of document.getElementsByClassName('matched-rule')) {
                     mrElement.onclick = (e) => {
-                        console.log('matched-rule', e.target);
+                        console.log('matched-rule', mrElement.getAttribute('data-rule'));
                     }
                 }
             };

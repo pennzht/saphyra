@@ -1,5 +1,8 @@
 // Tactics.
 
+// Matched rule format:
+// [trace, io, stmt, rule, map-as-list]
+
 function showMatchedRules(trace, io, content){
     if (io === null) return;
 
@@ -16,7 +19,7 @@ function showMatchedRules(trace, io, content){
                 console.log(`Match found: ${str(pattern)} -> ${str(stmt)} @ rule ${ruleName}`);
                 console.log(match.map);
                 applicableRules.push(
-                    {rule: ruleName, map: match.map}
+                    [trace, io, stmt, ruleName, [...match.map]],
                 );
             }
         }
