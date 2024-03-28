@@ -52,7 +52,18 @@ function execute (e) {
                 }
                 trace.reverse();
                 console.log(trace, io, content);
-                showMatchedRules(trace, io, content);
+                const matchedRules = showMatchedRules(trace, io, content);
+                $('display').innerHTML = '';
+                $('display').appendChild(elem('div', [],
+                    matchedRules.map((mr) => elem('div',
+                        {'data-rule': mr.rule,
+                         'data-map': str([... mr.map]),
+                         'data-trace': str(trace),
+                         'data-io': io,
+                         'data-sexp': content},
+                        [dispSexp(mr.rule), dispMap(mr.map)],
+                    )),
+                ));
             };
         }
     } catch (e) {
