@@ -78,7 +78,8 @@ function verifyNode (node) {
                 eq (subOuts, [out[2]]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
-            // TODO: verify.
+            // TODO: verify, with TOPOSORT.
+            // TODO: assign order to nodes.
             const subsVerified = subs.map(verifyNode);
             return nodeProper.concat(['#todo']);
         } else {
