@@ -47,6 +47,9 @@ function execute (e) {
                         io = io || y.getAttribute('data-io');
                     } else if (y.hasAttribute('data-label')) {
                         trace.push(y.getAttribute('data-label'));
+                    } else if (y.hasAttribute('data-ref')) {
+                        const [innerNode, innerIo, _] = deepParse(y.getAttribute('data-ref'))[0];
+                        trace.push(innerNode); io = innerIo;
                     }
                     y = y.parentNode;
                 }
