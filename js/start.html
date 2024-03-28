@@ -25,10 +25,11 @@
     <div><label for="command">Command: </label><input type="text" id="command"></input>
       <input type="button" id="command-button" value="↑ Execute"></input></div>
     <details open><summary>Visual order</summary><div id="visual"></div></details>
-    <details open><summary>Display</summary><div id="display"></div></details>
-    <details><summary>Output</summary><div id="output" style="white-space: pre;"></div></details>
-    <hr/>
-    <table id="two-columns">
+    <details><summary>Display</summary><div id="display"></div></details>
+    <details open><summary>Output</summary><div id="output" style="white-space: pre;"></div></details>
+
+    <!-- hiding table for now. -->
+    <table style="display:none;" id="two-columns">
       <tr>
         <td>
           <div><textarea id="lisp-input" spellcheck="false" rows="16" cols="50"></textarea></div>
