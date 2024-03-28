@@ -88,8 +88,8 @@ function verifyNode (node) {
                 eq (subOuts, [out[2]]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
-            const nodes = subs.filter((x) => x[0] === 'node' && isAtomic(x[1]));
-            const links = subs.filter((x) => x[0] === 'link');
+            const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[1]));
+            const links = subsVerified.filter((x) => x[0] === 'link');
 
             const nodeNames = nodes.map((x) => x[1]);
             const nodeRefs = new Map(nodes.map(
@@ -133,7 +133,9 @@ function verifyNode (node) {
 
             const failures = [];
 
-            // Along the order, check if each block is valid.
+            // Along the order, check if each block is valid,
+            // constructing an order of links and blocks.
+            const outSubs = [];
             for (const n of order) {
                 for (const l of links) {
                     const [_, a, b, stmt] = l;
@@ -143,6 +145,7 @@ function verifyNode (node) {
                             assump.set(b,
                                 delMember (assump.get(b), stmt)
                             );
+                            outSubs.push(l);
                         }
                     }
                 }
@@ -150,7 +153,15 @@ function verifyNode (node) {
                 if (assump.get(n).length > 0) {
                     failures.push([n, [...assump.get(n)]]);
                 }
+
+                if (! n.startsWith('^')) {
+                    // Actual block
+                    outSubs.push(nodeRefs.get(n));
+                }
             }
+
+            // Use redefined subs for nodes.
+            nodeProper[5] = outSubs;
 
             if (failures.length > 0) {
                 return nodeProper.concat(['#err/unproven-assump', ...failures]);

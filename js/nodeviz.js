@@ -166,7 +166,7 @@ function dispNode(node) {
   } else if (head === 'link') {
     const [_, a, b, stmt] = node;
     return elem('div', [], [
-      text('link '), text(a), text(' → '), text(b),
+      text('link '), dispStmt(stmt), text('('), text(a), text(' → '), text(b), text(')'),
     ]);
   } else if (isErr(head)) {
     return dispSexp(node);
