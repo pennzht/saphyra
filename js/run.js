@@ -30,7 +30,7 @@ function execute (e) {
         const module = verifyModule (ans);
         //        $('visual').innerHTML = displayInRowsHuman(visualize(module));
         $('visual').innerHTML = '';
-        $('visual').appendChild(dispSexp (module));
+        $('visual').appendChild(dispModule (module));
         $('output').innerText = JSON.stringify (module, visualizer, 2);
 
         // Set actions

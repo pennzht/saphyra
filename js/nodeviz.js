@@ -141,3 +141,40 @@ function dispMap(map) {
 }
 
 // TODO - add sexp to html converter.
+
+// Displays for modules (tree format).
+
+function dispModule(module) {
+  return elem('div', [], module.map(dispNode));
+}
+
+function dispNode(node) {
+  const head = node[0];
+  if (head === 'node') {
+    const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
+    return elem('node', [], [
+      text('node'), text(label),
+      ... conclusion.map(dispSexp),
+      ... ins.map(dispStmt),
+      text('→'), ...outs.map(dispStmt), dispSexp(justification),
+      ... subsVerified.map(dispNode),
+    ]);
+  } else if (head === 'link') {
+    const [_, a, b, stmt] = node;
+    return elem('div', [], [
+      text('link'), text(a), text('~→~'), text(b),
+    ]);
+  } else if (isErr(head)) {
+    return dispSexp(node);
+  }
+}
+
+function dispStmt(stmt) {
+  if (isAtomic(stmt)) return dispSexp(stmt);
+  const op = stmt[0];
+  if (stmt.length === 3) {
+    return dispSexp([stmt[1], op, stmt[2]]);
+  } else {
+    return dispSexp(stmt);
+  }
+}
