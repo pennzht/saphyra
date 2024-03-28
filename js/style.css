@@ -15,6 +15,11 @@ node {
     border: 1px solid #aaa;
 }
 
+/* An element to allow better addressing. */
+stmt {
+    display: inline-block;
+}
+
 .shade {
     background-color: #93efff;
 }

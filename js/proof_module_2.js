@@ -1,4 +1,4 @@
-// 2nd version of proof modules, using new tree syntax.
+// Verifies a tree module, adding necessary information.
 
 // Sync with axioms.js
 const folAxioms = deepParse(folRules);

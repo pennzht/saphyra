@@ -152,7 +152,9 @@ function dispNode(node) {
   const head = node[0];
   if (head === 'node') {
     const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
-    return elem('node', [], [
+    return elem('node', {
+      'data-label': label,
+    }, [
       text('node '), text(label),
       dispConclusion(conclusion),
       ... ins.map(dispStmt),
@@ -177,7 +179,7 @@ function dispStmt(stmt) {
     return stmt;
   }
 
-  return dispSexp(transformStmt(stmt));
+  return elem('stmt', {'data-sexp': str(stmt)}, [dispSexp(transformStmt(stmt))]);
 }
 
 function dispConclusion(conclusion) {
