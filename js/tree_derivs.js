@@ -55,3 +55,14 @@ sampleTreeDeriv2 = `\
   ))
 ))
 `;
+
+sampleTreeDeriv3 = `\
+(comment - an incomplete derivation)
+
+(node #t/switch [] [(-> (and _A _B) (and _B _A))]
+  [impl-intro] (
+  (node #1 [(and _A _B)] [(and _B _A)] [join] (
+    
+  ))
+))
+`;
