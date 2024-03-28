@@ -78,9 +78,9 @@ function text(t) {
   return document.createTextNode(t);
 }
 
-function elem(tag, attrs, children) {
+function elem(tag, attrs=null, children=null) {
   const e = document.createElement(tag);
-  if (typeof attrs === 'object') {
+  if (typeof attrs === 'object' && attrs) {
     for (const k of (Object.keys(attrs) || [])) {
       e.setAttribute(k, attrs[k]);
     }

@@ -198,3 +198,124 @@ theories = [`
   ))
 ))
 `];
+
+// Lisp prelude
+
+lispPrelude = `
+let debug [: (null val) (list: val #err/debug)] @
+
+let => [: (null val) val] @
+
+let not [: (null x) @ if x false true] @
+
+let null? [: (null x) @ and (atom? x) (= x null)] @
+
+let head [: (null cons) @ get 0 cons] @
+
+let tail [: (null cons) @ get 1 cons] @
+
+let all [: (null cons) _ [null? head tail] @ or (null? cons) @ and (head cons) (all @ tail cons)] @
+
+let all-range [: (all-range n fn) @ or (= 0 n) @ and (fn (- n 1)) (all-range (- n 1) fn)] @
+
+let map [: (map fn cons) _ [null? head tail] @ if (null? cons) null [list: (fn (head cons)) (map fn @ tail cons)]] @
+
+let map-list [: (null fn list) _ [map] @ cons->list @ map fn @ list->cons list] @
+
+let filter [: (filter fn cons) _ [null? head tail] @
+  if (null? cons) null @
+  if (fn (head cons)) (list: (head cons) (filter fn @ tail cons)) @
+  filter fn @ tail cons
+] @
+
+let filter-list [: (null fn list) _ [filter] @ cons->list @ filter fn @ list->cons list] @
+
+let foldl [: (foldl fn seed cons) _ [null? head tail] @
+  if (null? cons) seed (foldl fn (fn seed (head cons)) (tail cons))
+] @
+
+let foldl-list [: (null fn seed list) _ [foldl] @ foldl fn seed @ list->cons list] @
+
+let == [: (null x y) _ [not map-list all-range] @
+  if (atom? x) [and (atom? y) (= x y)]
+  [and (list? x) (list? y) (= (size x) (size y)) @
+    all-range (size x) [: (null ind) _ [x y] @ = (get ind x) (get ind y)]]
+] @
+
+let data/graph [' @
+  (2 3 5 7 8 9 10 11)
+  ([5 11] [11 2] [11 9] [8 9] [11 10] [3 8] [3 10] [7 8] [7 11])
+] @
+
+let data/cons [list->cons @ range 0 5] @
+
+let data/comment [' @ ========toposort========] @
+
+let initialize-map [: (null list value) _ [map-list] @ list->map @ map-list (: [__ x] [list: x value] [value]) list] @
+
+let bump-index [: (null map ind) @ set ind (+ 1 @ get ind map) map] @
+let beat-index [: (null map ind) @ set ind (+ -1 @ get ind map) map] @
+
+let push-index [: (null map ind new) @ set ind (list: new @ get ind map) map] @
+
+let for [: (for cons seed fn) _ [head tail null?] @
+  if (null? cons) seed @ for [tail cons] [fn seed [head cons]] fn
+] @
+
+let /comment [' @ continue from here. handling state is so hard in this language that I dont know what to do next.] @
+
+let topo-update-state [: (null state ind) _ [=> beat-index tail] @
+  let new-in [beat-index (get #in state) ind] @
+  let ready [get #ready state] @
+  let new-ready [if (= 0 @ get ind new-in) (list: ind ready) ready] @
+  set #in new-in @ set #ready new-ready state
+] @
+
+let topo-resolve [: (topo-resolve state) _ [not null? debug head tail => foldl beat-index topo-update-state for] @
+  if [not [get #ready state]]
+    (get #print state) @
+    let pick [head (get #ready state)] @
+    let ready [tail @ get #ready state] @
+    let upcoming [get pick (get #out state)] @
+    let new-state [for upcoming state topo-update-state] @
+    let new-state [set #ready ready new-state] @
+    let new-state [set #print [list: pick @ get #print state] new-state]
+    [topo-resolve new-state]
+] @
+
+let toposort-old [: (null spec) _
+[initialize-map => bump-index push-index foldl-list filter-list topo-resolve]
+@
+  let elems [get 0 spec] @
+  let links [get 1 spec] @
+  let in-degree [initialize-map elems 0] @
+  let out-nodes [initialize-map elems null] @
+  let in-degree [foldl-list [: (__ map ind) [bump-index map (get 1 ind)] [bump-index]] in-degree links] @
+  let out-nodes [foldl-list [: (__ map ind) [push-index map (get 0 ind) (get 1 ind)] [push-index]] out-nodes links] @
+  let zero-nodes [list->cons @ filter-list [: (__ ind) (= 0 @ get ind in-degree) (in-degree)] elems] @
+  let state [map: #in in-degree #out out-nodes #ready zero-nodes #print null] @ =>
+  [topo-resolve state]
+] @
+
+let toposort-step [: (toposort-step spec) _ [=> filter-list not] @
+  let nodes (get 0 spec) @
+  let edges (get 1 spec) @
+  let get-pre-edges (: [__ node] [filter-list _ edges] [filter-list edges] @ : [__ edge] (= (get 1 edge) node) [node]) @
+  let free-nodes [filter-list _ nodes @ : (__ node) (= 0 @ size @ get-pre-edges node) (get-pre-edges)] @
+  let pick [if free-nodes [get 0 free-nodes] null] @
+  let new-nodes (filter-list _ nodes @ : (__ node) (!= node pick) [pick]) @
+  let new-edges (filter-list _ edges @ : (__ edge) (!= pick @ get 0 edge) [pick]) @
+  let new-spec (list: new-nodes new-edges) @
+  list: new-nodes new-edges pick
+] @
+
+let toposort [: (toposort spec) _ [toposort-step => null?] @
+  let step (toposort-step spec) @
+  let nodes (get 0 step) @ let edges (get 1 step) @ let pick (get 2 step) @
+  if (null? pick) null @ list: pick @ toposort @ list: nodes edges
+] @
+
+let toposort [: (__ spec) (cons->list @ toposort spec) [cons->list toposort]] @
+
+toposort data/graph
+`;

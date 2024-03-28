@@ -1,4 +1,5 @@
 // Interactivity. Sync with ia.js
+// Might become unused.
 
 function tree(tag, attributes=null, children=null) {
   const trySerialize = (stuff) => {

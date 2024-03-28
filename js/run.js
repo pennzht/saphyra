@@ -6,6 +6,7 @@
 // const $ = (x) => document.getElementById(x);
 
 $('input').oninput = execute;
+$('lisp-input').oninput = executeLisp;
 
 console.log ('input value is', $('input').value);
 
@@ -14,6 +15,7 @@ window.onload = (e) => {
     // $('input').value = incomplete1;
     $('input').value = sampleDeriv1;
     execute(e);
+    executeLisp(e);
 }
 
 $('command').onchange = $('command').oninput = (e) => {
@@ -47,5 +49,25 @@ function execute (e) {
         } else {
             throw e;
         }
+    }
+}
+
+function executeLisp(e) {
+    const inValue = $('lisp-input').value;
+
+    try {
+        $('display-0').innerHTML = '';
+        $('error-0').innerHTML = '';
+        const code = prepro (deepParse (inValue));
+      const evaluated = evaluate(code, {limit: 100000});
+        $('display-0').appendChild(dispStack(evaluated));
+    } catch (err) {
+        $('error-0').appendChild(
+            elem('div', {style: 'color:#f00024;'}, [
+                text(err.message),
+                elem('br'),
+                text(err.stack),
+            ])
+        );
     }
 }
