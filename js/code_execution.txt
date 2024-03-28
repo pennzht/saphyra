@@ -1,0 +1,13 @@
+How a piece of Blue code is executed
+
+0. String
+    ↓ deepParse
+1. Code (with macros such as @, and, or)
+    ↓ prepro // preprocessing
+2. Expanded code
+    ↓ evaluate / stepStack
+3. Stack (list of frames)
+    ↓ dispStack
+4. HTML element
+    ↓ print
+5. Visible diagram
