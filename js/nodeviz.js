@@ -157,8 +157,10 @@ function dispNode(node) {
     }, [
       text('node '), text(label),
       dispConclusion(conclusion),
-      ... ins.map(dispStmt),
-      text('→'), ...outs.map(dispStmt), dispSexp(justification),
+      elem('div', {class: 'stmt-group', 'data-io': 'in'}, ins.map(dispStmt)),
+      text('→'),
+      elem('div', {class: 'stmt-group', 'data-io': 'out'}, outs.map(dispStmt)),
+      dispSexp(justification),
       ... subsVerified.map(dispNode),
     ]);
   } else if (head === 'link') {

@@ -24,6 +24,10 @@ stmt {
     background-color: #93efff;
 }
 
+.stmt-group {
+    display: inline-block;
+}
+
 /* Styles for expressions */
 .number { color: red; }
 .atom { color: blue; }

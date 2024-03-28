@@ -34,10 +34,22 @@ function execute (e) {
         $('output').innerText = '';
 
         // Set actions
-        for(const sexp of document.getElementsByClassName('shade')) {
-            sexp.onclick = (e) => {
-                console.log (e.target.getAttribute('data-pos'),
-                             parse(e.target.innerText));
+        for(const stmt of document.getElementsByTagName('stmt')) {
+            stmt.onclick = (e) => {
+                const content = stmt.getAttribute('data-sexp');
+                let y = stmt;
+                let io = null;
+                const trace = [];
+                while(y.id !== 'visual') {
+                    if (y.hasAttribute('data-io')) {
+                        io = io || y.getAttribute('data-io');
+                    } else if (y.hasAttribute('data-label')) {
+                        trace.push(y.getAttribute('data-label'));
+                    }
+                    y = y.parentNode;
+                }
+                trace.reverse();
+                console.log(trace, io, content);
             };
         }
     } catch (e) {
