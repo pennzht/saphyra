@@ -137,6 +137,7 @@ function verifyNode (node) {
             // constructing an order of links and blocks.
             const outSubs = [];
             for (const n of order) {
+                // Check pre-stmts.
                 for (const l of links) {
                     const [_, a, b, stmt] = l;
                     if (b === n) {
@@ -145,15 +146,26 @@ function verifyNode (node) {
                             assump.set(b,
                                 delMember (assump.get(b), stmt)
                             );
-                            outSubs.push(l);
                         }
                     }
                 }
 
+                // Display any unproven stmts.
                 if (assump.get(n).length > 0) {
                     failures.push([n, [...assump.get(n)]]);
                     // Push them to display too
-                    outSubs.push(...assump.get(n).map((st) => ['stmt', st]));
+                    outSubs.push(...assump.get(n).map((st) => ['stmt', st, n, 'in', 'unproven']));
+                }
+
+                // Display proven (outs) stmts. TODO continue here
+                if (n === '^a') {
+                    for (const st of ins) {
+                        outSubs.push(['stmt', st, n, 'out', 'given']);
+                    }
+                } else if (n.startsWith('#')) {
+                    for (const st of (nodeRefs.get(n)[3])) {
+                        outSubs.push(['stmt', st, n, 'out', 'proven']);
+                    }
                 }
 
                 if (! n.startsWith('^')) {
