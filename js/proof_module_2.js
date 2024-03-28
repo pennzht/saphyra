@@ -1,9 +1,9 @@
 // Verifies a tree module, adding necessary information.
 
 // Sync with axioms.js
-const folAxioms = deepParse(folRules);
+folAxioms = deepParse(folRules);
 
-const folAxiomsMap = new Map(folAxioms.map (
+folAxiomsMap = new Map(folAxioms.map (
     (line) => [line[0], line.slice(1)],  // name => [vars, ins, outs]
 ));
 

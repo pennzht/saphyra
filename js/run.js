@@ -50,6 +50,7 @@ function execute (e) {
                 }
                 trace.reverse();
                 console.log(trace, io, content);
+                showMatchedRules(trace, io, content);
             };
         }
     } catch (e) {
