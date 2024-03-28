@@ -150,7 +150,7 @@ function parseModule (lines) {
 }
 
 /// Performs a toposort (topological sorting) of the nodes of the module.
-function toposort (module) {
+function toposortModule (module) {
     const names = [... module.nodes.keys()];
 
     const indegree = new Map(
@@ -229,7 +229,7 @@ function isValidDeriv (lines) {
         return module;
     }
 
-    toposort(module);
+    toposortModule (module);
 
     if (!module.success) {
         return module;
