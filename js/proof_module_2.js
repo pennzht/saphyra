@@ -88,8 +88,6 @@ function verifyNode (node) {
                 eq (subOuts, [out[2]]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
-            // TODO: verify, with TOPOSORT.
-            // TODO: assign order to nodes.
             const nodes = subs.filter((x) => x[0] === 'node' && isAtomic(x[1]));
             const links = subs.filter((x) => x[0] === 'link');
 
