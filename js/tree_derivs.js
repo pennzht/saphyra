@@ -47,8 +47,8 @@ sampleTreeDeriv2 = `\
 (node #t/switch [] [(-> (and _A _B) (and _B _A))]
   [impl-intro] (
   (node #1 [(and _A _B)] [(and _B _A)] [join] (
-    (node #1 [(and _A _B)] [_A _B] [and-elim])
-    (node #2 [_B _A] [(and _B _A)] [and-intro])
+    (node #1 [(and _A _B)] [_A _B] [and-elim] ())
+    (node #2 [_B _A] [(and _B _A)] [and-intro] ())
     (link ^a #1 (and _A _B))
     (link #1 #2 _A) (link #1 #2 _B)
     (link #2 ^c (and _B _A))

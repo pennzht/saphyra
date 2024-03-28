@@ -26,14 +26,15 @@ function execute (e) {
     const inValue = $('input').value;
 
     try {
-        const ans = parse (inValue);
+        const ans = deepParse (inValue);
         console.log (ans);
         console.log ('string:', str(ans));
         // TODO: use $('display') for better options.
         // $('display').innerHTML = displayInRows (ans);
-        const module = isValidDeriv (ans);
+        const module = verifyModule (ans);
         //        $('visual').innerHTML = displayInRowsHuman(visualize(module));
-        $('visual').innerHTML = displayModule (module);
+        $('visual').innerHTML = '';
+        $('visual').appendChild(dispSexp (module));
         $('output').innerText = JSON.stringify (module, visualizer, 2);
 
         // Set actions

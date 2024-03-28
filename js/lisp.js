@@ -617,7 +617,8 @@ function eq (a, b) {
 
 // Sexp to string.
 function str (obj) {
-    if (isAtom(obj)) return obj;
+    if (isAtomic(obj)) return `${obj}`;
+    else if (isMap(obj)) return `[!map ${[...obj]}]`;
     else return '[' + obj.map (str).join(' ') + ']';
 }
 
