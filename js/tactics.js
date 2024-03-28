@@ -30,9 +30,35 @@ function showMatchedRules(trace, io, content){
 }
 
 function applyMatchedRule(code, matchedRule) {
-    const [trace, io, content, rule, replacementMap] = matchedRule;
-    console.log('trace', trace, 'io', io, 'content', content, 'rule', rule, 'replacementMap', new Map(replacementMap));
+    const [trace, io, content, ruleName, replacementList] = matchedRule;
+    console.log('trace', trace, 'io', io, 'content', content, 'rule', ruleName, 'replacementMap', new Map(replacementList));
     console.log('code', str(code));
 
-    // TODO - return a replaced rule.
+    const rule = folAxiomsMap.get(ruleName);
+    [ruleVars, ruleIns, ruleOuts] = rule;
+    console.log('vars', ruleVars, 'ins', ruleIns, 'outs', ruleOuts);
+
+    const replacementMap = new Map(replacementList);
+    for (const vn of ruleVars) {
+        if (! replacementMap.has(vn)) {
+            replacementMap.set(vn, gensym('_P'));
+        }
+    }
+
+    // Compute replacements.
+    [ins, outs] = replaceAll([ruleIns, ruleOuts], replacementMap);
+    console.log(str(ins));
+    console.log(str(outs));
+
+    const newNode = ['node', gensym('#gen/'), ins, outs, [ruleName], []];
+    let link;
+    if (io === 'in') {
+      link = ['link', newNode[1], trace[trace.length-1], content];
+    } else {
+      link = ['link', trace[trace.length-1], newNode[1], content];
+    }
+    console.log(newNode);
+    console.log(link);
+
+    // TODO: return replaced.
 }
