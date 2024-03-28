@@ -205,5 +205,7 @@ function dispConclusionError(conclusion) {
         ... item[1].map(dispStmt),
       ])),
     ]);
+  } else {
+    return dispSexp(conclusion);
   }
 }
