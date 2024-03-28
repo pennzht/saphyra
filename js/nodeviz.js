@@ -186,7 +186,20 @@ function dispConclusion(conclusion) {
   } else {
     return elem('sexp', [], [
       elem('span', {style: 'color:red;'}, [text('\u2717')]),  // cross.
-      dispSexp(conclusion),
+      dispConclusionError(conclusion),
+    ]);
+  }
+}
+
+function dispConclusionError(conclusion) {
+  if (conclusion[0] === '#err/unproven-assump') {
+    return elem('div', [], [
+      elem('div', [], [text('Not yet proven:')]),
+      ... conclusion.slice(1).map((item) => elem('div', [], [
+        dispSexp(item[0]),
+        text(':'),
+        ... item[1].map(dispStmt),
+      ])),
     ]);
   }
 }
