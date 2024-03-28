@@ -622,6 +622,14 @@ function str (obj) {
     else return '[' + obj.map (str).join(' ') + ']';
 }
 
+function hasMember(arr, elem) {
+    return arr.some((x) => eq(x, elem));
+}
+
+function delMember(arr, elem) {
+    return arr.filter((x) => !eq(x, elem));
+}
+
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
 if (false) {
     console.log (

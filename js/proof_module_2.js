@@ -42,6 +42,15 @@ function verifyNode (node) {
             return node.slice(0, 6).concat(['#err/subs-not-list']);
         }
 
+        if (! (isAtomic (label) && isList (ins) && isList (outs)
+               && isList(justification) && isList(subs))) {
+            return node.slice(0, 6).concat(['#err/structure-incorrect']);
+        }
+
+        if (! label.startsWith('#')) {
+            return node.slice(0, 6).concat(['#err/label-should-start-with-#']);
+        }
+
         const subsVerified = subs.map(verifyNode);
 
         const nodeProper = [
@@ -79,14 +88,81 @@ function verifyNode (node) {
                 eq (subOuts, [out[2]]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
-            // Node name should be unique
             // TODO: verify, with TOPOSORT.
             // TODO: assign order to nodes.
-            const nodes = subs.filter((x) => x[0] === 'node');
+            const nodes = subs.filter((x) => x[0] === 'node' && isAtomic(x[1]));
             const links = subs.filter((x) => x[0] === 'link');
-            console.log(nodes, links);
 
-            return nodeProper.concat(['#todo']);
+            const nodeNames = nodes.map((x) => x[1]);
+            const nodeRefs = new Map(nodes.map(
+                (node) => [node[1], node]
+            ));
+
+            // Node uniqueness
+            if (new Set(nodeNames).size < nodeNames.length) {
+                return nodeProper.concat([
+                    '#err/node-name-non-unique'
+                ]);
+            }
+
+            // Get sort order
+            const toposortResult = toposort(
+                nodeNames.concat(['^a', '^c']),
+                links.map((x) => [x[1], x[2]]),
+            );
+
+            // Get toposort
+            if (!toposortResult.success) {
+                return nodeProper.concat([
+                    '#err/' + toposortResult.reason,
+                    toposortResult.loop || toposortResult.unknownNode,
+                ]);
+            }
+            const order = toposortResult.order;
+
+            // Check all things in order
+            const assump = new Map(), conseq = new Map();
+            for (const n of order) {
+                if (n === '^a') {
+                    assump.set(n, []); conseq.set(n, [...ins]);
+                } else if (n === '^c') {
+                    assump.set(n, [...outs]); conseq.set(n, []);
+                } else {
+                    assump.set(n, [...(nodeRefs.get(n)[2])]);
+                    conseq.set(n, [...(nodeRefs.get(n)[3])]);
+                }
+            }
+            console.log(assump, conseq);
+
+            const failures = [];
+
+            // Along the order, check if each block is valid.
+            for (const n of order) {
+                for (const l of links) {
+                    const [_, a, b, stmt] = l;
+                    if (b === n) {
+                        // Potential origin.
+                        if (hasMember(conseq.get(a), stmt)) {
+                            assump.set(b,
+                                delMember (assump.get(b), stmt)
+                            );
+                            console.log('removed stmt', a, b, str(stmt));
+                        }
+                    }
+                }
+                console.log('at', n, assump.get(n));
+                if (assump.get(n).length > 0) {
+                    failures.push([n, [...assump.get(n)]]);
+                }
+            }
+
+            if (failures.length > 0) {
+                return nodeProper.concat(['#err/unproven-assump', ...failures]);
+            }
+
+            // Success!
+
+            return nodeProper.concat(['#good']);
         } else {
             return nodeProper.concat(['#err/no-such-rule']);
         }

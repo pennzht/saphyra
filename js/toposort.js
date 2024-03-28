@@ -17,10 +17,10 @@ function toposort (nodes, edges) {
     // Populate.
     for (const [a, b] of edges) {
         if (! indegree.has(a)) {
-            return {success: false, reason: `Unknown node ${a}`};
+            return {success: false, reason: 'unknown-node', unknownNode: a};
         }
         if (! indegree.has(b)) {
-            return {success: false, reason: `Unknown node ${b}`};
+            return {success: false, reason: 'unknown-node', unknownNode: b};
         }
         descendants.get(a).push(b);
         indegree.set(b, indegree.get(b) + 1n);
@@ -38,7 +38,6 @@ function toposort (nodes, edges) {
         const validNode = heads.pop();
         order.push(validNode);
         const nextNodes = descendants.get(validNode);
-        console.log(heads, validNode, descendants, indegree);
         nextNodes.reverse();
         for (const nn of nextNodes) {
             indegree.set(nn, indegree.get(nn) - 1n);
@@ -85,7 +84,7 @@ function toposort (nodes, edges) {
 
     // Loop complete
     loop.reverse();
-    return {success: false, loop};
+    return {success: false, reason: 'loop', loop};
 }
 
 if (false) {
