@@ -31,7 +31,7 @@ function execute (e) {
         //        $('visual').innerHTML = displayInRowsHuman(visualize(module));
         $('visual').innerHTML = '';
         $('visual').appendChild(dispModule (module));
-        $('output').innerText = JSON.stringify (module, visualizer, 2);
+        $('output').innerText = '';
 
         // Set actions
         for(const sexp of document.getElementsByClassName('shade')) {
