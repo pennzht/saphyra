@@ -1,5 +1,10 @@
 // Tactics.
 
+// `showMatchedRules` takes a `join` and a statement (e.g. an unproven statement, together with its port / block)
+// and reports a few potential ways to modify the `join` to make the new module.
+
+// `applyMatchedRule` takes a matched rule and applies it to a module, returning a new code.
+
 // Matched rule format:
 // [trace, io, stmt, rule, map-as-list]
 
