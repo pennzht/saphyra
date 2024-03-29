@@ -143,7 +143,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         const mainBlock = ['node', gensym('#'), [], [stmt], ['impl-intro'], [
           subBlock,
         ]];
-        const newLink = ['link', mainBlock[1], '^c', stmt];
+        const newLink = ['link', mainBlock[1], port, stmt];
         return addBlocksToNode(code, space, [mainBlock, newLink]);
     }
 

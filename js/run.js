@@ -11,7 +11,7 @@ $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 
 window.onload = (e) => {
-    $('input').value = `[node #root [] [(or [and _X _Y] [-> (and _X _Y) false])] [join] []]`;
+    $('input').value = `[node #root [] [] [join] []]`;
     executeInput(e);
     executeLisp(e);
 }
