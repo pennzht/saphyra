@@ -87,11 +87,16 @@ function execute(code) {
 
                 $('display').innerHTML = '';
                 $('display').appendChild(elem('div', [],
-                    matchedRules.map((mr) => elem('div',
-                        {class: 'matched-rule',
-                         'data-rule': str(mr)},
-                        [dispSexp(mr)],
-                    )),
+                    matchedRules.map((mr) => {
+                        const [space, port, io, stmt, ruleName, ...args] = mr;
+                        const subinput = ruleName === 'add-goal' ?
+                            [elem('input', {type: 'text', id: 'add-goal'})] : [];
+                        return elem('div',
+                            {class: 'matched-rule',
+                             'data-rule': str(mr)},
+                            [dispSexp(mr), ...subinput],
+                        );
+                    }),
                 ));
                 for (const mrElement of document.getElementsByClassName('matched-rule')) {
                     mrElement.onclick = (e) => {
