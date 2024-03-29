@@ -8,7 +8,7 @@
 // Matched rule format:
 // [space, port, io, stmt, rule, map-as-list] (for block applications)
 // [space, port, io, stmt, 'exact-match', other, otherIo] (for direct links)
-// [space, port, io, stmt, 'request-input'] (request input from parent)
+// [space, port, io, stmt, 'add-input'] (request input from parent)
 // [space, port, io, stmt, 'add-output'] (add output of proven stmt)
 // [space, ----, --, ----, 'add-goal'] (add goal to prove)
 // [space, ----, --, ----, 'add-goal', stmt] (add goal to prove)
@@ -63,6 +63,8 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
                 applicableRules.push([space, port, io, stmt, 'exact-match', '^a', 'out']);
             }
         }
+        // Add input.
+        applicableRules.push([space, port, io, stmt, 'add-input']);
         // Match impl.
         if (simpleMatch(parse('-> _A _B'), stmt).success) {
             // Can apply impl.
@@ -87,6 +89,8 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
                 applicableRules.push([space, port, io, stmt, 'exact-match', '^c', 'in']);
             }
         }
+        // Add output.
+        applicableRules.push([space, port, io, stmt, 'add-output']);
     }
 
     // Get FOL rules possible matches.
@@ -154,6 +158,23 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         );
     }
 
+    if (ruleName === 'add-input') {
+        return code.map((root) => replaceNode(root, space,
+            (node) => {
+                const [_, label, ins, outs, justification, subs, ...__]
+                    = node;
+                const newNode = [
+                    'node', label, ins.concat([stmt]), outs,
+                    justification,
+                    subs.concat([['link', '^a', port, stmt]]),
+                ];
+
+                console.log(str(newNode));
+                return newNode;
+            }
+        ));
+    }
+
     // Default case: add a block
 
     const [replacementList] = args;
@@ -200,6 +221,27 @@ function replacePathInModule(code, path, updateFn) {
     }
 
     return code.map((node) => replacePathInNode(node, path, updateFn));
+}
+
+function replacePathInNode(node, path, updateFn) {
+    if (node[0] === 'node' && node[1] === path[0]) {
+        return [
+            ... node.slice(0, 5),
+            replacePathInModule(node[5], path.slice(1), updateFn),
+        ];
+    }
+    return node;
+}
+
+function replaceNode(node, path, updateFn) {
+    if (node[0] !== 'node') return node;
+    const [_, label, ins, outs, just, subs, ...__] = node;
+    if (eq([label], path)) {
+        // Found node!
+        return updateFn(node);
+    } else if (path[0] === label) {
+        return ['node', label, ins, outs, just, subs.map((s) => replaceNode(s, path.slice(1), updateFn)), ...__];
+    } else return node;
 }
 
 function replacePathInNode(node, path, updateFn) {
