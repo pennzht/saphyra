@@ -35,6 +35,26 @@ function executeInput (e) {
     }
 }
 
+function executeLisp(e) {
+    const inValue = $('lisp-input').value;
+
+    try {
+        $('display-0').innerHTML = '';
+        $('error-0').innerHTML = '';
+        const code = prepro (deepParse (inValue));
+      const evaluated = evaluate(code, {limit: 100000});
+        $('display-0').appendChild(dispStack(evaluated));
+    } catch (err) {
+        $('error-0').appendChild(
+            elem('div', {style: 'color:#f00024;'}, [
+                text(err.message),
+                elem('br'),
+                text(err.stack),
+            ])
+        );
+    }
+}
+
 function execute(code) {
     try {
         const module = verifyModule (code);
@@ -87,25 +107,5 @@ function execute(code) {
         } else {
             throw e;
         }
-    }
-}
-
-function executeLisp(e) {
-    const inValue = $('lisp-input').value;
-
-    try {
-        $('display-0').innerHTML = '';
-        $('error-0').innerHTML = '';
-        const code = prepro (deepParse (inValue));
-      const evaluated = evaluate(code, {limit: 100000});
-        $('display-0').appendChild(dispStack(evaluated));
-    } catch (err) {
-        $('error-0').appendChild(
-            elem('div', {style: 'color:#f00024;'}, [
-                text(err.message),
-                elem('br'),
-                text(err.stack),
-            ])
-        );
     }
 }
