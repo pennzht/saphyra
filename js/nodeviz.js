@@ -5,71 +5,6 @@
 const $ = (x) => document.getElementById(x);
 // const elem = (x) => document.createElement(x);
 
-/// Displays a node `nodeName` within the module `module`.
-function displayNode (module, nodeName) {
-    const derivation = module.derives?.get(nodeName)?.rule ?? '(?)';
-
-    const subNamesUnsorted = (module.ances.get(nodeName) ?? []).filter ((x) => module.uplink.get(x) === nodeName);
-    // sort according to order
-    const subNames = module.order.filter ((x) => subNamesUnsorted.includes (x));
-
-    const subs = subNames.map ((name) => displayNode(module, name))
-          .join('');
-
-    const ins = module.nodes.get(nodeName).ins.map (
-        (x, i) => `<sexp class="shade" data-pos="${nodeName}-in-${i}">${str(x)}</sexp>`
-    ).join('');
-    const outs = module.nodes.get(nodeName).outs.map (
-        (x, i) => `<sexp class="shade" data-pos="${nodeName}-out-${i}">${str(x)}</sexp>`
-    ).join('');
-
-    return `<node>` +
-        `<div>${nodeName}: ${derivation}</div>` +
-        `<div>${subs}</div>` +
-        `${ins}&rarr;${outs}` +
-        `</node>`;
-}
-
-function displayModule (module) {
-    const roots = module.order.filter ((x) => ! module.uplink.has(x));
-    return roots.map ((n) => displayNode(module, n)).join('');
-}
-
-function display (sexp) {
-    if (typeof sexp === 'string') {
-        return sexp;
-    } else {
-        const parts = sexp.map (display);
-        return '<sexp> ' + parts.join(' ')  + '</sexp>';
-    }
-}
-
-function displayHuman (sexp) {
-    if (typeof sexp === 'string') {
-        return sexp;
-    } else {
-        const parts = sexp.map (displayHuman);
-        if (parts.length === 3 && ['->', 'and', 'or'].includes (parts[0])) {
-            return '<sexp> ' + [parts[1], parts[0], parts[2]].join(' ')  + '</sexp>';
-        }
-        return '<sexp> ' + parts.join(' ')  + '</sexp>';
-    }
-}
-
-function displayInRows (sexpList) {
-    return sexpList.map ((x) => `<div>${display(x)}</div>`).join('');
-}
-
-function displayInRowsHuman (sexpList) {
-    return sexpList.map ((x) => `<div>${displayHuman(x)}</div>`).join('');
-}
-
-function visualizer (key, value) {
-    return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
-            value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
-            value);
-}
-
 // Sync with visual.js (with dispCons removed)
 
 // Visualization of data structures.
@@ -153,13 +88,13 @@ function dispNode(node) {
   if (head === 'node') {
     const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
     return elem('node', {
-      'data-label': label,
+      'data-trace': label,
     }, [
       text('node '), elem('span', {class: 'active'}, [text(label)]),
       dispConclusion(conclusion),
-      elem('div', {class: 'stmt-group', 'data-io': 'in'}, ins.map(dispStmt)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(dispStmt)),
       text('→'),
-      elem('div', {class: 'stmt-group', 'data-io': 'out'}, outs.map(dispStmt)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(dispStmt)),
       dispSexp(justification),
       ... subsVerified.map(dispNode),
     ]);
@@ -173,7 +108,7 @@ function dispNode(node) {
   } else if (head === 'stmt') {
     // Active, referrable statement.
     const [_, content, n, io, comment] = node;
-    return elem('div', {class: 'stmt port active', 'data-ref': str([n, io, content])}, [
+    return elem('div', {class: 'stmt port active', 'data-trace': str([n, io]), 'data-sexp': str(content)}, [
       text(comment), dispStmt(content),
     ]);
   }

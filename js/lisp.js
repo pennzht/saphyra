@@ -416,13 +416,6 @@ function withVal (env, key, val) {
     return ans;
 }
 
-// Unused.
-function visualizer (key, value) {
-    return (typeof value === 'bigint' ? 'bigint:'+value.toString() :
-            value instanceof Map ? 'map:'+JSON.stringify([...value], visualizer) :
-            value);
-}
-
 // Returns the type of a value.
 function valType (val) {
     if ([true, false, null, undefined].includes(val)) {
