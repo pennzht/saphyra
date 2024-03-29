@@ -10,29 +10,30 @@
 // [space, port, io, stmt, 'exact-match', other, otherIo] (for direct links)
 // [space, port, io, stmt, 'request-input'] (request input from parent)
 // [space, port, io, stmt, 'add-output'] (add output of proven stmt)
-// [space, port, --, stmt, 'add-goal'], (add goal to prove)
+// [space, ----, --, stmt, 'add-goal'], (add goal to prove)
 
 function getMatchedRules(module, trace, stmt){
     // Destruct: [...space, port, io] = trace
+    // Trace is something like [#root #1 #2 #innernode in]
+
     const space = [...trace];
-    let io = space.pop();
-    if (! ['in', 'out'].includes(io)) {
-        space.push(io);
-        io = null;
-    }
-    const port = space.pop();
+    const tail = space[space.length - 1];
 
-    console.log(str(space), port, io);
-
-    if (io) {
+    if (['in', 'out'].includes(tail)) {
+        const io = space.pop();
+        const port = space.pop();
         return getMatchedRulesByPort(module, space, port, io, stmt);
     } else {
-        return getMatchedRulesBySpace(module, space, port, stmt);
+        return getMatchedRulesBySpace(module, space, stmt);
     }
 }
 
-function getMatchedRulesBySpace(module, space, port, stmt) {
-  return [];
+function getMatchedRulesBySpace(module, space, stmt) {
+    const applicableRules = [];
+
+    applicableRules.push([space, null, null, stmt, 'add-goal']);
+
+    return applicableRules;
 }
 
 function getMatchedRulesByPort(module, space, port, io, stmt) {
