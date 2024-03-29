@@ -155,7 +155,7 @@ function dispNode(node) {
     return elem('node', {
       'data-label': label,
     }, [
-      text('node '), text(label),
+      text('node '), elem('span', {class: 'active'}, [text(label)]),
       dispConclusion(conclusion),
       elem('div', {class: 'stmt-group', 'data-io': 'in'}, ins.map(dispStmt)),
       text('→'),
@@ -173,7 +173,7 @@ function dispNode(node) {
   } else if (head === 'stmt') {
     // Active, referrable statement.
     const [_, content, n, io, comment] = node;
-    return elem('div', {class: 'stmt port', 'data-ref': str([n, io, content])}, [
+    return elem('div', {class: 'stmt port active', 'data-ref': str([n, io, content])}, [
       text(comment), dispStmt(content),
     ]);
   }

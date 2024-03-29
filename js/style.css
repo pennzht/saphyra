@@ -28,6 +28,11 @@ stmt {
     background-color: #93efff;
 }
 
+/* A clickable node/port to connect nodes on. */
+.active {
+    background-color: #00d5e8;
+}
+
 .stmt-group {
     display: inline-block;
 }

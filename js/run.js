@@ -64,6 +64,7 @@ function execute(code) {
 
         // Set actions
         // Only consider active ports.
+        // TODO - change to "active" to accommodate active nodes.
         for(const stmt of document.getElementsByClassName('port')) {
             stmt.onclick = (e) => {
                 let y = stmt;
