@@ -3,7 +3,7 @@
 // Matched rule format:
 // [trace, io, stmt, rule, map-as-list]
 
-function showMatchedRules(trace, io, content){
+function showMatchedRules(module, trace, io, content){
     if (io === null) return;
 
     const stmt = deepParse(content)[0];

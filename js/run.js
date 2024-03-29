@@ -62,7 +62,7 @@ function execute(code) {
                 }
                 trace.reverse();
                 console.log(trace, io, content);
-                const matchedRules = showMatchedRules(trace, io, content);
+                const matchedRules = showMatchedRules(module, trace, io, content);
                 $('display').innerHTML = '';
                 $('display').appendChild(elem('div', [],
                     matchedRules.map((mr) => elem('div',
