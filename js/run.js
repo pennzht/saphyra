@@ -103,6 +103,7 @@ function execute(code) {
                 for (const mrElement of document.getElementsByClassName('apply-rule')) {
                     mrElement.onclick = (e) => {
                         // New node.
+                        const goalContent = $('add-goal').value; console.log(goalContent);
                         currentCode =
                             applyMatchedRule(code, deepParse(mrElement.getAttribute('data-rule'))[0]);
                         execute(currentCode);
