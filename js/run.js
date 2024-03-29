@@ -92,13 +92,15 @@ function execute(code) {
                         const subinput = ruleName === 'add-goal' ?
                             [elem('input', {type: 'text', id: 'add-goal'})] : [];
                         return elem('div',
-                            {class: 'matched-rule',
-                             'data-rule': str(mr)},
-                            [dispSexp(mr), ...subinput],
+                            {class: 'matched-rule'},
+                            [
+                              dispSexp(mr), ...subinput,
+                              elem('button', {'data-rule': str(mr), class: 'apply-rule'}, [text('Apply')]),
+                            ],
                         );
                     }),
                 ));
-                for (const mrElement of document.getElementsByClassName('matched-rule')) {
+                for (const mrElement of document.getElementsByClassName('apply-rule')) {
                     mrElement.onclick = (e) => {
                         // New node.
                         currentCode =
