@@ -105,7 +105,7 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
 }
 
 function applyMatchedRule(code, matchedRule) {
-    const [space, port, io, content, ruleName, ...args] = matchedRule;
+    const [space, port, io, stmt, ruleName, ...args] = matchedRule;
 
     if (ruleName === 'exact-match') {
         // Add exact match.
@@ -114,9 +114,9 @@ function applyMatchedRule(code, matchedRule) {
 
         let newLink;
         if (io === 'in') {
-            newLink = ['link', other, port, content];
+            newLink = ['link', other, port, stmt];
         } else {
-            newLink = ['link', port, other, content];
+            newLink = ['link', port, other, stmt];
         }
 
         return replacePathInModule(code, space,
@@ -127,7 +127,7 @@ function applyMatchedRule(code, matchedRule) {
     const [replacementList] = args;
 
     console.log(
-      'space', space, 'port', port, 'io', io, 'content', content,
+      'space', space, 'port', port, 'io', io, 'stmt', stmt,
       'ruleName', ruleName, 'replacements', str(replacementList),
     );
 
@@ -150,9 +150,9 @@ function applyMatchedRule(code, matchedRule) {
     const newNode = ['node', gensym('#gen/'), ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
-        link = ['link', newNode[1], port, content];
+        link = ['link', newNode[1], port, stmt];
     } else {
-        link = ['link', port, newNode[1], content];
+        link = ['link', port, newNode[1], stmt];
     }
     console.log(newNode);
     console.log(link);
