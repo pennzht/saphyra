@@ -15,9 +15,15 @@
 function getMatchedRules(module, trace, stmt){
     // Destruct: [...space, port, io] = trace
     const space = [...trace];
-    const io = space.pop();
-    if (! ['in', 'out'].includes(io)) {console.log (trace, str(stmt)); return [];}
+    let io = space.pop();
+    if (! ['in', 'out'].includes(io)) {
+        space.push(io);
+        io = null;
+    }
     const port = space.pop();
+
+    console.log(str(space), port, io);
+    if (! io) {return [];}
 
     const applicableRules = [];
 
