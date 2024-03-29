@@ -23,8 +23,19 @@ function getMatchedRules(module, trace, stmt){
     const port = space.pop();
 
     console.log(str(space), port, io);
-    if (! io) {return [];}
 
+    if (io) {
+        return getMatchedRulesByPort(module, space, port, io, stmt);
+    } else {
+        return getMatchedRulesBySpace(module, space, port, stmt);
+    }
+}
+
+function getMatchedRulesBySpace(module, space, port, stmt) {
+  return [];
+}
+
+function getMatchedRulesByPort(module, space, port, io, stmt) {
     const applicableRules = [];
 
     // Check if exact match exists.
