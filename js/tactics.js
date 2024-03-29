@@ -6,56 +6,60 @@
 // `applyMatchedRule` takes a matched rule and applies it to a module, returning a new code.
 
 // Matched rule format:
-// [trace, io, stmt, rule, map-as-list] (for block applications)
-// [trace, io, stmt, 'exact-match', other, otherIo] (for direct links)
-// [trace, io, stmt, 'request-input'] (request input from parent)
-// [trace, io, stmt, 'add-output'] (add output of proven stmt)
-// [trace, -, stmt, 'add-goal'], (add goal to prove)
+// [space, port, io, stmt, rule, map-as-list] (for block applications)
+// [space, port, io, stmt, 'exact-match', other, otherIo] (for direct links)
+// [space, port, io, stmt, 'request-input'] (request input from parent)
+// [space, port, io, stmt, 'add-output'] (add output of proven stmt)
+// [space, port, --, stmt, 'add-goal'], (add goal to prove)
 
-function showMatchedRules(module, trace, io, stmt){
-    if (io === null) return;
+function getMatchedRules(module, trace, stmt){
+    // Destruct: [...space, port, io] = trace
+    const space = [...trace];
+    const io = space.pop();
+    if (! ['in', 'out'].includes(io)) return;
+    const port = space.pop();
 
     const applicableRules = [];
 
     // Check if exact match exists.
 
-    const targetNode = locateNode(module, trace.slice(0, trace.length-1));
-    console.log(targetNode);
+    const spaceNode = locateNode(module, space);
+    console.log(spaceNode);
 
     if (io === 'in') {
         // Match exact outs.
-        for (const sub of targetNode[5]) if (sub[0] === 'node') {
+        for (const sub of spaceNode[5]) if (sub[0] === 'node') {
             for (const out of sub[3]) {
                 if (eq (out, stmt)) {
                     applicableRules.push([
-                        trace, io, stmt, 'exact-match', sub[1], 'out'
+                        space, port, io, stmt, 'exact-match', sub[1], 'out'
                     ]);
                 }
             }
         }
         // Match parent assumptions.
-        for (const assumption of targetNode[2]) {
+        for (const assumption of spaceNode[2]) {
             if (eq (assumption, stmt)) {
-                applicableRules.push([trace, io, stmt, 'exact-match', '^a', 'out']);
+                applicableRules.push([space, port, io, stmt, 'exact-match', '^a', 'out']);
             }
         }
     }
 
     if (io === 'out') {
         // Match exact outs.
-        for (const sub of targetNode[5]) if (sub[0] === 'node') {
+        for (const sub of spaceNode[5]) if (sub[0] === 'node') {
             for (const inn of sub[2]) {
                 if (eq (inn, stmt)) {
                     applicableRules.push([
-                        trace, io, stmt, 'exact-match', sub[1], 'in'
+                        space, port, io, stmt, 'exact-match', sub[1], 'in'
                     ]);
                 }
             }
         }
         // Match parent assumptions.
-        for (const consequent of targetNode[3]) {
+        for (const consequent of spaceNode[3]) {
             if (eq (consequent, stmt)) {
-                applicableRules.push([trace, io, stmt, 'exact-match', '^c', 'in']);
+                applicableRules.push([space, port, io, stmt, 'exact-match', '^c', 'in']);
             }
         }
     }
@@ -71,7 +75,7 @@ function showMatchedRules(module, trace, io, stmt){
                 console.log(`Match found: ${str(pattern)} -> ${str(stmt)} @ rule ${ruleName}`);
                 console.log(match.map);
                 applicableRules.push(
-                    [trace, io, stmt, ruleName, [...match.map]],
+                    [space, port, io, stmt, ruleName, [...match.map]],
                 );
             }
         }
@@ -82,29 +86,31 @@ function showMatchedRules(module, trace, io, stmt){
 }
 
 function applyMatchedRule(code, matchedRule) {
-    const [trace, io, content, ruleName, ...args] = matchedRule;
+    const [space, port, io, content, ruleName, ...args] = matchedRule;
 
     if (ruleName === 'exact-match') {
         // Add exact match.
 
         const [other, polarity] = args;
-        const current = trace[trace.length - 1];
+
         let newLink;
         if (io === 'in') {
-            newLink = ['link', other, current, content];
+            newLink = ['link', other, port, content];
         } else {
-            newLink = ['link', current, other, content];
+            newLink = ['link', port, other, content];
         }
 
-        return replacePathInModule(code, trace.slice(0, trace.length-1),
+        return replacePathInModule(code, space,
             (node) => node.concat([newLink]),
         );
     }
 
     const [replacementList] = args;
 
-    console.log('trace', trace, 'io', io, 'content', content, 'rule', ruleName, 'replacementMap', new Map(replacementList));
-    console.log('code', str(code));
+    console.log(
+      'space', space, 'port', port, 'io', io, 'content', content,
+      'ruleName', ruleName, 'replacements', str(replacementList),
+    );
 
     const rule = folAxiomsMap.get(ruleName);
     [ruleVars, ruleIns, ruleOuts] = rule;
@@ -125,14 +131,14 @@ function applyMatchedRule(code, matchedRule) {
     const newNode = ['node', gensym('#gen/'), ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
-        link = ['link', newNode[1], trace[trace.length-1], content];
+        link = ['link', newNode[1], port, content];
     } else {
-        link = ['link', trace[trace.length-1], newNode[1], content];
+        link = ['link', port, newNode[1], content];
     }
     console.log(newNode);
     console.log(link);
 
-    return replacePathInModule(code, trace.slice(0, trace.length-1),
+    return replacePathInModule(code, space,
         (node) => node.concat([newNode, link]),
     );
 }

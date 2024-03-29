@@ -108,7 +108,7 @@ function dispNode(node) {
   } else if (head === 'stmt') {
     // Active, referrable statement.
     const [_, content, n, io, comment] = node;
-    return elem('div', {class: 'stmt port active', 'data-trace': str([n, io]), 'data-sexp': str(content)}, [
+    return elem('div', {class: 'stmt port active', 'data-trace': `${n} ${io}`, 'data-sexp': str(content)}, [
       text(comment), dispStmt(content),
     ]);
   }

@@ -68,23 +68,22 @@ function execute(code) {
         for(const stmt of document.getElementsByClassName('port')) {
             stmt.onclick = (e) => {
                 let y = stmt;
-                let io = null;
                 let content = null;
-                const trace = [];
+                let trace = '';
                 while(y.id !== 'visual') {
-                    if (y.hasAttribute('data-label')) {
-                        trace.push(y.getAttribute('data-label'));
-                    } else if (y.hasAttribute('data-ref')) {
-                        const [innerNode, innerIo, innerContent] = deepParse(y.getAttribute('data-ref'))[0];
-                        trace.push(innerNode); io = innerIo;
-                        content = innerContent;
-                        console.log(trace, io);
+                    if (y.hasAttribute('data-trace')) {
+                        trace = y.getAttribute('data-trace') + ' ' + trace;
+                    }
+                    if (y.hasAttribute('data-sexp')) {
+                        content = parse(y.getAttribute('data-sexp'))[0];
                     }
                     y = y.parentNode;
                 }
-                trace.reverse();
-                console.log(trace, io, content);
-                const matchedRules = showMatchedRules(module, trace, io, content);
+                trace = parse(trace);
+                console.log(trace, content);
+
+                const matchedRules = getMatchedRules(module, trace, content);
+
                 $('display').innerHTML = '';
                 $('display').appendChild(elem('div', [],
                     matchedRules.map((mr) => elem('div',
