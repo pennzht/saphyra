@@ -10,6 +10,51 @@ function showMatchedRules(module, trace, io, content){
 
     const applicableRules = [];
 
+    // Check if exact match exists.
+
+    const targetNode = locateNode(module, trace.slice(0, trace.length-1));
+    console.log(targetNode);
+
+    if (io === 'in') {
+        // Match exact outs.
+        for (const sub of targetNode[5]) if (sub[0] === 'node') {
+            for (const out of sub[3]) {
+                if (eq (out, content)) {
+                    applicableRules.push([
+                        trace, io, content, sub[1], 'out'
+                    ]);
+                }
+            }
+        }
+        // Match parent assumptions.
+        for (const assumption of targetNode[2]) {
+            if (eq (assumption, content)) {
+                applicableRules.push([trace, io, content, '^a', 'out']);
+            }
+        }
+    }
+
+    if (io === 'out') {
+        // Match exact outs.
+        for (const sub of targetNode[5]) if (sub[0] === 'node') {
+            for (const inn of sub[2]) {
+                if (eq (inn, content)) {
+                    applicableRules.push([
+                        trace, io, content, sub[1], 'in'
+                    ]);
+                }
+            }
+        }
+        // Match parent assumptions.
+        for (const consequent of targetNode[3]) {
+            if (eq (consequent, content)) {
+                applicableRules.push([trace, io, content, '^c', 'in']);
+            }
+        }
+    }
+
+    // Get FOL rules possible matches.
+
     for (const [ruleName, [vars, ins, outs]] of folAxiomsMap.entries()) {
         const targets = io === 'in' ? outs : ins;
 
@@ -81,4 +126,13 @@ function replacePathInNode(node, path, updateFn) {
         ];
     }
     return node;
+}
+
+function locateNode(module, path) {
+    for (const node of module) {
+        if (node[0] === 'node' && node[1] === path[0]) {
+            if (path.length === 1) return node;
+            return locateNode(node[5], path.slice(1));
+        }
+    }
 }
