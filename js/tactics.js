@@ -64,7 +64,7 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
             }
         }
         // Match impl.
-        if (simpleMatch(parse('-> _A _B'), stmt)) {
+        if (simpleMatch(parse('-> _A _B'), stmt).success) {
             // Can apply impl.
             applicableRules.push([space, port, 'in', stmt, 'impl-intro']);
         }

@@ -105,7 +105,7 @@ function verifyNode (node) {
 
             // Get sort order
             const toposortResult = toposort(
-                ['^a', '^c'].concat(nodeNames),
+                ['^a'].concat(nodeNames).concat(['^c']),
                 links.map((x) => [x[1], x[2]]),
             );
 
