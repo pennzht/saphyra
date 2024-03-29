@@ -3,4 +3,4 @@ TODO:
 Module needs restructuring.
 * [done] Enforce tree structure
 * [done: statement is label] Let statements (ports) be named and operable
-* A module should be more of a (flat) structure that is operated upon by code, less by hand
+* [in progress - tactics] A module should be more of a (flat) structure that is operated upon by code, less by hand
