@@ -74,5 +74,9 @@ sampleTreeDeriv4 = `\
 `;
 
 sampleTreeDeriv5 = `\
+(node #root [] [(-> _A (-> _B _A))] [join] ())
+`;
+
+sampleTreeDeriv6 = `\
 (node #root [] [(-> (-> (and _A _B) _C) (-> _A (-> _B _C)))] [join] ())
 `;

@@ -73,9 +73,8 @@ function verifyNode (node) {
             //         to [...] |- [A -> B]
             // Allowing reorders.
             // General rule:
-            // sub-outs = (-> A B)
-            // super-outs = B
-            // super-ins = union(sub-ins, A)
+            // sub-ins = union(ins, A)
+            // sub-outs = [B]
             if (outs.length !== 1) {
                 return nodeProper.concat(['#err/too-long']);
             }
@@ -89,7 +88,7 @@ function verifyNode (node) {
             }
             const subIns = sub[2], subOuts = sub[3];
             const [_arrow, A, B] = out;
-            const valid = _arrow === '->' && eq(B, subOuts) &&
+            const valid = _arrow === '->' && eq([B], subOuts) &&
                 setEquals(subIns, [...ins, A]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {

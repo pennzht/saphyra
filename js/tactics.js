@@ -159,7 +159,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'add-input') {
-        return code.map((root) => replaceNode(root, space,
+        return code.map((root) => replaceNodeAdjustImplIntro(root, space,
             (node) => {
                 const [_, label, ins, outs, justification, subs, ...__]
                     = node;
@@ -168,8 +168,6 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
                     justification,
                     subs.concat([['link', '^a', port, stmt]]),
                 ];
-
-                console.log(str(newNode));
                 return newNode;
             }
         ));
@@ -233,14 +231,25 @@ function replacePathInNode(node, path, updateFn) {
     return node;
 }
 
-function replaceNode(node, path, updateFn) {
+// Replaces a `join` node, adjusting all parent impl-intro's, if there exist any.
+function replaceNodeAdjustImplIntro(node, path, updateFn) {
     if (node[0] !== 'node') return node;
     const [_, label, ins, outs, just, subs, ...__] = node;
     if (eq([label], path)) {
         // Found node!
         return updateFn(node);
     } else if (path[0] === label) {
-        return ['node', label, ins, outs, just, subs.map((s) => replaceNode(s, path.slice(1), updateFn)), ...__];
+        const newSubs = subs.map((s) => replaceNodeAdjustImplIntro(s, path.slice(1), updateFn));
+        if (just[0] === 'impl-intro') {
+            // Adjust ins/outs.
+            const [sub] = newSubs;
+            const subIns = sub[2], subOuts = sub[3];
+            const [[_arrow, A, B]] = outs;
+            const newIns = delMember(subIns, A);
+            return ['node', label, newIns, outs, just, newSubs, ...__];
+        } else {
+            return ['node', label, ins, outs, just, newSubs, ...__];
+        }
     } else return node;
 }
 
