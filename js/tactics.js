@@ -124,6 +124,19 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         );
     }
 
+    if (ruleName === 'add-goal') {
+        const goals = parseLenient(additionalArgs.goalContent);
+        if (!goals) return code; // Application failed
+        const goal = goals[0];
+
+        const newNode = ['node', gensym('#gen/'), [goal], [goal], ['id'], []];
+        const newLink = ['link', newNode[1], '^c', goal];
+
+        return replacePathInModule(code, space,
+            (node) => node.concat([newNode, newLink]),
+        );
+    }
+
     const [replacementList] = args;
 
     console.log(

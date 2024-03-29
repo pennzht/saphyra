@@ -530,6 +530,18 @@ function parse (input) {
     return JSON.parse (input);
 }
 
+function parseLenient (input) {
+    try {
+        return parse(input);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            return null;
+        } else {
+            throw e;
+        }
+    }
+}
+
 function translateLiteral(expr) {
   if (expr instanceof Array) {
     return expr.map(translateLiteral);
