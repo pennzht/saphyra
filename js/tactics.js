@@ -21,7 +21,7 @@ function showMatchedRules(module, trace, io, content){
             for (const out of sub[3]) {
                 if (eq (out, content)) {
                     applicableRules.push([
-                        trace, io, content, sub[1], 'out'
+                        trace, io, content, 'exact-match', sub[1], 'out'
                     ]);
                 }
             }
@@ -29,7 +29,7 @@ function showMatchedRules(module, trace, io, content){
         // Match parent assumptions.
         for (const assumption of targetNode[2]) {
             if (eq (assumption, content)) {
-                applicableRules.push([trace, io, content, '^a', 'out']);
+                applicableRules.push([trace, io, content, 'exact-match', '^a', 'out']);
             }
         }
     }
@@ -40,7 +40,7 @@ function showMatchedRules(module, trace, io, content){
             for (const inn of sub[2]) {
                 if (eq (inn, content)) {
                     applicableRules.push([
-                        trace, io, content, sub[1], 'in'
+                        trace, io, content, 'exact-match', sub[1], 'in'
                     ]);
                 }
             }
@@ -48,7 +48,7 @@ function showMatchedRules(module, trace, io, content){
         // Match parent assumptions.
         for (const consequent of targetNode[3]) {
             if (eq (consequent, content)) {
-                applicableRules.push([trace, io, content, '^c', 'in']);
+                applicableRules.push([trace, io, content, 'exact-match', '^c', 'in']);
             }
         }
     }
@@ -75,7 +75,27 @@ function showMatchedRules(module, trace, io, content){
 }
 
 function applyMatchedRule(code, matchedRule) {
-    const [trace, io, content, ruleName, replacementList] = matchedRule;
+    const [trace, io, content, ruleName, ...args] = matchedRule;
+
+    if (ruleName === 'exact-match') {
+        // Add exact match.
+
+        const [other, polarity] = args;
+        const current = trace[trace.length - 1];
+        let newLink;
+        if (io === 'in') {
+            newLink = ['link', other, current, content];
+        } else {
+            newLink = ['link', current, other, content];
+        }
+
+        return replacePathInModule(code, trace.slice(0, trace.length-1),
+            (node) => node.concat([newLink]),
+        );
+    }
+
+    const [replacementList] = args;
+
     console.log('trace', trace, 'io', io, 'content', content, 'rule', ruleName, 'replacementMap', new Map(replacementList));
     console.log('code', str(code));
 
