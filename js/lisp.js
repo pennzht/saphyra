@@ -635,6 +635,11 @@ function delMember(arr, elem) {
     return arr.filter((x) => !eq(x, elem));
 }
 
+function setEquals(A, B) {
+    const describe = (set) => [... new Set(set.map(str))].sort();
+    return eq(describe(A), describe(B));
+}
+
 const globalCounter = {count: 0n};
 function gensym (prefix = '') {
     globalCounter.count++;

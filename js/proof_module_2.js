@@ -71,6 +71,11 @@ function verifyNode (node) {
         } else if (rule === 'impl-intro') {
             // Rule: from [..., A] |- [B]
             //         to [...] |- [A -> B]
+            // Allowing reorders.
+            // General rule:
+            // sub-outs = (-> A B)
+            // super-outs = B
+            // super-ins = union(sub-ins, A)
             if (outs.length !== 1) {
                 return nodeProper.concat(['#err/too-long']);
             }
@@ -83,9 +88,9 @@ function verifyNode (node) {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
             const subIns = sub[2], subOuts = sub[3];
-            const valid = out[0] === '->' &&
-                eq (subIns, [...ins, out[1]]) &&
-                eq (subOuts, [out[2]]);
+            const [_arrow, A, B] = out;
+            const valid = _arrow === '->' && eq(B, subOuts) &&
+                setEquals(subIns, [...ins, A]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[1]));
