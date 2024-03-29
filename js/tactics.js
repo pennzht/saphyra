@@ -10,8 +10,9 @@
 // [space, port, io, stmt, 'exact-match', other, otherIo] (for direct links)
 // [space, port, io, stmt, 'request-input'] (request input from parent)
 // [space, port, io, stmt, 'add-output'] (add output of proven stmt)
-// [space, ----, --, ----, 'add-goal'], (add goal to prove)
-// [space, ----, --, ----, 'add-goal', stmt], (add goal to prove)
+// [space, ----, --, ----, 'add-goal'] (add goal to prove)
+// [space, ----, --, ----, 'add-goal', stmt] (add goal to prove)
+// [space, port, 'in', stmt, 'impl-intro'] (apply special rule: impl-intro)
 
 function getMatchedRules(module, trace, stmt){
     // Destruct: [...space, port, io] = trace
