@@ -77,7 +77,6 @@ function execute(code) {
                     y = y.parentNode;
                 }
                 trace = parse(trace);
-                console.log(trace, content);
 
                 const matchedRules = getMatchedRules(module, trace, content);
                 if (matchedRules.length === 0) return;

@@ -44,7 +44,6 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
     // Check if exact match exists.
 
     const spaceNode = locateNode(module, space);
-    console.log(spaceNode);
 
     if (io === 'in') {
         // Match exact outs.
@@ -101,8 +100,6 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
         for (const pattern of targets) {
             let match = simpleMatch(pattern, stmt);
             if (match.success) {
-                console.log(`Match found: ${str(pattern)} -> ${str(stmt)} @ rule ${ruleName}`);
-                console.log(match.map);
                 applicableRules.push(
                     [space, port, io, stmt, ruleName, [...match.map]],
                 );
@@ -110,7 +107,6 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
         }
     }
 
-    console.log("---end---");
     return applicableRules;
 }
 
@@ -170,14 +166,8 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
 
     const [replacementList] = args;
 
-    console.log(
-      'space', space, 'port', port, 'io', io, 'stmt', stmt,
-      'ruleName', ruleName, 'replacements', str(replacementList),
-    );
-
     const rule = folAxiomsMap.get(ruleName);
     [ruleVars, ruleIns, ruleOuts] = rule;
-    console.log('vars', ruleVars, 'ins', ruleIns, 'outs', ruleOuts);
 
     const replacementMap = new Map(replacementList);
     for (const vn of ruleVars) {
@@ -188,8 +178,6 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
 
     // Compute replacements.
     [ins, outs] = replaceAll([ruleIns, ruleOuts], replacementMap);
-    console.log(str(ins));
-    console.log(str(outs));
 
     const newNode = ['node', gensym('#'), ins, outs, [ruleName], []];
     let link;
@@ -198,8 +186,6 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     } else {
         link = ['link', port, newNode[1], stmt];
     }
-    console.log(newNode);
-    console.log(link);
 
     return addBlocksToNode(code, space, [newNode, link]);
 }
