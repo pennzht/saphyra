@@ -105,7 +105,7 @@ function verifyNode (node) {
 
             // Get sort order
             const toposortResult = toposort(
-                nodeNames.concat(['^a', '^c']),
+                ['^a', '^c'].concat(nodeNames),
                 links.map((x) => [x[1], x[2]]),
             );
 
@@ -157,6 +157,12 @@ function verifyNode (node) {
                     outSubs.push(...assump.get(n).map((st) => ['stmt', st, n, 'in', 'unproven']));
                 }
 
+                // Display the block itself.
+                if (! n.startsWith('^')) {
+                    // Actual block
+                    outSubs.push(nodeRefs.get(n));
+                }
+
                 // Display proven (outs) stmts. TODO continue here
                 if (n === '^a') {
                     for (const st of ins) {
@@ -166,11 +172,6 @@ function verifyNode (node) {
                     for (const st of (nodeRefs.get(n)[3])) {
                         outSubs.push(['stmt', st, n, 'out', 'proven']);
                     }
-                }
-
-                if (! n.startsWith('^')) {
-                    // Actual block
-                    outSubs.push(nodeRefs.get(n));
                 }
             }
 
