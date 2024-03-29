@@ -13,7 +13,7 @@ $('lisp-input').oninput = executeLisp;
 window.onload = (e) => {
     /* example input */
     // $('input').value = incomplete1;
-    $('input').value = sampleTreeDeriv5;
+    $('input').value = sampleTreeDeriv3;
     executeInput(e);
     executeLisp(e);
 }
@@ -63,20 +63,21 @@ function execute(code) {
         $('output').innerText = '';
 
         // Set actions
-        for(const stmt of document.getElementsByTagName('stmt')) {
+        // Only consider active ports.
+        for(const stmt of document.getElementsByClassName('port')) {
             stmt.onclick = (e) => {
-                const content = stmt.getAttribute('data-sexp');
                 let y = stmt;
                 let io = null;
+                let content = null;
                 const trace = [];
                 while(y.id !== 'visual') {
-                    if (y.hasAttribute('data-io')) {
-                        io = io || y.getAttribute('data-io');
-                    } else if (y.hasAttribute('data-label')) {
+                    if (y.hasAttribute('data-label')) {
                         trace.push(y.getAttribute('data-label'));
                     } else if (y.hasAttribute('data-ref')) {
-                        const [innerNode, innerIo, _] = deepParse(y.getAttribute('data-ref'))[0];
+                        const [innerNode, innerIo, innerContent] = deepParse(y.getAttribute('data-ref'))[0];
                         trace.push(innerNode); io = innerIo;
+                        content = innerContent;
+                        console.log(trace, io);
                     }
                     y = y.parentNode;
                 }

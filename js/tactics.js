@@ -12,10 +12,8 @@
 // [trace, io, stmt, 'add-output'] (add output of proven stmt)
 // [trace, -, stmt, 'add-goal'], (add goal to prove)
 
-function showMatchedRules(module, trace, io, content){
+function showMatchedRules(module, trace, io, stmt){
     if (io === null) return;
-
-    const stmt = deepParse(content)[0];
 
     const applicableRules = [];
 
@@ -28,17 +26,17 @@ function showMatchedRules(module, trace, io, content){
         // Match exact outs.
         for (const sub of targetNode[5]) if (sub[0] === 'node') {
             for (const out of sub[3]) {
-                if (eq (out, content)) {
+                if (eq (out, stmt)) {
                     applicableRules.push([
-                        trace, io, content, 'exact-match', sub[1], 'out'
+                        trace, io, stmt, 'exact-match', sub[1], 'out'
                     ]);
                 }
             }
         }
         // Match parent assumptions.
         for (const assumption of targetNode[2]) {
-            if (eq (assumption, content)) {
-                applicableRules.push([trace, io, content, 'exact-match', '^a', 'out']);
+            if (eq (assumption, stmt)) {
+                applicableRules.push([trace, io, stmt, 'exact-match', '^a', 'out']);
             }
         }
     }
@@ -47,17 +45,17 @@ function showMatchedRules(module, trace, io, content){
         // Match exact outs.
         for (const sub of targetNode[5]) if (sub[0] === 'node') {
             for (const inn of sub[2]) {
-                if (eq (inn, content)) {
+                if (eq (inn, stmt)) {
                     applicableRules.push([
-                        trace, io, content, 'exact-match', sub[1], 'in'
+                        trace, io, stmt, 'exact-match', sub[1], 'in'
                     ]);
                 }
             }
         }
         // Match parent assumptions.
         for (const consequent of targetNode[3]) {
-            if (eq (consequent, content)) {
-                applicableRules.push([trace, io, content, 'exact-match', '^c', 'in']);
+            if (eq (consequent, stmt)) {
+                applicableRules.push([trace, io, stmt, 'exact-match', '^c', 'in']);
             }
         }
     }
