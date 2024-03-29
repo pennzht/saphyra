@@ -103,9 +103,16 @@ function execute(code) {
                 for (const mrElement of document.getElementsByClassName('apply-rule')) {
                     mrElement.onclick = (e) => {
                         // New node.
-                        const goalContent = $('add-goal').value; console.log(goalContent);
+                        const additionalArgs = {};
+                        if ($('add-goal')) {
+                            additionalArgs.goalContent = $('add-goal').value;
+                        }
                         currentCode =
-                            applyMatchedRule(code, deepParse(mrElement.getAttribute('data-rule'))[0]);
+                            applyMatchedRule(
+                                code,
+                                deepParse(mrElement.getAttribute('data-rule'))[0],
+                                additionalArgs,
+                            );
                         execute(currentCode);
                     }
                 }

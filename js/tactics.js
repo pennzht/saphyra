@@ -104,7 +104,7 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
     return applicableRules;
 }
 
-function applyMatchedRule(code, matchedRule) {
+function applyMatchedRule(code, matchedRule, additionalArgs) {
     const [space, port, io, stmt, ruleName, ...args] = matchedRule;
 
     if (ruleName === 'exact-match') {
