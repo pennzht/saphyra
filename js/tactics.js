@@ -143,6 +143,19 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         );
     }
 
+    if (ruleName === 'impl-intro') {
+        const subBlock = ['node', gensym('#gen/'), [stmt[1]], [stmt[2]], ['join'], []];
+        const mainBlock = ['node', gensym('#gen/'), [], [stmt], ['impl-intro'], [
+          subBlock,
+        ]];
+        const newLink = ['link', mainBlock[1], '^c', stmt];
+        return replacePathInModule(code, space,
+            (node) => node.concat([mainBlock, newLink]),
+        );
+    }
+
+    // Default case: add a block
+
     const [replacementList] = args;
 
     console.log(
