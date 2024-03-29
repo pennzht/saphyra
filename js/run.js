@@ -14,7 +14,7 @@ window.onload = (e) => {
     /* example input */
     // $('input').value = incomplete1;
     $('input').value = sampleTreeDeriv3;
-    execute(e);
+    executeInput(e);
     executeLisp(e);
 }
 
@@ -22,11 +22,21 @@ $('command').onchange = $('command').oninput = (e) => {
     console.log ($("command").value);
 }
 
-function execute (e) {
-    const inValue = $('input').value;
+// Global state: current node
+currentCode = null;
 
+function executeInput (e) {
+    const inValue = $('input').value;
     try {
-        const code = deepParse (inValue);
+        currentCode = deepParse(inValue);
+        execute(currentCode);
+    } catch (ex) {
+        console.log('Something wrong.', ex.stack);
+    }
+}
+
+function execute(code) {
+    try {
         const module = verifyModule (code);
         $('visual').innerHTML = '';
         $('visual').appendChild(dispModule (module));
@@ -63,7 +73,10 @@ function execute (e) {
                 ));
                 for (const mrElement of document.getElementsByClassName('matched-rule')) {
                     mrElement.onclick = (e) => {
-                        applyMatchedRule(code, deepParse(mrElement.getAttribute('data-rule'))[0]);
+                        // New node.
+                        currentCode =
+                            applyMatchedRule(code, deepParse(mrElement.getAttribute('data-rule'))[0]);
+                        execute(currentCode);
                     }
                 }
             };

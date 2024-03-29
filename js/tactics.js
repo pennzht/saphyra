@@ -53,12 +53,32 @@ function applyMatchedRule(code, matchedRule) {
     const newNode = ['node', gensym('#gen/'), ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
-      link = ['link', newNode[1], trace[trace.length-1], content];
+        link = ['link', newNode[1], trace[trace.length-1], content];
     } else {
-      link = ['link', trace[trace.length-1], newNode[1], content];
+        link = ['link', trace[trace.length-1], newNode[1], content];
     }
     console.log(newNode);
     console.log(link);
 
-    // TODO: return replaced.
+    return replacePathInModule(code, trace.slice(0, trace.length-1),
+        (node) => node.concat([newNode, link]),
+    );
+}
+
+function replacePathInModule(code, path, updateFn) {
+    if (path.length === 0) {
+        return updateFn(code);
+    }
+
+    return code.map((node) => replacePathInNode(node, path, updateFn));
+}
+
+function replacePathInNode(node, path, updateFn) {
+    if (node[0] === 'node' && node[1] === path[0]) {
+        return [
+            ... node.slice(0, 5),
+            replacePathInModule(node[5], path.slice(1), updateFn),
+        ];
+    }
+    return node;
 }
