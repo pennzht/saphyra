@@ -75,8 +75,6 @@ function dispMap(map) {
   ));
 }
 
-// TODO - add sexp to html converter.
-
 // Displays for modules (tree format).
 
 function dispModule(module) {

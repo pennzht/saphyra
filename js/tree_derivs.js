@@ -80,3 +80,7 @@ sampleTreeDeriv5 = `\
 sampleTreeDeriv6 = `\
 (node #root [] [(-> (-> (and _A _B) _C) (-> _A (-> _B _C)))] [join] ())
 `;
+
+// Generated from tactics!
+sampleTreeDeriv6Complete = `\
+[node #root [] [[-> [-> [and _A _B] _C] [-> _A [-> _B _C]]]] [join] [[node #gen/2 [] [[-> [-> [and _A _B] _C] [-> _A [-> _B _C]]]] [impl-intro] [[node #gen/1 [[-> [and _A _B] _C]] [[-> _A [-> _B _C]]] [join] [[node #gen/4 [[-> [and _A _B] _C]] [[-> _A [-> _B _C]]] [impl-intro] [[node #gen/3 [_A [-> [and _A _B] _C]] [[-> _B _C]] [join] [[node #gen/6 [[-> [and _A _B] _C] _A] [[-> _B _C]] [impl-intro] [[node #gen/5 [_B [-> [and _A _B] _C] _A] [_C] [join] [[node #gen/7 [[-> [and _A _B] _C]] [[-> [and _A _B] _C]] [id] []] [link #gen/7 ^c [-> [and _A _B] _C]] [link ^a #gen/7 [-> [and _A _B] _C]] [node #gen/8 [_A] [_A] [id] []] [link #gen/8 ^c _A] [link ^a #gen/8 _A] [node #gen/9 [[and _A _B]] [[and _A _B]] [id] []] [link #gen/9 ^c [and _A _B]] [node #gen/10 [_A _B] [[and _A _B]] [and-intro] []] [link #gen/10 #gen/9 [and _A _B]] [link #gen/8 #gen/10 _A] [link ^a #gen/10 _B] [node #gen/11 [[and _A _B] [-> [and _A _B] _C]] [_C] [mp] []] [link #gen/7 #gen/11 [-> [and _A _B] _C]] [link #gen/9 #gen/11 [and _A _B]] [link #gen/11 ^c _C]]]]] [link #gen/6 ^c [-> _B _C]] [link ^a #gen/6 [-> [and _A _B] _C]] [link ^a #gen/6 _A]]]]] [link #gen/4 ^c [-> _A [-> _B _C]]] [link ^a #gen/4 [-> [and _A _B] _C]]]]]] [link #gen/2 ^c [-> [-> [and _A _B] _C] [-> _A [-> _B _C]]]]]]`;

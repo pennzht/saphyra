@@ -11,9 +11,7 @@ $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 
 window.onload = (e) => {
-    /* example input */
-    // $('input').value = incomplete1;
-    $('input').value = sampleTreeDeriv5;
+    $('input').value = sampleTreeDeriv6Complete;
     executeInput(e);
     executeLisp(e);
 }
@@ -64,7 +62,6 @@ function execute(code) {
 
         // Set actions
         // Only consider active ports.
-        // TODO - add tactics for active nodes.
         for(const stmt of document.getElementsByClassName('active')) {
             stmt.onclick = (e) => {
                 let y = stmt;

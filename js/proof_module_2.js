@@ -167,7 +167,6 @@ function verifyNode (node) {
                     outSubs.push(nodeRefs.get(n));
                 }
 
-                // Display proven (outs) stmts. TODO continue here
                 if (n === '^a') {
                     for (const st of ins) {
                         outSubs.push(['stmt', st, n, 'out', 'given']);
