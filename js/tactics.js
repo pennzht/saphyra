@@ -6,7 +6,11 @@
 // `applyMatchedRule` takes a matched rule and applies it to a module, returning a new code.
 
 // Matched rule format:
-// [trace, io, stmt, rule, map-as-list]
+// [trace, io, stmt, rule, map-as-list] (for block applications)
+// [trace, io, stmt, 'exact-match', other, otherIo] (for direct links)
+// [trace, io, stmt, 'request-input'] (request input from parent)
+// [trace, io, stmt, 'add-output'] (add output of proven stmt)
+// [trace, -, stmt, 'add-goal'], (add goal to prove)
 
 function showMatchedRules(module, trace, io, content){
     if (io === null) return;
