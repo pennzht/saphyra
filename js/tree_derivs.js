@@ -62,7 +62,13 @@ sampleTreeDeriv3 = `\
 (node #t/switch [] [(-> (and _A _B) (and _B _A))]
   [impl-intro] (
   (node #1 [(and _A _B)] [(and _B _A)] [join] (
-    
+
   ))
+))
+`;
+
+sampleTreeDeriv4 = `\
+(node #root [(and _A (and _B _C))] [(and (and _A _B) _C)] [join] (
+
 ))
 `;
