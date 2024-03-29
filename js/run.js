@@ -26,7 +26,7 @@ currentCode = null;
 function executeInput (e) {
     const inValue = $('input').value;
     try {
-        currentCode = deepParse(inValue);
+        currentCode = parse(inValue)[0];  // Everything is root.
         execute(currentCode);
     } catch (ex) {
         console.log('Something wrong.', ex.stack);
@@ -55,9 +55,9 @@ function executeLisp(e) {
 
 function execute(code) {
     try {
-        const module = verifyModule (code);
+        const module = verifyNode (code);
         $('visual').innerHTML = '';
-        $('visual').appendChild(dispModule (module));
+        $('visual').appendChild(dispNode (module));
         $('output').innerText = '';
 
         // Set actions

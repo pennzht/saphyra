@@ -129,9 +129,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
             newLink = ['link', port, other, stmt];
         }
 
-        return replacePathInModule(code, space,
-            (node) => node.concat([newLink]),
-        );
+        return addBlocksToNode(code, space, [newLink]);
     }
 
     if (ruleName === 'add-goal') {
@@ -142,9 +140,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         const newNode = ['node', gensym('#'), [goal], [goal], ['id'], []];
         const newLink = ['link', newNode[1], '^c', goal];
 
-        return replacePathInModule(code, space,
-            (node) => node.concat([newNode, newLink]),
-        );
+        return addBlocksToNode(code, space, [newNode, newLink]);
     }
 
     if (ruleName === 'impl-intro') {
@@ -153,13 +149,11 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
           subBlock,
         ]];
         const newLink = ['link', mainBlock[1], '^c', stmt];
-        return replacePathInModule(code, space,
-            (node) => node.concat([mainBlock, newLink]),
-        );
+        return addBlocksToNode(code, space, [mainBlock, newLink]);
     }
 
     if (ruleName === 'add-input') {
-        return code.map((root) => replaceNodeAdjustImplIntro(root, space,
+        return replaceNodeAdjustImplIntro(code, space,
             (node) => {
                 const [_, label, ins, outs, justification, subs, ...__]
                     = node;
@@ -170,7 +164,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
                 ];
                 return newNode;
             }
-        ));
+        );
     }
 
     // Default case: add a block
@@ -208,27 +202,21 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     console.log(newNode);
     console.log(link);
 
-    return replacePathInModule(code, space,
-        (node) => node.concat([newNode, link]),
-    );
+    return addBlocksToNode(code, space, [newNode, link]);
 }
 
-function replacePathInModule(code, path, updateFn) {
-    if (path.length === 0) {
-        return updateFn(code);
+function addBlocksToNode(node, path, addedBlocks) {
+    if (node[0] !== 'node') {
+        return node;   // No replacement
     }
-
-    return code.map((node) => replacePathInNode(node, path, updateFn));
-}
-
-function replacePathInNode(node, path, updateFn) {
-    if (node[0] === 'node' && node[1] === path[0]) {
-        return [
-            ... node.slice(0, 5),
-            replacePathInModule(node[5], path.slice(1), updateFn),
-        ];
+    const [_, label, ins, outs, just, subs, ...__] = node;
+    if (eq ([label], path)) {
+        return [_, label, ins, outs, just, subs.concat(addedBlocks)];
+    } else if (path[0] === label) {
+        return [_, label, ins, outs, just, subs.map((n) => addBlocksToNode(n, path.slice(1), addedBlocks))];
+    } else {
+        return node;
     }
-    return node;
 }
 
 // Replaces a `join` node, adjusting all parent impl-intro's, if there exist any.
@@ -253,21 +241,15 @@ function replaceNodeAdjustImplIntro(node, path, updateFn) {
     } else return node;
 }
 
-function replacePathInNode(node, path, updateFn) {
-    if (node[0] === 'node' && node[1] === path[0]) {
-        return [
-            ... node.slice(0, 5),
-            replacePathInModule(node[5], path.slice(1), updateFn),
-        ];
-    }
-    return node;
-}
-
-function locateNode(module, path) {
-    for (const node of module) {
-        if (node[0] === 'node' && node[1] === path[0]) {
-            if (path.length === 1) return node;
-            return locateNode(node[5], path.slice(1));
+function locateNode(node, path) {
+    const [_, label, ins, outs, just, subs, ...__] = node;
+    if (eq([label], path)) {
+        return node;
+    } else {
+        for (const sub of subs) {
+            if (sub[0] === 'node' && sub[1] === path[1]) {
+                return locateNode(sub, path.slice(1));
+            }
         }
     }
 }

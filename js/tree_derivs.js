@@ -1,3 +1,4 @@
+// Outdated format.
 sampleTreeDeriv1 = `\
 (comment - format is
   (stmt #label content) or
@@ -33,7 +34,7 @@ sampleTreeDeriv1 = `\
 
 `;
 
-sampleTreeDeriv2 = `\
+/**
 (comment - format is
   (node #label [ins] [outs] [justification args.optional] (subs.optional))
     ins and outs are statements.
@@ -43,7 +44,8 @@ sampleTreeDeriv2 = `\
     #early and #late are statement labels,
     may be ^a (parent assumptions) or ^c (parent consequents)
 )
-
+**/
+sampleTreeDeriv2 = `\
 (node #t/switch [] [(-> (and _A _B) (and _B _A))]
   [impl-intro] (
   (node #1 [(and _A _B)] [(and _B _A)] [join] (
@@ -57,8 +59,6 @@ sampleTreeDeriv2 = `\
 `;
 
 sampleTreeDeriv3 = `\
-(comment - an incomplete derivation)
-
 (node #t/switch [] [(-> (and _A _B) (and _B _A))]
   [impl-intro] (
   (node #1 [(and _A _B)] [(and _B _A)] [join] (
