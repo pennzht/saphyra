@@ -26,7 +26,7 @@ currentCode = null;
 function executeInput (e) {
     const inValue = $('input').value;
     try {
-        currentCode = parse(inValue)[0];  // Everything is root.
+        currentCode = parseOne(inValue);  // Everything is root.
         execute(currentCode);
     } catch (ex) {
         console.log('Something wrong.', ex.stack);
@@ -72,7 +72,7 @@ function execute(code) {
                         trace = y.getAttribute('data-trace') + ' ' + trace;
                     }
                     if (y.hasAttribute('data-sexp')) {
-                        content = parse(y.getAttribute('data-sexp'))[0];
+                        content = parseOne(y.getAttribute('data-sexp'));
                     }
                     y = y.parentNode;
                 }
@@ -107,7 +107,7 @@ function execute(code) {
                         currentCode =
                             applyMatchedRule(
                                 code,
-                                deepParse(mrElement.getAttribute('data-rule'))[0],
+                                parseOne(mrElement.getAttribute('data-rule')),
                                 additionalArgs,
                             );
                         execute(currentCode);

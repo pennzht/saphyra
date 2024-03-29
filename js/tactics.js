@@ -133,9 +133,8 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'add-goal') {
-        const goals = parseLenient(additionalArgs.goalContent);
-        if (!goals) return code; // Application failed
-        const goal = goals[0];
+        const goal = parseOneLenient(additionalArgs.goalContent);
+        if (!goal) return code; // Application failed
 
         const newNode = ['node', gensym('#'), [goal], [goal], ['id'], []];
         const newLink = ['link', newNode[1], '^c', goal];

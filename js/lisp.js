@@ -530,6 +530,10 @@ function parse (input) {
     return JSON.parse (input);
 }
 
+function parseOne (input) {
+    return parse(input) [0];
+}
+
 function parseLenient (input) {
     try {
         return parse(input);
@@ -540,6 +544,12 @@ function parseLenient (input) {
             throw e;
         }
     }
+}
+
+function parseOneLenient (input) {
+    const ans = parseLenient(input);
+    if (!ans) return null;
+    return ans[0];
 }
 
 function translateLiteral(expr) {
