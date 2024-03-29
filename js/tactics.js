@@ -139,7 +139,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         if (!goals) return code; // Application failed
         const goal = goals[0];
 
-        const newNode = ['node', gensym('#gen/'), [goal], [goal], ['id'], []];
+        const newNode = ['node', gensym('#'), [goal], [goal], ['id'], []];
         const newLink = ['link', newNode[1], '^c', goal];
 
         return replacePathInModule(code, space,
@@ -148,8 +148,8 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'impl-intro') {
-        const subBlock = ['node', gensym('#gen/'), [stmt[1]], [stmt[2]], ['join'], []];
-        const mainBlock = ['node', gensym('#gen/'), [], [stmt], ['impl-intro'], [
+        const subBlock = ['node', gensym('#'), [stmt[1]], [stmt[2]], ['join'], []];
+        const mainBlock = ['node', gensym('#'), [], [stmt], ['impl-intro'], [
           subBlock,
         ]];
         const newLink = ['link', mainBlock[1], '^c', stmt];
@@ -198,7 +198,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     console.log(str(ins));
     console.log(str(outs));
 
-    const newNode = ['node', gensym('#gen/'), ins, outs, [ruleName], []];
+    const newNode = ['node', gensym('#'), ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
         link = ['link', newNode[1], port, stmt];

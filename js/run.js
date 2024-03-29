@@ -11,7 +11,7 @@ $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 
 window.onload = (e) => {
-    $('input').value = sampleTreeDeriv6Complete;
+    $('input').value = sampleTreeDeriv5;
     executeInput(e);
     executeLisp(e);
 }
