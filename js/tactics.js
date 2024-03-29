@@ -63,6 +63,11 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
                 applicableRules.push([space, port, io, stmt, 'exact-match', '^a', 'out']);
             }
         }
+        // Match impl.
+        if (simpleMatch(parse('-> _A _B'), stmt)) {
+            // Can apply impl.
+            applicableRules.push([space, port, 'in', stmt, 'impl-intro']);
+        }
     }
 
     if (io === 'out') {
