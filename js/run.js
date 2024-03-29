@@ -64,8 +64,8 @@ function execute(code) {
 
         // Set actions
         // Only consider active ports.
-        // TODO - change to "active" to accommodate active nodes.
-        for(const stmt of document.getElementsByClassName('port')) {
+        // TODO - add tactics for active nodes.
+        for(const stmt of document.getElementsByClassName('active')) {
             stmt.onclick = (e) => {
                 let y = stmt;
                 let content = null;
@@ -83,6 +83,7 @@ function execute(code) {
                 console.log(trace, content);
 
                 const matchedRules = getMatchedRules(module, trace, content);
+                if (matchedRules.length === 0) return;
 
                 $('display').innerHTML = '';
                 $('display').appendChild(elem('div', [],
