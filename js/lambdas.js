@@ -166,6 +166,8 @@ console.log(lambdaEq(
   parseOne(`(: _x (: _x [+ _x _y _z]))`),
   parseOne(`(: _x (: _u [+ _u _y _x]))`),
 ))
+
+console.log(walkSexp(parseOne(`(: _x (: _x [+ _x _y _z]))`), []))
 }
 
 // TODO: abstractions
