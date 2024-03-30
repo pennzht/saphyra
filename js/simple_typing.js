@@ -1,5 +1,7 @@
 // Typing support for simply-typed lambda calculus.
 
+// O: object; P: proposition
+// <ABC>: (A, B -> C)
 builtinSymbols = new Map([
   ['and', '<PPP>'],
   ['or', '<PPP>'],
