@@ -89,8 +89,6 @@ if (false) {
   console.log(genVar(['_v0:O', '_v1:O', '_v5:O'], 'O'));
 }
 
-// TODO: lambda_reduce, lambda_normal, lambda_eq, abstractions
-
 function lambdaReduce (lam, arg) {
     if (! isLambda(lam)) {
         return null;
@@ -121,10 +119,53 @@ function lambdaReplace (sexp, v, arg) {
     }
 }
 
-if (0) {
+function lambdaNormal(sexp, varmap, resPrefix = '_!R', countfrom = 0n) {
+    if (isLambda(sexp)) {
+        const [_, v, body] = sexp;
+        const rname = resPrefix + str(countfrom);
+        const subvarmap = new Map([... varmap]);
+        subvarmap.set(v, rname);
+        const [sub, tail] = lambdaNormal(body, subvarmap, resPrefix, countfrom + 1n);
+        return [[':', rname, sub], tail];
+    } else if (isList(sexp)) {
+        const ans = [];
+        let cf = countfrom, resub;
+        for (const sub of sexp) {
+            [resub, cf] = lambdaNormal(sub, varmap, resPrefix, cf);
+            ans.push(resub);
+        }
+        return [ans, cf];
+    } else {
+        return [varmap.get(sexp) || sexp, countfrom];
+    }
+}
+
+function lambdaEq(l1, l2) {
+    const [a, _a] = lambdaNormal(l1, new Map());
+    const [b, _b] = lambdaNormal(l2, new Map());
+    return eq(a, b);
+}
+
+if (1) {
 console.log(str(lambdaReplace(
     parseOne(`(: _x:O (: _y:O [+ _x:O _z:O]))`),
     '_z:O',
     '3',
 )))
+
+console.log(str(lambdaNormal(
+    parseOne(`(: _x (: _x [+ _x _y _z]))`), new Map(),
+)))
+
+console.log(lambdaEq(
+  parseOne(`(: _x (: _x [+ _x _y _z]))`),
+  parseOne(`(: _x (: _u [+ _u _y _z]))`),
+))
+
+console.log(lambdaEq(
+  parseOne(`(: _x (: _x [+ _x _y _z]))`),
+  parseOne(`(: _x (: _u [+ _u _y _x]))`),
+))
 }
+
+// TODO: abstractions
