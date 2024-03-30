@@ -69,6 +69,10 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
             // Can apply impl.
             applicableRules.push([space, port, 'in', stmt, 'impl-intro']);
         }
+        // Match forall-intro.
+        if (simpleMatch(parse('forall _P'), stmt).success) {
+            applicableRules.push([space, port, 'in', stmt, 'forall-intro']);
+        }
     }
 
     if (io === 'out') {
@@ -142,6 +146,17 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         const spaceIns = locateNode(code, space)[2];
         const subBlock = ['node', gensym('#'), [...spaceIns, stmt[1]], [stmt[2]], ['join'], []];
         const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['impl-intro'], [
+          subBlock,
+        ]];
+        const newLink = ['link', mainBlock[1], port, stmt];
+        return addBlocksToNode(code, space, [mainBlock, newLink]);
+    }
+
+    if (ruleName === 'forall-intro') {
+        const spaceIns = locateNode(code, space)[2];
+        const newVar = genVar(getFreeVars(spaceIns), typeString(stmt[1][1]));
+        const subBlock = ['node', gensym('#'), spaceIns, [[stmt[1], newVar]], ['join'], []];
+        const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['forall-intro'], [
           subBlock,
         ]];
         const newLink = ['link', mainBlock[1], port, stmt];
