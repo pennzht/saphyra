@@ -1,8 +1,3 @@
-// Added FOL rules (simplistic) to folRules, as well as Peano arithmetic.
-// Missing from FOL rules, complicated rules that must be handled individually:
-//     impl-intro, forall-intro, exists-elim
-//     =-replacement, beta-reduction
-
 sampleDeriv1 = `(comment - node data)
 (node #ans
   []

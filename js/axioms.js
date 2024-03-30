@@ -1,3 +1,6 @@
+// First-order logic + Peano arithmetic.
+// The below complex rules are not included here, but tested individually.
+//     impl-intro, forall-intro, exists-elim, beta-reduction
 
 folRules = `
 (and-intro
