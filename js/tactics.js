@@ -354,3 +354,59 @@ function applyBeta(code, space, port, io, lam, arg, generalDirection) {
 
     return addBlocksToNode(code, space, addedBlocks);
 }
+
+/// If there are any `id` blocks connected to other blocks, remove them.
+/// `id` blocks are blocks of the form [node ... [X] [X] [id] []], which are
+/// used as temporary helper blocks to expose a statement.
+function trimId(originalCode) {
+    const originalSubs = originalCode[5];
+    const idBlocks = originalSubs.filter((x) => isList(x) && x[0] === 'node' && x[4] /*just*/ .includes('id'));
+
+    let subs = originalSubs;
+    for (const block of idBlocks) {
+        const idn = block[1];
+        const nodesTo     = subs.filter((x) => x[0] === 'link' && x[2] === idn).map((x) => x[1]);
+        const nodesFrom   = subs.filter((x) => x[0] === 'link' && x[1] === idn).map((x) => x[2]);
+        const linkedParts = (nodesTo.length > 0 ? 1 : 0) + (nodesFrom.length > 0 ? 1 : 0);
+        if (linkedParts === 1) {
+            // Remove all dependencies.
+            subs = subs.filter((x) =>
+                (x[0] === 'node' && x[1] !== idn) ||
+                (x[0] === 'link' && x[1] !== idn && x[2] !== idn)
+            );
+        } else if (linkedParts === 0) {
+            // pass; leave it as is for now.
+        } else {
+            // remove.
+            const incomingNode = nodesTo[0];
+            const outgoingNodes = nodesFrom;
+            const stmt = block[2][0];
+            subs = subs.filter((x) =>
+                (x[0] === 'node' && x[1] !== idn) ||
+                (x[0] === 'link' && x[1] !== idn && x[2] !== idn)
+            );
+            // Add new linkings
+            for (const n of outgoingNodes) {
+                subs.push(['link', incomingNode, n, stmt]);
+            }
+        }
+    }
+
+    const newCode = [...originalCode];
+    newCode[5] = subs;
+    return newCode;
+}
+
+if (0){
+console.log(trimId(parseOne(`
+  [node #r [_A] [_B] [join] [
+    [link ^a #a _A]
+    [node #a [_A] [_C] [xyz] []]
+    [link #a #c _C]
+    [node #c [_C] [_C] [id] []]
+    [link #c #b _C]
+    [node #b [_C] [_B] [xyz] []]
+    [link #b ^c _B]
+  ]]
+`)))
+}
