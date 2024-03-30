@@ -41,7 +41,7 @@ function replaceByPath(sexp, path, target) {
 }
 
 function getAllAtoms(sexp) {
-    if (isAtomic(sexp)) return sexp;
+    if (isAtomic(sexp)) return [sexp];
 
     const ans = [];
     for (const sub of sexp) ans.push(...getAllAtoms(sub));
@@ -50,6 +50,23 @@ function getAllAtoms(sexp) {
 
 function getAllVars(sexp) {
     return getAllAtoms(sexp).filter(isVar);
+}
+
+function getFreeVars(sexp) {
+    if (isLambda(sexp)) {
+        const [_, varName, body] = sexp;
+        const ans = new Set(getAllVars(body));
+        ans.delete(varName);
+        return [...ans];
+    } else {
+        // TODO - finish this.
+    }
+}
+
+if (1) {
+    console.log(getAllVars(parseOne(`
+        (forall (: _x:O [= _x:O (+ O _x:O)]))
+      `)))
 }
 
 // Next: def free_vars(o) ...
