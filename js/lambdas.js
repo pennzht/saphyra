@@ -119,7 +119,8 @@ function lambdaReplace (sexp, v, arg) {
     }
 }
 
-function lambdaNormal(sexp, varmap, resPrefix = '_!R', countfrom = 0n) {
+function lambdaNormal(sexp, map = null, resPrefix = '_!R', countfrom = 0n) {
+    const varmap = map || new Map();
     if (isLambda(sexp)) {
         const [_, v, body] = sexp;
         const rname = resPrefix + str(countfrom);
@@ -141,12 +142,30 @@ function lambdaNormal(sexp, varmap, resPrefix = '_!R', countfrom = 0n) {
 }
 
 function lambdaEq(l1, l2) {
-    const [a, _a] = lambdaNormal(l1, new Map());
-    const [b, _b] = lambdaNormal(l2, new Map());
+    const [a, _a] = lambdaNormal(l1);
+    const [b, _b] = lambdaNormal(l2);
     return eq(a, b);
 }
 
-if (1) {
+// Inverse of `lambdaReduce`. Returns a collection of possible replacements.
+function lambdaExtract (term) {
+    const nf = lambdaNormal (term) [0];
+    const maps = new Map();
+
+    walkSexp(nf).map((x) => console.log(str(x)))
+    for (const [nfo, path] of walkSexp(nf)) {
+        const sub = subByPath(term, path);
+        const gist = str(lambdaNormal(nfo, new Map(), '_!S')[0]);
+        if (! maps.has(gist)) {
+            maps.set(gist, []);
+        }
+        maps.get(gist).push(path);
+    }
+
+    return maps;
+}
+
+if (0) {
 console.log(str(lambdaReplace(
     parseOne(`(: _x:O (: _y:O [+ _x:O _z:O]))`),
     '_z:O',
@@ -168,6 +187,10 @@ console.log(lambdaEq(
 ))
 
 console.log(walkSexp(parseOne(`(: _x (: _x [+ _x _y _z]))`), []))
+
+console.log(lambdaExtract(parseOne(
+  `([: _x (* 2 (= _x _x))] [: _x _x])`
+)))
 }
 
 // TODO: abstractions
