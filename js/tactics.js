@@ -168,7 +168,9 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
           subBlock,
         ]];
         const newLink = ['link', mainBlock[1], port, stmt];
-        return addBlocksToNode(code, space, [mainBlock, newLink]);
+        // Connect links to imputs.
+        const newIncomingLinks = spaceIns.map((i) => ['link', '^a', mainBlock[1], i]);
+        return addBlocksToNode(code, space, [mainBlock, ...newIncomingLinks, newLink]);
     }
 
     if (ruleName === 'forall-intro') {
