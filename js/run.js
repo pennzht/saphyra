@@ -13,7 +13,7 @@ $('lisp-input').oninput = executeLisp;
 const emptyNode = `[node #root [] [] [join] []]`
 
 window.onload = (e) => {
-    $('input').value = sampleTreeDeriv7;
+    $('input').value = sampleTreeDeriv7Complete;
     executeInput(e);
     executeLisp(e);
 }

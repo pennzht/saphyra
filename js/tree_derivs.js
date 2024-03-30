@@ -98,3 +98,5 @@ sampleTreeDeriv7Manual = `\
   (node #1 [] [((: _x:O (= _x:O _x:O)) _y:O)] [join] [])
 ))
 `;
+
+sampleTreeDeriv7Complete = "[node #root [] [[forall [: _x:O [= _x:O [+ _x:O O]]]]] [join] [[node #2 [] [[forall [: _x:O [= _x:O [+ _x:O O]]]]] [forall-intro] [[node #1 [] [[[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [join] [[node #3 [] [[= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]] [beta] []] [node #4 [[= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]] [[= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]]] [=-sym] []] [node #5 [[= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [= _v0:O [+ _v0:O O]]] [[[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [equiv-elim] []] [link #3 #4 [= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]] [link #4 #5 [= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]]] [link #5 ^c [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [node #6 [[= [+ _v0:O O] _v0:O]] [[= _v0:O [+ _v0:O O]]] [=-sym] []] [link #6 #5 [= _v0:O [+ _v0:O O]]] [node #7 [] [[= [+ _v0:O O] _v0:O]] [+-O] []] [link #7 #6 [= [+ _v0:O O] _v0:O]]]]]] [link #2 ^c [forall [: _x:O [= _x:O [+ _x:O O]]]]]]]";
