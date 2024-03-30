@@ -89,4 +89,4 @@ if (false) {
   console.log(genVar(['_v0:O', '_v1:O', '_v5:O'], 'O'));
 }
 
-// Next: def lambda_b_reduce ...
+// TODO: lambda_reduce, lambda_normal, lambda_eq, abstractions
