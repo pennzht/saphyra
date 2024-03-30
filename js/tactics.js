@@ -45,6 +45,17 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
 
     const spaceNode = locateNode(module, space);
 
+    // In both cases, allow beta-expansion or beta-reduction.
+    applicableRules.push([
+        space, port, io, stmt, 'beta-expansion-stmt',
+    ]);
+
+    if (isRedux(stmt)) {
+        applicableRules.push([
+            space, port, io, stmt, 'beta-reduction-stmt',
+        ]);
+    }
+
     if (io === 'in') {
         // Match exact outs.
         for (const sub of spaceNode[5]) if (sub[0] === 'node') {
@@ -161,6 +172,14 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         ]];
         const newLink = ['link', mainBlock[1], port, stmt];
         return addBlocksToNode(code, space, [mainBlock, newLink]);
+    }
+
+    if (ruleName === 'beta-expansion-stmt') {
+        // TODO
+    }
+
+    if (ruleName === 'beta-reduction-stmt') {
+        // TODO
     }
 
     if (ruleName === 'add-input') {

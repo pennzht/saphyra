@@ -12,6 +12,10 @@ function isLambda(sexp) {
     return simpleMatch([':', '_A', '_B'], sexp).success && isVar(sexp[1]);
 }
 
+function isRedux(sexp) {
+    return simpleMatch([[':', '_A', '_B'], '_C'], sexp).success;
+}
+
 function walkSexp(sexp, prefixQ) {
     const prefix = prefixQ || [];
     if (isLambda(sexp)) {
