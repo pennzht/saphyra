@@ -76,7 +76,7 @@ function genVar(avoid, ts) {
     }
 }
 
-if (1) {
+if (false) {
   console.log(getAllVars(parseOne(`
       (forall (: _x:O [= _x:O (+ O _x:O)]))
     `)));
