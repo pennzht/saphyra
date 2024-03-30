@@ -139,8 +139,9 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'impl-intro') {
-        const subBlock = ['node', gensym('#'), [stmt[1]], [stmt[2]], ['join'], []];
-        const mainBlock = ['node', gensym('#'), [], [stmt], ['impl-intro'], [
+        const spaceIns = locateNode(code, space)[2];
+        const subBlock = ['node', gensym('#'), [...spaceIns, stmt[1]], [stmt[2]], ['join'], []];
+        const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['impl-intro'], [
           subBlock,
         ]];
         const newLink = ['link', mainBlock[1], port, stmt];
