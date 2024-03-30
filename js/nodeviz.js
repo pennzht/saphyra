@@ -81,10 +81,19 @@ function dispModule(module) {
   return elem('div', [], module.map(dispNode));
 }
 
+HIDE_EMPTY_NODES = true;
+
 function dispNode(node) {
   const head = node[0];
   if (head === 'node') {
     const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
+
+    // Hide empty nodes.
+    if (HIDE_EMPTY_NODES && justification[0] !== 'join' && subsVerified.length === 0) {
+      return elem('span');
+    }
+
+    // Default case.
     return elem('node', {
       'data-trace': label,
     }, [
@@ -105,9 +114,10 @@ function dispNode(node) {
     return dispSexp(node);
   } else if (head === 'stmt') {
     // Active, referrable statement.
-    const [_, content, n, io, comment] = node;
+    const [_, content, n, io, comment, ...justification] = node;
     return elem('div', {class: 'stmt port active', 'data-trace': `${n} ${io}`, 'data-sexp': str(content)}, [
       text(comment), dispStmt(content),
+      text(justification.length > 0 ? str(justification[0]) : ''),
     ]);
   }
 }

@@ -225,7 +225,12 @@ function verifyNode (node) {
                     }
                 } else if (n.startsWith('#')) {
                     for (const st of (nodeRefs.get(n)[3])) {
-                        outSubs.push(['stmt', st, n, 'out', 'proven']);
+                        const provenStatement = ['stmt', st, n, 'out', 'proven'];
+                        if (nodeRefs.get(n)[5].length <= 0) {
+                            // No subs; allow hiding.
+                            provenStatement.push(nodeRefs.get(n)[4]); // justification
+                        }
+                        outSubs.push(provenStatement);
                     }
                 }
             }
