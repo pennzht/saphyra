@@ -147,10 +147,18 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         const goal = parseOneLenient(additionalArgs.goalContent);
         if (!goal) return code; // Application failed
 
-        const newNode = ['node', gensym('#'), [goal], [goal], ['id'], []];
-        const newLink = ['link', newNode[1], '^c', goal];
-
-        return addBlocksToNode(code, space, [newNode, newLink]);
+        return replaceNodeAdjustImplIntro(code, space,
+            (node) => {
+                const [_, label, ins, outs, justification, subs, ...__]
+                    = node;
+                const newNode = [
+                    'node', label, ins, outs.concat([goal]),
+                    justification,
+                    subs, ...__,
+                ];
+                return newNode;
+            }
+        );
     }
 
     if (ruleName === 'impl-intro') {
@@ -243,7 +251,9 @@ function addBlocksToNode(node, path, addedBlocks) {
     }
     const [_, label, ins, outs, just, subs, ...__] = node;
     if (eq ([label], path)) {
-        return [_, label, ins, outs, just, subs.concat(addedBlocks)];
+        return trimId(
+            [_, label, ins, outs, just, subs.concat(addedBlocks)],
+        );
     } else if (path[0] === label) {
         return [_, label, ins, outs, just, subs.map((n) => addBlocksToNode(n, path.slice(1), addedBlocks))];
     } else {
@@ -398,15 +408,28 @@ function trimId(originalCode) {
 }
 
 if (0){
-console.log(trimId(parseOne(`
-  [node #r [_A] [_B] [join] [
-    [link ^a #a _A]
-    [node #a [_A] [_C] [xyz] []]
-    [link #a #c _C]
-    [node #c [_C] [_C] [id] []]
-    [link #c #b _C]
-    [node #b [_C] [_B] [xyz] []]
-    [link #b ^c _B]
-  ]]
-`)))
+  console.log(trimId(parseOne(`
+    [node #r [_A] [_B] [join] [
+      [link ^a #a _A]
+      [node #a [_A] [_C] [xyz] []]
+      [link #a #c _C]
+      [node #c [_C] [_C] [id] []]
+      [link #c #b _C]
+      [node #b [_C] [_B] [xyz] []]
+      [link #b ^c _B]
+    ]]
+  `)))
+
+  console.log(trimId(parseOne(`
+    [node #r [_A] [_B] [join] [
+      [link ^a #a _A]
+      [node #a [_A] [_C] [xyz] []]
+      [link #a #c _C]
+      [node #c [_C] [_C] [id] []]
+      [link #c #b _C]
+      [node #b [_C] [_B] [xyz] []]
+      [link #b ^c _B]
+      [node #goal [_C] [_C] [id] []]
+    ]]
+  `)))
 }
