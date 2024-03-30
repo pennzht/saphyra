@@ -48,6 +48,10 @@ folRules = `
   [_A _B]
   [(-> _A _B) (-> _B _A)] [(= _A _B)])
 
+(equiv-elim
+  [_A _B]
+  [(= _A _B) _A] [_B])
+
 (forall-elim
   [_P _x]
   [(forall _P)] [(_P _x)])
@@ -59,6 +63,10 @@ folRules = `
 (=-intro
   [_a]
   [] [(= _a _a)])
+
+(=-sym
+  [_a _b]
+  [(= _a _b)] [(= _b _a)])
 
 (=-elim
   [_P _a _b]
