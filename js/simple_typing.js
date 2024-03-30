@@ -21,6 +21,7 @@ builtinSymbols = new Map([
 function typeString (atom) {
     if (! isAtomic(atom)) return null;
     if (builtinSymbols.has(atom)) return builtinSymbols.get(atom);
+    if (typeof atom !== 'string') return null;
 
     const colonLocation = atom.lastIndexOf(':');
     if (colonLocation < 0) return null;
@@ -64,4 +65,40 @@ function wellTyped (sexp) {
         return ['and', 'or', '->'].includes (head) && [a, b].every (wellTyped);
     }
     return false;
+}
+
+// TODO - return the type of `sexp`, any `null` if failing.
+function getType (sexp) {
+    if (isAtomic(sexp)) return typeSignature(sexp);
+
+    // Other kind: application
+    if (!isList(sexp)) return null;
+    if (sexp.length <= 0) return null;
+
+    const [head, ...args] = sexp;
+    const [headType, ...argsType] = sexp.map(getType);
+
+    if (argsType.includes(null)) return null;
+
+    // Special cases
+    if (head === '=') {
+        const valid = args.length === 2 && eq(argsType[0], argsType[1]);
+        return valid ? 'P' : null;
+    }
+
+    if (head === ':') {
+        const valid = args.length === 2;
+        return valid ? argsType : null;
+    }
+
+    // headType = [...argsType, returnType]
+
+    const valid = isList(headType) && eq(argsType, headType.slice(0, headType.length-1));
+    return valid ? headType[headType.length-1] : null;
+}
+
+if (false) {
+console.log(`Type 1 ${str(getType(parseOne("([: _x:P [: _y:O _z:P]] false)")))}`);  // [O P]
+console.log(`Type 2 ${str(getType(parseOne("[: _x:O (+ _x:O _x:O)]")))}`);  // [O O]
+console.log(`Type 3 ${str(getType(parseOne("[: _x:P (= _x:P _x:P)]")))}`);  // [P P]
 }
