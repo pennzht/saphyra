@@ -87,6 +87,6 @@ sampleTreeDeriv6Complete = `\
 
 sampleTreeDeriv7 = `\
 (node #root [] [
-  (forall _x:O (= _x:O (+ _x:O O)))
+  (forall (: _x:O (= _x:O (+ _x:O O))))
 ] [join] ())
 `;

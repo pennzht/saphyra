@@ -10,8 +10,10 @@
 $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 
+const emptyNode = `[node #root [] [] [join] []]`
+
 window.onload = (e) => {
-    $('input').value = `[node #root [] [] [join] []]`;
+    $('input').value = sampleTreeDeriv7;
     executeInput(e);
     executeLisp(e);
 }
