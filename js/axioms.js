@@ -83,7 +83,7 @@ folRules = `
 (peano-2
   [_P]
   [(_P O)
-   (forall ([: _p [: _n (-> (_p _n) (_p (S _n)))]] _P))]
+   (forall ([: _p:<OP> [: _n:O (-> (_p:<OP> _n:O) (_p:<OP> (S _n:O)))]] _P))]
   [(forall _P)])
 
 (+-O [_a   ] [] [(= (+ _a O) _a)])

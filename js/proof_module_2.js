@@ -116,6 +116,33 @@ function verifyNode (node) {
 
             const valid = validIns && validOuts;
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+        } else if (rule === 'beta') {
+            // Beta expansion/contraction
+            if (outs.length !== 1) {
+                return nodeProper.concat(['#err/incorrect-outs']);
+            }
+            const [out] = outs;
+            const matching = simpleMatch(
+                ['=', [[':', '_invar', '_body'], '_value'],
+                      '_rhs'],
+                out,
+            );
+            if (! matching.success) {
+                return nodeProper.concat(['#err/format']);
+            }
+
+            const val = (x) => matching.map.get(x);
+
+            if (! isVar(val('_invar'))) {
+                return nodeProper.concat(['#err/not-variable']);
+            }
+
+            const valid = eq(
+                val('_rhs'),
+                lambdaReplace(val('_body'), val('_invar'), val('_value')),
+            );
+
+            return nodeProper.concat([valid ? '#good' : '#err/beta']);
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[1]));
             const links = subsVerified.filter((x) => x[0] === 'link');
@@ -224,4 +251,16 @@ function verifyNode (node) {
 /// Verifies a tree of derivations.
 function verifyModule (nodes) {
     return nodes.map(verifyNode);
+}
+
+if (0){
+console.log (verifyNode(
+  parseOne(
+    `
+[node #b [_A]
+[[= ((: _y _m) _x) _m]] [beta] []
+]
+    `
+  )
+));
 }
