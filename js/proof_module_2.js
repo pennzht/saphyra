@@ -1,5 +1,20 @@
 // Verifies a tree module, adding necessary information.
 
+/** Structure of a tree module:
+    [node #label [... input statements] [... output statements] justification [... subnodes and links]]
+        a proof node; given input statements are true, proves that the output statements are true.
+        may include subnodes as part of the proof.
+        justification is a list such as [and-intro] or [impl-intro]
+        when justification = [join], it represents a space containing smaller nodes,
+        combining their assumptions and conclusions into a large node.
+    [link #from-node #to-node statement]
+        indicates that a given statement is an output of #from-node and
+        an input of #to-node.
+**/
+
+[Label, Ins, Outs, Just, Subs, AdditionalInfo] = [1, 2, 3, 4, 5, 6];
+[Lfrom, Lto, Lstmt] = [1, 2, 3];
+
 // Sync with axioms.js
 folAxioms = parse(folRules);   // Avoiding deepParse for now.
 
@@ -34,28 +49,29 @@ function verifyNode (node) {
 
         const [_, label, ins, outs, justification, subs, ..._rest] = node;
 
+        const nodeProper = [
+            'node', label, ins, outs, justification, subs,
+        ];
+
         if (! isList(justification)) {
-            return node.slice(0, 6).concat(['#err/justification-not-list']);
+            return nodeProper.concat(['#err/justification-not-list']);
         }
 
         if (! isList(subs)) {
-            return node.slice(0, 6).concat(['#err/subs-not-list']);
+            return nodeProper.concat(['#err/subs-not-list']);
         }
 
         if (! (isAtomic (label) && isList (ins) && isList (outs)
                && isList(justification) && isList(subs))) {
-            return node.slice(0, 6).concat(['#err/structure-incorrect']);
+            return nodeProper.concat(['#err/structure-incorrect']);
         }
 
         if (! label.startsWith('#')) {
-            return node.slice(0, 6).concat(['#err/label-should-start-with-#']);
+            return nodeProper.concat(['#err/label-should-start-with-#']);
         }
 
         const subsVerified = subs.map(verifyNode);
-
-        const nodeProper = [
-            'node', label, ins, outs, justification, subsVerified,
-        ];
+        nodeProper[Subs] = subsVerified;
 
         const [rule, ...args] = justification;
 
@@ -86,7 +102,7 @@ function verifyNode (node) {
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
-            const subIns = sub[2], subOuts = sub[3];
+            const subIns = sub[Ins], subOuts = sub[Outs];
             const [_arrow, A, B] = out;
             const valid = _arrow === '->' && eq([B], subOuts) &&
                 setEquals(subIns, [...ins, A]);
@@ -105,7 +121,7 @@ function verifyNode (node) {
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
-            const subIns = sub[2], subOuts = sub[3];
+            const subIns = sub[Ins], subOuts = sub[Outs];
             const validIns = setEquals(subIns, ins);
             const outsMatch = simpleMatch(
                 [['_P', '_var'], ['forall', '_P']],
@@ -144,7 +160,7 @@ function verifyNode (node) {
 
             return nodeProper.concat([valid ? '#good' : '#err/beta']);
         } else if (rule === 'join') {
-            const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[1]));
+            const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
             const links = subsVerified.filter((x) => x[0] === 'link');
 
             const nodeNames = nodes.map((x) => x[1]);
@@ -162,7 +178,7 @@ function verifyNode (node) {
             // Get sort order
             const toposortResult = toposort(
                 ['^a'].concat(nodeNames).concat(['^c']),
-                links.map((x) => [x[1], x[2]]),
+                links.map((x) => [x[Lfrom], x[Lto]]),
             );
 
             // Get toposort
@@ -224,11 +240,11 @@ function verifyNode (node) {
                         outSubs.push(['stmt', st, n, 'out', 'given']);
                     }
                 } else if (n.startsWith('#')) {
-                    for (const st of (nodeRefs.get(n)[3])) {
+                    for (const st of (nodeRefs.get(n)[Outs])) {
                         const provenStatement = ['stmt', st, n, 'out', 'proven'];
-                        if (nodeRefs.get(n)[5].length <= 0) {
+                        if (nodeRefs.get(n)[Subs].length <= 0) {
                             // No subs; allow hiding.
-                            provenStatement.push(nodeRefs.get(n)[4]); // justification
+                            provenStatement.push(nodeRefs.get(n)[Just]); // justification
                         }
                         outSubs.push(provenStatement);
                     }
@@ -236,7 +252,7 @@ function verifyNode (node) {
             }
 
             // Use redefined subs for nodes.
-            nodeProper[5] = outSubs;
+            nodeProper[Subs] = outSubs;
 
             if (failures.length > 0) {
                 return nodeProper.concat(['#err/unproven-assump', ...failures]);

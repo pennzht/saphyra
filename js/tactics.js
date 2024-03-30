@@ -58,17 +58,17 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
 
     if (io === 'in') {
         // Match exact outs.
-        for (const sub of spaceNode[5]) if (sub[0] === 'node') {
-            for (const out of sub[3]) {
+        for (const sub of spaceNode[Subs]) if (sub[0] === 'node') {
+            for (const out of sub[Outs]) {
                 if (eq (out, stmt)) {
                     applicableRules.push([
-                        space, port, io, stmt, 'exact-match', sub[1], 'out'
+                        space, port, io, stmt, 'exact-match', sub[Label], 'out'
                     ]);
                 }
             }
         }
         // Match parent assumptions.
-        for (const assumption of spaceNode[2]) {
+        for (const assumption of spaceNode[Ins]) {
             if (eq (assumption, stmt)) {
                 applicableRules.push([space, port, io, stmt, 'exact-match', '^a', 'out']);
             }
@@ -88,8 +88,8 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
 
     if (io === 'out') {
         // Match exact outs.
-        for (const sub of spaceNode[5]) if (sub[0] === 'node') {
-            for (const inn of sub[2]) {
+        for (const sub of spaceNode[Subs]) if (sub[0] === 'node') {
+            for (const inn of sub[Ins]) {
                 if (eq (inn, stmt)) {
                     applicableRules.push([
                         space, port, io, stmt, 'exact-match', sub[1], 'in'
@@ -98,7 +98,7 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
             }
         }
         // Match parent assumptions.
-        for (const consequent of spaceNode[3]) {
+        for (const consequent of spaceNode[Outs]) {
             if (eq (consequent, stmt)) {
                 applicableRules.push([space, port, io, stmt, 'exact-match', '^c', 'in']);
             }
@@ -162,7 +162,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'impl-intro') {
-        const spaceIns = locateNode(code, space)[2];
+        const spaceIns = locateNode(code, space)[Ins];
         const subBlock = ['node', gensym('#'), [...spaceIns, stmt[1]], [stmt[2]], ['join'], []];
         const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['impl-intro'], [
           subBlock,
@@ -174,7 +174,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'forall-intro') {
-        const spaceIns = locateNode(code, space)[2];
+        const spaceIns = locateNode(code, space)[Ins];
         const newVar = genVar(getFreeVars(spaceIns), typeString(stmt[1][1]));
         const subBlock = ['node', gensym('#'), spaceIns, [[stmt[1], newVar]], ['join'], []];
         const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['forall-intro'], [
@@ -239,9 +239,9 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     const newNode = ['node', gensym('#'), ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
-        link = ['link', newNode[1], port, stmt];
+        link = ['link', newNode[Label], port, stmt];
     } else {
-        link = ['link', port, newNode[1], stmt];
+        link = ['link', port, newNode[Label], stmt];
     }
 
     return addBlocksToNode(code, space, [newNode, link]);
@@ -275,7 +275,7 @@ function replaceNodeAdjustImplIntro(node, path, updateFn) {
         if (just[0] === 'impl-intro') {
             // Adjust ins/outs.
             const [sub] = newSubs;
-            const subIns = sub[2], subOuts = sub[3];
+            const subIns = sub[Ins], subOuts = sub[Outs];
             const [[_arrow, A, B]] = outs;
             const newIns = delMember(subIns, A);
             return ['node', label, newIns, outs, just, newSubs, ...__];
@@ -291,7 +291,7 @@ function locateNode(node, path) {
         return node;
     } else {
         for (const sub of subs) {
-            if (sub[0] === 'node' && sub[1] === path[1]) {
+            if (sub[0] === 'node' && sub[Label] === path[1]) {
                 return locateNode(sub, path.slice(1));
             }
         }
@@ -323,17 +323,17 @@ function applyBeta(code, space, port, io, lam, arg, generalDirection) {
 
         addedBlocks.push(
             betaBlock, symBlock, elimBlock,
-            ['link', betaBlock[1], symBlock[1], betaBlock[3][0]],
-            ['link', symBlock[1], elimBlock[1], symBlock[3][0]],
+            ['link', betaBlock[Label], symBlock[Label], betaBlock[Outs][0]],
+            ['link', symBlock[Label], elimBlock[Label], symBlock[Outs][0]],
         )
 
         if (io === 'in') {
             addedBlocks.push(
-                ['link', elimBlock[1], port, redux]
+                ['link', elimBlock[Label], port, redux]
             )
         } else {
             addedBlocks.push(
-                ['link', port, elimBlock[1], reduced]
+                ['link', port, elimBlock[Label], reduced]
             )
         }
     } else {
@@ -350,16 +350,16 @@ function applyBeta(code, space, port, io, lam, arg, generalDirection) {
 
         addedBlocks.push(
             betaBlock, elimBlock,
-            ['link', betaBlock[1], elimBlock[1], symBlock[3][0]],
+            ['link', betaBlock[Label], elimBlock[Label], symBlock[Outs][0]],
         )
 
         if (io === 'in') {
             addedBlocks.push(
-                ['link', elimBlock[1], port, reduced]
+                ['link', elimBlock[Label], port, reduced]
             )
         } else {
             addedBlocks.push(
-                ['link', port, elimBlock[1], redux]
+                ['link', port, elimBlock[Label], redux]
             )
         }
     }
@@ -371,20 +371,20 @@ function applyBeta(code, space, port, io, lam, arg, generalDirection) {
 /// `id` blocks are blocks of the form [node ... [X] [X] [id] []], which are
 /// used as temporary helper blocks to expose a statement.
 function trimId(originalCode) {
-    const originalSubs = originalCode[5];
-    const idBlocks = originalSubs.filter((x) => isList(x) && x[0] === 'node' && x[4] /*just*/ .includes('id'));
+    const originalSubs = originalCode[Subs];
+    const idBlocks = originalSubs.filter((x) => isList(x) && x[0] === 'node' && x[Just].includes('id'));
 
     let subs = originalSubs;
     for (const block of idBlocks) {
         const idn = block[1];
-        const nodesTo     = subs.filter((x) => x[0] === 'link' && x[2] === idn).map((x) => x[1]);
-        const nodesFrom   = subs.filter((x) => x[0] === 'link' && x[1] === idn).map((x) => x[2]);
+        const nodesTo     = subs.filter((x) => x[0] === 'link' && x[Lto] === idn).map((x) => x[Lfrom]);
+        const nodesFrom   = subs.filter((x) => x[0] === 'link' && x[Lfrom] === idn).map((x) => x[Lto]);
         const linkedParts = (nodesTo.length > 0 ? 1 : 0) + (nodesFrom.length > 0 ? 1 : 0);
         if (linkedParts === 1) {
             // Remove all dependencies.
             subs = subs.filter((x) =>
-                (x[0] === 'node' && x[1] !== idn) ||
-                (x[0] === 'link' && x[1] !== idn && x[2] !== idn)
+                (x[0] === 'node' && x[Label] !== idn) ||
+                (x[0] === 'link' && x[Lfrom] !== idn && x[Lto] !== idn)
             );
         } else if (linkedParts === 0) {
             // pass; leave it as is for now.
@@ -394,8 +394,8 @@ function trimId(originalCode) {
             const outgoingNodes = nodesFrom;
             const stmt = block[2][0];
             subs = subs.filter((x) =>
-                (x[0] === 'node' && x[1] !== idn) ||
-                (x[0] === 'link' && x[1] !== idn && x[2] !== idn)
+                (x[0] === 'node' && x[Label] !== idn) ||
+                (x[0] === 'link' && x[Lfrom] !== idn && x[Lto] !== idn)
             );
             // Add new linkings
             for (const n of outgoingNodes) {
@@ -405,7 +405,7 @@ function trimId(originalCode) {
     }
 
     const newCode = [...originalCode];
-    newCode[5] = subs;
+    newCode[Subs] = subs;
     return newCode;
 }
 

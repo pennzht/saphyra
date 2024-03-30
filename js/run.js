@@ -15,8 +15,8 @@ const emptyNode = `[node #root [] [] [join] []]`
 // TODO: fix case where: after loading a proven module, statement symbols are reused (such as #1 and #1) in the same root.
 
 window.onload = (e) => {
+    $('input').value = emptyNode;
     $('input').value = sampleTreeDeriv7Complete;
-    // $('input').value = emptyNode;
     executeInput(e);
     executeLisp(e);
 }
