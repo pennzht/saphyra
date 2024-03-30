@@ -53,6 +53,10 @@ folRules = `
   [_P _x]
   [(forall _P)] [(_P _x)])
 
+(exists-intro
+  [_P _x]
+  [(_P _x)] [(exists _P)])
+
 (=-intro
   [_a]
   [] [(= _a _a)])
