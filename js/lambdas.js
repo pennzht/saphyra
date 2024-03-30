@@ -58,15 +58,35 @@ function getFreeVars(sexp) {
         const ans = new Set(getAllVars(body));
         ans.delete(varName);
         return [...ans];
+    } else if (isList(sexp)) {
+        const ans = [];
+        for (const sub of sexp) ans.push(...getFreeVars(sub));
+        return ans;
+    } else if (isVar(sexp)) {
+        return [sexp];
     } else {
-        // TODO - finish this.
+        return [];
+    }
+}
+
+function genVar(avoid, ts) {
+    for (let i = 0; i <= avoid.length; i++) {
+        const contender = `_v${i}:${ts}`;
+        if (! avoid.includes(contender)) return contender;
     }
 }
 
 if (1) {
-    console.log(getAllVars(parseOne(`
-        (forall (: _x:O [= _x:O (+ O _x:O)]))
-      `)))
+  console.log(getAllVars(parseOne(`
+      (forall (: _x:O [= _x:O (+ O _x:O)]))
+    `)));
+  console.log(getFreeVars(parseOne(`
+      (forall (: _x:O [= _x:O (+ O _x:O)]))
+    `)));
+  console.log(getFreeVars(parseOne(`
+      (forall (: _x:O [= _x:O (+ _y:O _x:O)]))
+    `)));
+  console.log(genVar(['_v0:O', '_v1:O', '_v5:O'], 'O'));
 }
 
-// Next: def free_vars(o) ...
+// Next: def lambda_b_reduce ...
