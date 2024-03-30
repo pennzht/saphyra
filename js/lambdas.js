@@ -90,3 +90,41 @@ if (false) {
 }
 
 // TODO: lambda_reduce, lambda_normal, lambda_eq, abstractions
+
+function lambdaReduce (lam, arg) {
+    if (! isLambda(lam)) {
+        return null;
+    }
+    const [_, v, body] = lam;
+    return lambdaReplace (body, v, arg);
+}
+
+function lambdaReplace (sexp, v, arg) {
+    if (isLambda (sexp)) {
+        // Lambda. Beware variable capture.
+        let innerVar = sexp[1], innerExp = sexp[2];
+        if (eq(innerVar, v)) return sexp;  // Variable shadowing.
+        if (getFreeVars(arg).includes(innerVar)) {
+            // Replace.
+            const newVar = genVar(
+                getFreeVars(arg).concat(getAllVars(sexp)),
+                typeString(innerVar),
+            );
+            innerVar = newVar;
+            innerExp = lambdaReplace(innerExp, innerVar, newVar);
+        }
+        return [':', innerVar, lambdaReplace(innerExp, v, arg)];
+    } else if (isList(sexp)) {
+        return sexp.map((m) => lambdaReplace(m, v, arg));
+    } else {
+        return isVar(sexp) && eq(sexp, v) ? arg : sexp;
+    }
+}
+
+if (0) {
+console.log(str(lambdaReplace(
+    parseOne(`(: _x:O (: _y:O [+ _x:O _z:O]))`),
+    '_z:O',
+    '3',
+)))
+}
