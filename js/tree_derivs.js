@@ -90,3 +90,11 @@ sampleTreeDeriv7 = `\
   (forall (: _x:O (= _x:O (+ _x:O O))))
 ] [join] ())
 `;
+
+sampleTreeDeriv7Manual = `\
+(node #root [] [
+  (forall (: _x:O (= _x:O _x:O)))
+] [forall-intro] (
+  (node #1 [] [((: _x:O (= _x:O _x:O)) _y:O)] [join] [])
+))
+`;

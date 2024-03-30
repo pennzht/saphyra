@@ -13,7 +13,7 @@ $('lisp-input').oninput = executeLisp;
 const emptyNode = `[node #root [] [] [join] []]`
 
 window.onload = (e) => {
-    $('input').value = sampleTreeDeriv7;
+    $('input').value = sampleTreeDeriv7Manual;
     executeInput(e);
     executeLisp(e);
 }
@@ -31,7 +31,7 @@ function executeInput (e) {
         currentCode = parseOne(inValue);  // Everything is root.
         execute(currentCode);
     } catch (ex) {
-        console.log('Something wrong.', ex.stack);
+        console.log('Something wrong.', ex.stack, ex.message);
     }
 }
 

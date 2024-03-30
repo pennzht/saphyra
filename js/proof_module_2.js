@@ -91,6 +91,31 @@ function verifyNode (node) {
             const valid = _arrow === '->' && eq([B], subOuts) &&
                 setEquals(subIns, [...ins, A]);
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+        } else if (rule === 'forall-intro') {
+            // Rule: from [...] |- [(P _var)] where _var not in ...
+            //         to [...] |- [(forall P)]
+            if (outs.length !== 1) {
+                return nodeProper.concat(['#err/too-long']);
+            }
+            const [out] = outs;
+            if (subsVerified.length !== 1) {
+                return nodeProper.concat(['#err/too-many-subs']);
+            }
+            const [sub] = subsVerified;  // Verify node.
+            if (sub[0] !== 'node') {
+                return nodeProper.concat(['#err/sub-not-node']);
+            }
+            const subIns = sub[2], subOuts = sub[3];
+            const validIns = setEquals(subIns, ins);
+            const outsMatch = simpleMatch(
+                [['_P', '_var'], ['forall', '_P']],
+                [subOuts[0], out],
+            );
+            const validOuts = outsMatch.success && isVar(outsMatch.map.get('_var'))
+                && ! getFreeVars(subIns).includes(outsMatch.map.get('_var'));
+
+            const valid = validIns && validOuts;
+            return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[1]));
             const links = subsVerified.filter((x) => x[0] === 'link');
