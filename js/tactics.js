@@ -175,11 +175,23 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'beta-expansion-stmt') {
-        // TODO
+        // TODO.
+        /*
+        if (io === 'in') {
+            return applyBeta(code, space, port, io, lam, arg, reduced, 'type-reduce');
+        } else {
+            return applyBeta(code, space, port, io, lam, arg, reduced, 'type-expand');
+        }
+        */
     }
 
     if (ruleName === 'beta-reduction-stmt') {
-        // TODO
+        const [lam, arg] = stmt;
+        if (io === 'in') {
+            return applyBeta(code, space, port, io, lam, arg, 'type-expand');
+        } else {
+            return applyBeta(code, space, port, io, lam, arg, 'type-reduce');
+        }
     }
 
     if (ruleName === 'add-input') {
@@ -272,4 +284,73 @@ function locateNode(node, path) {
             }
         }
     }
+}
+
+function applyBeta(code, space, port, io, lam, arg, generalDirection) {
+    const redux = [lam, arg];
+    const reduced = lambdaReduce(lam, arg);
+
+    const addedBlocks = [];
+
+    if (generalDirection === 'type-expand') {
+        const betaBlock = ['node', gensym('#'), [], [
+            ['=', redux, reduced],
+        ], ['beta'], []];
+        const symBlock = ['node', gensym('#'), [
+            ['=', redux, reduced],
+        ], [
+            ['=', reduced, redux],
+        ], ['=-sym'], []];
+        const elimBlock = ['node', gensym('#'), [
+            ['=', reduced, redux],
+            reduced,
+        ], [
+            redux
+        ], ['equiv-elim'], []];
+        // Apply links
+
+        addedBlocks.push(
+            betaBlock, symBlock, elimBlock,
+            ['link', betaBlock[1], symBlock[1], betaBlock[3][0]],
+            ['link', symBlock[1], elimBlock[1], symBlock[3][0]],
+        )
+
+        if (io === 'in') {
+            addedBlocks.push(
+                ['link', elimBlock[1], port, redux]
+            )
+        } else {
+            addedBlocks.push(
+                ['link', port, elimBlock[1], reduced]
+            )
+        }
+    } else {
+        const betaBlock = ['node', gensym('#'), [], [
+            ['=', redux, reduced],
+        ], ['beta'], []];
+        const elimBlock = ['node', gensym('#'), [
+            ['=', redux, reduced],
+            redux,
+        ], [
+            reduced,
+        ], ['equiv-elim'], []];
+        // Apply links
+
+        addedBlocks.push(
+            betaBlock, elimBlock,
+            ['link', betaBlock[1], elimBlock[1], symBlock[3][0]],
+        )
+
+        if (io === 'in') {
+            addedBlocks.push(
+                ['link', elimBlock[1], port, reduced]
+            )
+        } else {
+            addedBlocks.push(
+                ['link', port, elimBlock[1], redux]
+            )
+        }
+    }
+
+    return addBlocksToNode(code, space, addedBlocks);
 }
