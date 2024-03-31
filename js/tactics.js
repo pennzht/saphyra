@@ -453,7 +453,26 @@ function autoCompleteNode(
 
 // TODO - tries to construct a node that proves `stmt`.
 function tryProveTautology(stmt) {
-  /// CONTINUE HERE.
+  function collectAtomicStatements(stmt, set) {
+    // TODO
+  }
+
+  function proveTautology(ins, upcoming, stmt) {
+    // TODO
+  }
+
+  const atomics = [... collectAtomicStatements(stmt, new Set())];
+
+  if (atomics.length > 6) {
+    // Too many statements, stop to avoid space explosion.
+    return null;
+  }
+
+  return proveTautology(
+    /* ins */ [],
+    /* upcoming */ atomics,
+    /* statement */ stmt,
+  );
 }
 
 /// Example input:
