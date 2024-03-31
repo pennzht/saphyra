@@ -405,6 +405,15 @@ function getAtomicEvaluativeNodes(
   // TODO - return a list of evaluative nodes.
 }
 
+/// Example input:
+/// stmt = (-> (and _A _B) _C)
+/// atomicAssignments = {_A: true, _B: false, _C: true}
+function evaluateSingleStmt(
+  stmt, atomicAssignments,
+) {
+  /// TODO: generate nodes for this single statement.
+}
+
 if ('Debug') {
   console.log(getAtomicEvaluativeNodes(
     /* ins */ parse(`(-> _A (-> _B _C))`),
