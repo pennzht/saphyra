@@ -209,4 +209,11 @@ $('del-value').onclick = (e) => {
 TODO - use actual insert/delete
 TODO - add markers for sorted insertion
 TODO - add slice / merge
+
+For merge, just act as if you're adding a depth=n node to a tree. Balance as you go after adding the node.
+For slice, first create a sequence of decreasing-depth nodes, such as
+    [depth=9 depth=9 depth=7 depth=4 depth=4 depth=2 depth=1]
+and then "roll out" higher depths into lower depths, so that each level has between 1 and 3 nodes.
+You can also "roll out" as you go, so you don't have to keep a separate stack of partial nodes.
+Finally, "roll in" from the shallower end and balance as you go.
 */
