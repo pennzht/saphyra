@@ -375,7 +375,7 @@ function trimId(originalCode) {
     return newCode;
 }
 
-/// TODO - construct a `join` node using nothing but those subnodes.
+/// Constructs a `join` node using nothing but those subnodes.
 /// May rename subnodes if necessary.
 ///
 /// This function is used to generate proofs of readily-evaluable statements
@@ -451,19 +451,9 @@ function autoCompleteNode(
   };
 }
 
-/// TODO - "evaluative" nodes
-/// to build a tautology, such as (-> A B C) -> ((A and B) -> C),
-/// make branches for all atomics (in this case, A B C)
-/// and evaluate all other inputs/outputs.
-/// For example, one of these nodes is proving that
-/// [node #label [_A (-> _B false) _C     (-> _A (-> _B _C))]
-///              [(-> (and _A _B) _C)]
-///              (join) (... subs)]
-function getAtomicEvaluativeNodes(
-  ins, outs, assignments,
-) {
-  return assignments;
-  // TODO - return a list of evaluative nodes.
+// TODO - tries to construct a node that proves `stmt`.
+function tryProveTautology(stmt) {
+  /// CONTINUE HERE.
 }
 
 /// Example input:
@@ -600,12 +590,6 @@ if ('Debug') {
     /* ins */ parse(`_A (-> _B false) (-> _C false)`),
     /* outs */ parse(`(-> (and _A _B) _C)`),
     /* bc */ evaluation.nodes,
-  ));
-
-  console.log(getAtomicEvaluativeNodes(
-    /* ins */ parse(`(-> _A (-> _B _C))`),
-    /* outs */ parse(`(-> (and _A _B) _C)`),
-    /* assignments */ new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
   ));
 }
 
