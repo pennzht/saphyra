@@ -99,6 +99,11 @@ function getType (sexp) {
     return valid ? headType[headType.length-1] : null;
 }
 
+function typeToString(type) {
+    if (isAtomic(type)) return type;
+    else return '<' + type.map(typeToString).join('') + '>';
+}
+
 if (false) {
 console.log(`Type 1 ${str(getType(parseOne("([: _x:P [: _y:O _z:P]] false)")))}`);  // [O P]
 console.log(`Type 2 ${str(getType(parseOne("[: _x:O (+ _x:O _x:O)]")))}`);  // [O O]

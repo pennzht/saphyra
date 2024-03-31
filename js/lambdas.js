@@ -110,7 +110,7 @@ function lambdaReplace (sexp, v, arg) {
             // Replace.
             const newVar = genVar(
                 getFreeVars(arg).concat(getAllVars(sexp)),
-                typeString(innerVar),
+                typeToString(getType(innerVar)),
             );
             innerVar = newVar;
             innerExp = lambdaReplace(innerExp, innerVar, newVar);
@@ -168,6 +168,8 @@ function lambdaExtract (term) {
 
     return maps;
 }
+
+/// TODO - add lambdaFullReduce(term, stepLimit = 100)
 
 if (0) {
 console.log(str(lambdaReplace(

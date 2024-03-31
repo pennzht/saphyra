@@ -175,7 +175,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
 
     if (ruleName === 'forall-intro') {
         const spaceIns = locateNode(code, space)[Ins];
-        const newVar = genVar(getFreeVars(spaceIns), typeString(stmt[1][1]));
+        const newVar = genVar(getFreeVars(spaceIns), typeToString(getType(stmt[1][1])));
         const subBlock = ['node', gensym('#'), spaceIns, [[stmt[1], newVar]], ['join'], []];
         const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['forall-intro'], [
           subBlock,
