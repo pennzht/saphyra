@@ -567,6 +567,8 @@ function translateLiteral(expr) {
 function deepParse(input) { return translateLiteral(parse(input)); }
 
 /// Performs a simple match between pattern and sexp.
+/// Remember, it returns an object {success, map},
+/// and in a boolean, only check for .success
 function simpleMatch (pattern, sexp) {
     if (isVar (pattern)) {
         return {success: true, map: new Map([[pattern, sexp]])};

@@ -407,16 +407,16 @@ function getAtomicEvaluativeNodes(
 
 /// Example input:
 /// stmt = (-> (and _A _B) _C)
-/// assignments = {_A: true, _B: false, _C: true}
+/// assignments = {_A: +1, _B: -1, _C: +1}
+/// Allows 0 for "unknown"; using ternary logic.
 function evaluateSingleStmt(
   stmt, assignments,
 ) {
-  const gist = str(stmt);
-  if (assignments.has(gist)) {
+  if (assignments.has(str(stmt))) {
     return [];  // Already given, no need to prove
-  } else if (gist === 'true') {
+  } else if (stmt === 'true') {
     return [ ['node', '#', [], ['true'], ['true-intro'], []] ];
-  } else if (gist === 'false') {
+  } else if (stmt === 'false') {
     return [ ['node', '#', [], parseOne(`(-> false false)`), ['impl-intro'],
       [ // subs
         ['link', '^a', '#', 'false'],
@@ -429,10 +429,42 @@ function evaluateSingleStmt(
   /// TODO: add "simple evaluation" to get sub-evaluations.
 }
 
+/// Example input:
+/// stmt = (-> (and _A _B) _C)
+/// assignments = {_A: true, _B: false, _C: true}
+/// Allows 0 for "unknown"; using ternary logic.
+function getBooleanValue(
+  stmt, assignments,
+) {
+  console.log(stmt);
+  if (stmt === 'true') {
+    return +1;
+  } else if (stmt === 'false') {
+    return -1;
+  } else if (simpleMatch(parseOne(`(and _A _B)`), stmt).success) {
+    return Math.min(
+      getBooleanValue(stmt[1], assignments),
+      getBooleanValue(stmt[2], assignments),
+    )
+  } else if (simpleMatch(parseOne(`(or _A _B)`), stmt).success) {
+    return Math.max(
+      getBooleanValue(stmt[1], assignments),
+      getBooleanValue(stmt[2], assignments),
+    )
+  } else if (simpleMatch(parseOne(`(-> _A _B)`), stmt).success) {
+    return Math.max(
+      0 - getBooleanValue(stmt[1], assignments),
+      getBooleanValue(stmt[2], assignments),
+    )
+  } else {
+    return assignments.has(str(stmt)) ? assignments.get(str(stmt)) : 0;
+  }
+}
+
 if ('Debug') {
-  console.log(evaluateSingleStmt(
+  console.log(getBooleanValue(
     parseOne(`(-> (and _A _B) _C)`),
-    new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
+    new Map([[`_A`, +1], [`_B`, 0], [`_C`, 0]]),
   ));
 
   console.log(getAtomicEvaluativeNodes(
