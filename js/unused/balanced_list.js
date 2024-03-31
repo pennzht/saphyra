@@ -40,16 +40,7 @@ function addElem(node, data) {
         else newChildren.push(... ch.children);
       }
 
-      // Is this a good branch?
-      if (newChildren.length <= 3) {
-        return branch(...newChildren);
-      } else {
-        // Split branch.
-        return branch(
-          branch(newChildren[0], newChildren[1]),
-          branch(newChildren[2], newChildren[3]),
-        );
-      }
+      return recombineNodes(newChildren, false);
     } else {
       // Still balanced. Good.
       return branch(...children);
@@ -91,26 +82,60 @@ function delElem(node) {
       }
 
       // Depending on the size (3 ~ 7), set new nodes.
-      const [a, b, c, d, e, f, g, ..._else] =
-          [...newChildren, null, null, null, null, null, null, null];
-      const size = newChildren.length;
-
-      if (size === 1) {
-        return a;
-      } else if (size === 2) {
-        return branch(a, b);
-      } else if (size === 3) {
-        return branch(a, b, c);
-      } else if (size === 4) {
-        return branch(branch(a, b), branch(c, d));
-      } else if (size === 5) {
-        return branch(branch(a, b), branch(c, d, e));
-      } else if (size === 6) {
-        return branch(branch(a, b, c), branch(d, e, f));
-      } else if (size === 7) {
-        return branch(branch(a, b), branch(c, d), branch(e, f, g));
-      }
+      return recombineNodes(newChildren, true);
     }
+  }
+}
+
+function recombineNodes(nodes, preferDeep) {
+  const size = nodes.length;
+  const [a, b, c, d, e, f, g, h, i, ..._else] =
+      [...nodes, null, null, null, null, null, null, null, null];
+
+  if (size === 1) {
+    return a;
+  } else if (size === 2) {
+    return branch(a, b);
+  } else if (size === 3) {
+    return branch(a, b, c);
+  } else if (size === 4) {
+    return branch(branch(a, b), branch(c, d));
+  } else if (size === 5) {
+    return branch(branch(a, b), branch(c, d, e));
+  } else if (size === 6) {
+    return branch(branch(a, b, c), branch(d, e, f));
+  } else if (size === 7) {
+    return branch(branch(a, b), branch(c, d), branch(e, f, g));
+  } else if (size === 8) {
+    return preferDeep ?
+      branch(
+        branch(
+          branch(a, b), branch(c, d),
+        ),
+        branch(
+          branch(e, f), branch(g, h),
+        ),
+      ) :
+      branch(
+        branch(a, b, c),
+        branch(d, e, f),
+        branch(g, h),
+      );
+  } else {
+    return preferDeep ?
+      branch(
+        branch(
+          branch(a, b), branch(c, d),
+        ),
+        branch(
+          branch(e, f), branch(g, h, i),
+        ),
+      ) :
+      branch(
+        branch(a, b, c),
+        branch(d, e, f),
+        branch(g, h, i),
+      );
   }
 }
 
