@@ -98,4 +98,36 @@ folRules = `
 
 (^-S [_a _b] [] [(= (^ _a (S _b)) (* _a (^ _a _b)))])
 
+(and-negate-1
+  [_A _B]
+  [(-> _A false)]
+  [(-> (and _A _B) false)])
+
+(and-negate-2
+  [_A _B]
+  [(-> _B false)]
+  [(-> (and _A _B) false)])
+
+(or-negate
+  [_A _B]
+  [(-> _A false) (-> _B false)]
+  [(-> (or _A _B) false)])
+
+(ex-falso
+  [_A _B]
+  [(-> _A false)]
+  [(-> _A _B)])
+
+(veritas-aeterna
+  [_A _B]
+  [_B]
+  [(-> _A _B)])
+
+(impl-negate
+  [_A _B]
+  [_A (-> _B false)]
+  [(-> (-> _A _B) false)])
 `;
+
+/// The last few lines are temporary axioms to make tautology tactics easier.
+/// They will be replaced by actual proofs.

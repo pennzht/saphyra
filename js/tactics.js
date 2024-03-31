@@ -479,7 +479,7 @@ function evaluateSingleStmtWithValue(
     if (resA.value === -1) {
       nodes.push(['node', '#', [neg(A)], [stmt], ['ex-falso'], []]); // TODO: expand.
     } else if (resB.value === 1) {
-      nodes.push(['node', '#', [B], [stmt], ['k-combinator'], []]); // TODO: expand.
+      nodes.push(['node', '#', [B], [stmt], ['veritas-aeterna'], []]); // TODO: expand.
     } else if (resA.value === 1 && resB.value === -1) {
       nodes.push(['node', '#', [A, neg(B)], [neg(stmt)], ['impl-negate'], []]); // TODO: expand.
     }
