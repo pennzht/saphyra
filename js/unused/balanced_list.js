@@ -1,8 +1,5 @@
 /// A balanced-list implementation.
 
-window.onload = main;
-$('add-value').onclick = updateTree;
-
 function sum(arr) {
   let ans = 0;
   for (const x of arr) ans += x;
@@ -18,9 +15,15 @@ function leaf(data) {
   return {type: 'leaf', data, depth: 0, size: 1};
 }
 
+function empty() {
+  return {type: 'empty', depth: -1, size: 0};
+}
+
 // Just consider balancedness, ignore order for now.
 function addElem(node, data) {
-  if (node.type === 'leaf') {
+  if (node.type === 'empty') {
+    return leaf(data);
+  } else if (node.type === 'leaf') {
     return branch(
       leaf(data), leaf(node.data)
     )
@@ -54,17 +57,76 @@ function addElem(node, data) {
   }
 }
 
+// TODO - function delElem(node, data)
+//     Currently deletes a _random_ node
+//     After removing, try to "merge" thinner node with its neighbor.
+//     If resolves in another "thin" node, keep going upwards.
+function delElem(node) {
+  if (node.type === 'empty') {return node}
+  else if (node.type === 'leaf') {return empty()}
+  else {
+    const children = [...node.children];
+    const index = randrange(children.length);
+    children[index] = delElem(children[index]);
+    const chosenChild = children[index];
+
+    // Check rebalance
+    if (chosenChild.type === 'empty') {
+      const newChildren = children.filter((x) => x.type !== 'empty');
+      return newChildren.length > 1 ?
+        branch(...newChildren) :
+        newChildren[0];
+    } else if (chosenChild.depth === node.depth - 1) {
+      // Still balanced, good
+      return branch(...children);
+    } else {
+      // Chosen child is shallower, need to recombine with siblings' children
+      const newChildren = [];
+      for (const child of children) {
+        if (child.depth === node.depth - 1) {
+          newChildren.push(... child.children);
+        } else {
+          newChildren.push(child);
+        }
+      }
+
+      // Depending on the size (3 ~ 7), set new nodes.
+      const [a, b, c, d, e, f, g, ..._else] =
+          [...newChildren, null, null, null, null, null, null, null];
+      const size = newChildren.length;
+
+      if (size === 1) {
+        return a;
+      } else if (size === 2) {
+        return branch(a, b);
+      } else if (size === 3) {
+        return branch(a, b, c);
+      } else if (size === 4) {
+        return branch(branch(a, b), branch(c, d));
+      } else if (size === 5) {
+        return branch(branch(a, b), branch(c, d, e));
+      } else if (size === 6) {
+        return branch(branch(a, b, c), branch(d, e, f));
+      } else if (size === 7) {
+        return branch(branch(a, b), branch(c, d), branch(e, f, g));
+      }
+    }
+  }
+}
+
 function joinAll(listOfLists) {
   return [].concat(...listOfLists);
 }
 
 function dispLayer(layer) {
   const children = layer.map((node) =>
-    elem('td', {colspan: node.size}, [
-      node.type === 'branch' ?
-      `\u25be ${node.depth}` :
-      `${node.data}`
-    ])
+    node.type === 'empty'
+      ? elem('td', {}, [text('(empty)')])
+      : elem('td', {colspan: node.size}, [
+        node.type === 'branch' ?
+        text(`\u25be ${node.depth}`) :
+        text(`${node.data}`)
+      ])
   );
   return elem('tr', null, children);
 }
@@ -94,20 +156,27 @@ globals = {
   )
 };
 
-function main() {
+window.onload = (e) => {
   console.log(globals.list);
   $('output').appendChild(dispTree(globals.list));
-}
+};
 
 function randrange(n) {
   return Math.floor(Math.random() * n)
 }
 
-function updateTree() {
+$('add-value').onclick = (e) => {
   const newData = parseInt($('value').value) || randrange(100);
   $('value').value = '';
 
   globals.list = addElem(globals.list, newData);
+  $('output').innerHTML = '';
+  $('output').appendChild(dispTree(globals.list));
+}
+
+$('del-value').onclick = (e) => {
+  globals.list = delElem(globals.list);
+  console.log(globals.list);
   $('output').innerHTML = '';
   $('output').appendChild(dispTree(globals.list));
 }
