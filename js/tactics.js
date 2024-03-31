@@ -399,19 +399,34 @@ function autoCompleteNode(
 ///              [(-> (and _A _B) _C)]
 ///              (join) (... subs)]
 function getAtomicEvaluativeNodes(
-  ins, outs, atomicAssignments,
+  ins, outs, assignments,
 ) {
-  return atomicAssignments;
+  return assignments;
   // TODO - return a list of evaluative nodes.
 }
 
 /// Example input:
 /// stmt = (-> (and _A _B) _C)
-/// atomicAssignments = {_A: true, _B: false, _C: true}
+/// assignments = {_A: true, _B: false, _C: true}
 function evaluateSingleStmt(
-  stmt, atomicAssignments,
+  stmt, assignments,
 ) {
-  /// TODO: generate nodes for this single statement.
+  const gist = str(stmt);
+  if (assignments.has(gist)) {
+    return [];  // Already given, no need to prove
+  } else if (gist === 'true') {
+    return [ ['node', '#', [], ['true'], ['true-intro'], []] ];
+  } else if (gist === 'false') {
+    return [ ['node', '#', [], parseOne(`(-> false false)`), ['impl-intro'],
+      [ // subs
+        ['link', '^a', '#', 'false'],
+        ['node', '#', ['false'], ['false'], ['id'], []],
+        ['link', '#', '^c', 'false'],
+      ],
+    ] ];
+  }
+  /// TODO: generate nodes for each sub.
+  /// TODO: add "simple evaluation" to get sub-evaluations.
 }
 
 if ('Debug') {
@@ -423,7 +438,7 @@ if ('Debug') {
   console.log(getAtomicEvaluativeNodes(
     /* ins */ parse(`(-> _A (-> _B _C))`),
     /* outs */ parse(`(-> (and _A _B) _C)`),
-    /* atomicAssignments */ new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
+    /* assignments */ new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
   ));
 }
 
