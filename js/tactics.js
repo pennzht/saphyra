@@ -375,6 +375,21 @@ function trimId(originalCode) {
     return newCode;
 }
 
+/// TODO - construct a `join` node using nothing but those subnodes.
+/// May rename subnodes if necessary.
+///
+/// This function is used to generate proofs of readily-evaluable statements
+/// such as [A, not B, C] |- []
+function autoCompleteNode(
+  ins, outs, breadcrumbNodes,
+) {
+  const currentSubs = [];
+  const statementParents = new Map();  // statement -> parent statement
+
+}
+
+/// TODO - "evaluative" nodes
+
 if (0){
   console.log(trimId(parseOne(`
     [node #r [_A] [_B] [join] [
