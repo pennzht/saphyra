@@ -26,16 +26,43 @@ window.onload = (e) => {
     executeLisp(e);
   */
 
+  /*
   const evaluation = evaluateSingleStmtWithValue(
     parseOne(`(-> (and _A _B) _C)`),
     new Map([[`_A`, +1], [`_B`, -1], [`_C`, -1]]),
   );
 
   currentCode = autoCompleteNode(
-    /* ins */ parse(`_A (-> _B false) (-> _C false)`),
-    /* outs */ parse(`(-> (and _A _B) _C)`),
-    /* bc */ evaluation.nodes,
+    parse(`_A (-> _B false) (-> _C false)`),
+    parse(`(-> (and _A _B) _C)`),
+    evaluation.nodes,
   ).node;
+  */
+
+  // SUCCESS !!!
+
+  currentCode = tryProveTautology(parseOne(`
+    (-> _M (-> _N (and _M (or _Q _N))))
+  `));
+
+  currentCode = tryProveTautology(parseOne(`
+    [-> _A
+      [-> (-> _A _B)
+        [-> (-> _A _C)
+          [-> (-> _B _D)
+            [-> (-> _C _D)
+              _D
+            ]
+          ]
+        ]
+      ]
+    ]
+  `));
+
+  currentCode = tryProveTautology(parseOne(
+    `(and (and _A _B) (-> _A false))`
+  ));
+
   execute(currentCode);
 }
 

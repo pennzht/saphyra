@@ -454,11 +454,96 @@ function autoCompleteNode(
 // TODO - tries to construct a node that proves `stmt`.
 function tryProveTautology(stmt) {
   function collectAtomicStatements(stmt, set) {
-    // TODO
+    if (['true', 'false'].includes(stmt)) {
+      ;
+    } else if (isList(stmt) && ['->', 'and', 'or'].includes(stmt[0])) {
+      for (sub of [stmt[1], stmt[2]]) {
+        collectAtomicStatements(sub, set);
+      }
+    } else {
+      set.add(str(stmt));
+    }
+    return set;
   }
 
-  function proveTautology(ins, upcoming, stmt) {
-    // TODO
+  // Returns a node of either stmt or (not stmt).
+  // If not always-true or always-false, return null.
+  // When merging nodes, just test if outs are equal.
+  function proveJudgment(ins, polarities, upcoming, stmt) {
+    const polarizedIns = ins.map((inn, index) => polarities[index] > 0 ? inn : ['->', inn, 'false']);
+
+    if (upcoming.length <= 0) {
+      // Can prove things.
+      const res = evaluateSingleStmtWithValue(
+        stmt,
+        new Map(ins.map((inn, index) => [str (inn), polarities[index]])),
+      );
+
+      if (res.value !== 0) {
+        const trueOut = res.value > 0 ? stmt : ['->', stmt, 'false'];
+        return autoCompleteNode(polarizedIns, [trueOut], res.nodes).node;
+      } else return null;
+    }
+
+    // Split into two cases and prove them separately.
+    const next = upcoming[0], rest = upcoming.slice(1);
+    const case1 = proveJudgment(
+      ins.concat([next]), polarities.concat([+1]), rest, stmt
+    );
+    if (case1 === null) return null;
+
+    const case2 = proveJudgment(
+      ins.concat([next]), polarities.concat([-1]), rest, stmt
+    );
+    if (case2 === null) return null;
+
+    if (! eq(case1[Outs], case2[Outs])) {
+      console.log('outs mismatch');
+      return null;
+    }
+
+    const judgment = case1[Outs][0];
+
+    // Successful match.
+    const branch1node = [
+      'node', '#1',
+      polarizedIns, [['->', next, judgment]],
+      ['impl-intro'], [case1],
+    ];
+    const branch2node = [
+      'node', '#2',
+      polarizedIns, [['->', ['->', next, 'false'], judgment]],
+      ['impl-intro'], [case2],
+    ];
+    const tnd = [
+      'node',
+      '#tnd', [],
+      [['or', next, ['->', next, 'false']]],
+      ['tnd'], [],
+    ];
+    const stem = [
+      'node', '#0',
+      [... branch1node[Outs], ... branch2node[Outs], ...tnd[Outs]],
+      [judgment], ['or-elim'],
+      [],
+    ];
+
+    const mergedNode = autoCompleteNode(
+      polarizedIns, [judgment], [branch1node, branch2node, tnd, stem],
+    );
+
+    if (mergedNode.success) return mergedNode.node;
+    return null;
+
+    /** ['node', '#', ins, [judgment], ['join'], [
+      branch1node,
+      branch2node,
+      ... (ins.map( (inn) => ['link', '^a', '#1', inn] )),
+      ... (ins.map( (inn) => ['link', '^a', '#2', inn] )),
+      tnd,
+      ['node', '#0', [tnd[Outs][0], branch1node[Outs][0], branch2node[Outs][0]], [judgment], ['tnd'], []],
+      ['link', '']
+    ]]; **/
   }
 
   const atomics = [... collectAtomicStatements(stmt, new Set())];
@@ -468,8 +553,9 @@ function tryProveTautology(stmt) {
     return null;
   }
 
-  return proveTautology(
+  return proveJudgment(
     /* ins */ [],
+    /* polarities */ [],
     /* upcoming */ atomics,
     /* statement */ stmt,
   );
@@ -497,11 +583,9 @@ function evaluateSingleStmtWithValue(
     };
   } else if (stmt === 'false') {
     return {
-      nodes: [ ['node', '#', [], parseOne(`(-> false false)`), ['impl-intro'],
+      nodes: [ ['node', '#', [], parse(`(-> false false)`), ['impl-intro'],
         [ // subs
-          ['link', '^a', '#', 'false'],
           ['node', '#', ['false'], ['false'], ['id'], []],
-          ['link', '#', '^c', 'false'],
         ],
       ] ],
       value: -1,
@@ -610,6 +694,10 @@ if ('Debug') {
     /* outs */ parse(`(-> (and _A _B) _C)`),
     /* bc */ evaluation.nodes,
   ));
+
+  console.log(tryProveTautology(parseOne(`
+    (-> _A (-> _B (and _A _B)))
+  `)))
 }
 
 if (0){
