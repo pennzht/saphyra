@@ -16,7 +16,7 @@ const emptyNode = `[node #root [] [] [join] []]`
 
 window.onload = (e) => {
     $('input').value = emptyNode;
-    // $('input').value = sampleTreeDeriv7Complete;
+    $('input').value = sampleTreeDeriv9;
     executeInput(e);
     executeLisp(e);
 }
