@@ -424,6 +424,14 @@ function evaluateSingleStmt(
         ['link', '#', '^c', 'false'],
       ],
     ] ];
+  } else if (simpleMatch(parseOne(`(and _A _B)`), stmt).success) {
+    // TODO - find subvalues and evaluate.
+  } else if (simpleMatch(parseOne(`(or _A _B)`), stmt).success) {
+    // TODO - find subvalues and evaluate.
+  } else if (simpleMatch(parseOne(`(-> _A _B)`), stmt).success) {
+    // TODO - find subvalues and evaluate.
+  } else {
+    return [];
   }
   /// TODO: generate nodes for each sub.
   /// TODO: add "simple evaluation" to get sub-evaluations.
