@@ -418,7 +418,7 @@ function evaluateSingleStmtWithValue(
   if (assignments.has(str(stmt))) {
     return {
       nodes: [],
-      value: +1,
+      value: assignments.get(str(stmt)),
     };
   } else if (stmt === 'true') {
     return {
@@ -438,8 +438,8 @@ function evaluateSingleStmtWithValue(
     };
   } else if (simpleMatch(parseOne(`(and _A _B)`), stmt).success) {
     const [_, A, B] = stmt;
-    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
-    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    const resA = evaluateSingleStmtWithValue(A, assignments);
+    const resB = evaluateSingleStmtWithValue(B, assignments);
     // For each case, generate subnodes.
     const nodes = [];
     if (resA.value === -1) {
@@ -451,12 +451,12 @@ function evaluateSingleStmtWithValue(
     }
     return {
       nodes: [...resA.nodes, ...resB.nodes, ...nodes],
-      value: Math.min(resA.value, resB.value);
+      value: Math.min(resA.value, resB.value),
     }
   } else if (simpleMatch(parseOne(`(or _A _B)`), stmt).success) {
     const [_, A, B] = stmt;
-    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
-    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    const resA = evaluateSingleStmtWithValue(A, assignments);
+    const resB = evaluateSingleStmtWithValue(B, assignments);
     // For each case, generate subnodes.
     const nodes = [];
     if (resA.value === 1) {
@@ -468,12 +468,12 @@ function evaluateSingleStmtWithValue(
     }
     return {
       nodes: [...resA.nodes, ...resB.nodes, ...nodes],
-      value: Math.max(resA.value, resB.value);
+      value: Math.max(resA.value, resB.value),
     }
   } else if (simpleMatch(parseOne(`(-> _A _B)`), stmt).success) {
     const [_, A, B] = stmt;
-    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
-    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    const resA = evaluateSingleStmtWithValue(A, assignments);
+    const resB = evaluateSingleStmtWithValue(B, assignments);
     // For each case, generate subnodes.
     const nodes = [];
     if (resA.value === -1) {
@@ -485,7 +485,7 @@ function evaluateSingleStmtWithValue(
     }
     return {
       nodes: [...resA.nodes, ...resB.nodes, ...nodes],
-      value: Math.max(0 - resA.value, resB.value);
+      value: Math.max(0 - resA.value, resB.value),
     }
   } else {
     return {nodes: [], value: 0};
@@ -527,10 +527,13 @@ function getBooleanValue(
 }
 
 if ('Debug') {
-  console.log(getBooleanValue(
+  const evaluation = (evaluateSingleStmtWithValue(
     parseOne(`(-> (and _A _B) _C)`),
-    new Map([[`_A`, +1], [`_B`, 0], [`_C`, 0]]),
+    new Map([[`_A`, +1], [`_B`, +1], [`_C`, -1]]),
   ));
+
+  console.log(evaluation.value);
+  console.log(evaluation.nodes.map(str));
 
   console.log(getAtomicEvaluativeNodes(
     /* ins */ parse(`(-> _A (-> _B _C))`),
