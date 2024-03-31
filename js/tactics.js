@@ -415,6 +415,11 @@ function evaluateSingleStmt(
 }
 
 if ('Debug') {
+  console.log(evaluateSingleStmt(
+    parseOne(`(-> (and _A _B) _C)`),
+    new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
+  ));
+
   console.log(getAtomicEvaluativeNodes(
     /* ins */ parse(`(-> _A (-> _B _C))`),
     /* outs */ parse(`(-> (and _A _B) _C)`),
