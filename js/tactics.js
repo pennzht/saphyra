@@ -161,11 +161,12 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
 
     if (ruleName === 'impl-intro') {
         const spaceIns = locateNode(code, space)[Ins];
-        const subBlock = ['node', gensym('#'), [...spaceIns, stmt[1]], [stmt[2]], ['join'], []];
-        const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['impl-intro'], [
+        const [label1, label2] = gensyms(code, 2);
+        const subBlock = ['node', label1, [...spaceIns, stmt[1]], [stmt[2]], ['join'], []];
+        const mainBlock = ['node', label2, spaceIns, [stmt], ['impl-intro'], [
           subBlock,
         ]];
-        const newLink = ['link', mainBlock[1], port, stmt];
+        const newLink = ['link', mainBlock[Label], port, stmt];
         // Connect links to imputs.
         const newIncomingLinks = spaceIns.map((i) => ['link', '^a', mainBlock[1], i]);
         return addBlocksToNode(code, space, [mainBlock, ...newIncomingLinks, newLink]);
@@ -174,11 +175,12 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     if (ruleName === 'forall-intro') {
         const spaceIns = locateNode(code, space)[Ins];
         const newVar = genVar(getFreeVars(spaceIns), typeToString(getType(stmt[1][1])));
-        const subBlock = ['node', gensym('#'), spaceIns, [[stmt[1], newVar]], ['join'], []];
-        const mainBlock = ['node', gensym('#'), spaceIns, [stmt], ['forall-intro'], [
+        const [label1, label2] = gensyms(code, 2);
+        const subBlock = ['node', label1, spaceIns, [[stmt[1], newVar]], ['join'], []];
+        const mainBlock = ['node', label2, spaceIns, [stmt], ['forall-intro'], [
           subBlock,
         ]];
-        const newLink = ['link', mainBlock[1], port, stmt];
+        const newLink = ['link', mainBlock[Label], port, stmt];
         return addBlocksToNode(code, space, [mainBlock, newLink]);
     }
 
@@ -222,14 +224,14 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     const replacementMap = new Map(replacementList);
     for (const vn of ruleVars) {
         if (! replacementMap.has(vn)) {
-            replacementMap.set(vn, gensym('_P'));
+            replacementMap.set(vn, gensym(code, '_P'));
         }
     }
 
     // Compute replacements.
     [ins, outs] = replaceAll([ruleIns, ruleOuts], replacementMap);
 
-    const newNode = ['node', gensym('#'), ins, outs, [ruleName], []];
+    const newNode = ['node', gensyms(code)[0], ins, outs, [ruleName], []];
     let link;
     if (io === 'in') {
         link = ['link', newNode[Label], port, stmt];
@@ -300,10 +302,12 @@ function applyBeta(code, space, port, io, stmt) {
 
     const addedBlocks = [];
 
-    const betaBlock = ['node', gensym('#'), [], [
+    const [label1, label2] = gensyms(code, 2);
+
+    const betaBlock = ['node', label1, [], [
         ['=', prior, posterior],
     ], ['beta'], []];
-    const elimBlock = ['node', gensym('#'), [
+    const elimBlock = ['node', label2, [
         ['=', prior, posterior],
         prior,
     ], [

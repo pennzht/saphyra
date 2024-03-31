@@ -650,12 +650,6 @@ function setEquals(A, B) {
     return eq(describe(A), describe(B));
 }
 
-const globalCounter = {count: 0n};
-function gensym (prefix = '') {
-    globalCounter.count++;
-    return `${prefix}${globalCounter.count}`;
-}
-
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
 if (false) {
     console.log (

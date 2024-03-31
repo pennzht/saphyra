@@ -80,6 +80,18 @@ function genVar(avoid, ts) {
     }
 }
 
+function gensyms (avoid, count = 1, prefix = '#', suffix = '') {
+    const avoidSet = new Set(getAllAtoms(avoid));
+    const ans = [];
+    for (let i = 0; i <= avoidSet.size + count; i++) {
+        const contender = `${prefix}${i}${suffix}`;
+        if (! avoidSet.has(contender)) {
+            ans.push(contender);
+            if (ans.length >= count) return ans;
+        }
+    }
+}
+
 if (false) {
   console.log(getAllVars(parseOne(`
       (forall (: _x:O [= _x:O (+ O _x:O)]))
