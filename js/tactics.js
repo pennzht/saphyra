@@ -194,11 +194,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'beta-reduction-stmt') {
-        if (io === 'in') {
-            return applyBeta(code, space, port, io, stmt, 'type-expand');
-        } else {
-            return applyBeta(code, space, port, io, stmt, 'type-reduce');
-        }
+        return applyBeta(code, space, port, io, stmt);
     }
 
     if (ruleName === 'add-input') {
@@ -295,70 +291,39 @@ function locateNode(node, path) {
     }
 }
 
-function applyBeta(code, space, port, io, stmt, generalDirection) {
+function applyBeta(code, space, port, io, stmt) {
     const redux = stmt;
     const reduced = lambdaFullReduce(stmt);
 
+    const prior = io === 'in' ? reduced : redux;
+    const posterior = io === 'in' ? redux : reduced;
+
     const addedBlocks = [];
 
-    if (generalDirection === 'type-expand') {
-        const betaBlock = ['node', gensym('#'), [], [
-            ['=', redux, reduced],
-        ], ['beta'], []];
-        const symBlock = ['node', gensym('#'), [
-            ['=', redux, reduced],
-        ], [
-            ['=', reduced, redux],
-        ], ['=-sym'], []];
-        const elimBlock = ['node', gensym('#'), [
-            ['=', reduced, redux],
-            reduced,
-        ], [
-            redux
-        ], ['equiv-elim'], []];
-        // Apply links
+    const betaBlock = ['node', gensym('#'), [], [
+        ['=', prior, posterior],
+    ], ['beta'], []];
+    const elimBlock = ['node', gensym('#'), [
+        ['=', prior, posterior],
+        prior,
+    ], [
+        posterior,
+    ], ['equiv-elim'], []];
+    // Apply links
 
+    addedBlocks.push(
+        betaBlock, elimBlock,
+        ['link', betaBlock[Label], elimBlock[Label], betaBlock[Outs][0]],
+    )
+
+    if (io === 'in') {
         addedBlocks.push(
-            betaBlock, symBlock, elimBlock,
-            ['link', betaBlock[Label], symBlock[Label], betaBlock[Outs][0]],
-            ['link', symBlock[Label], elimBlock[Label], symBlock[Outs][0]],
+            ['link', elimBlock[Label], port, posterior]
         )
-
-        if (io === 'in') {
-            addedBlocks.push(
-                ['link', elimBlock[Label], port, redux]
-            )
-        } else {
-            addedBlocks.push(
-                ['link', port, elimBlock[Label], reduced]
-            )
-        }
     } else {
-        const betaBlock = ['node', gensym('#'), [], [
-            ['=', redux, reduced],
-        ], ['beta'], []];
-        const elimBlock = ['node', gensym('#'), [
-            ['=', redux, reduced],
-            redux,
-        ], [
-            reduced,
-        ], ['equiv-elim'], []];
-        // Apply links
-
         addedBlocks.push(
-            betaBlock, elimBlock,
-            ['link', betaBlock[Label], elimBlock[Label], symBlock[Outs][0]],
+            ['link', port, elimBlock[Label], prior]
         )
-
-        if (io === 'in') {
-            addedBlocks.push(
-                ['link', elimBlock[Label], port, reduced]
-            )
-        } else {
-            addedBlocks.push(
-                ['link', port, elimBlock[Label], redux]
-            )
-        }
     }
 
     return addBlocksToNode(code, space, addedBlocks);
