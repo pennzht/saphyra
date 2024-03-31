@@ -380,6 +380,8 @@ function trimId(originalCode) {
 ///
 /// This function is used to generate proofs of readily-evaluable statements
 /// such as [A, not B, C] |- []
+/// breadcrumb NODES are used because while building evaluative nodes,
+/// intermediary NODES are always built.
 function autoCompleteNode(
   ins, outs, breadcrumbNodes,
 ) {
@@ -389,6 +391,27 @@ function autoCompleteNode(
 }
 
 /// TODO - "evaluative" nodes
+/// to build a tautology, such as (-> A B C) -> ((A and B) -> C),
+/// make branches for all atomics (in this case, A B C)
+/// and evaluate all other inputs/outputs.
+/// For example, one of these nodes is proving that
+/// [node #label [_A (-> _B false) _C     (-> _A (-> _B _C))]
+///              [(-> (and _A _B) _C)]
+///              (join) (... subs)]
+function getAtomicEvaluativeNodes(
+  ins, outs, atomicAssignments,
+) {
+  return atomicAssignments;
+  // TODO - return a list of evaluative nodes.
+}
+
+if ('Debug') {
+  console.log(getAtomicEvaluativeNodes(
+    /* ins */ parse(`(-> _A (-> _B _C))`),
+    /* outs */ parse(`(-> (and _A _B) _C)`),
+    /* atomicAssignments */ new Map([[`_A`, true], [`_B`, false], [`_C`, true]]),
+  ));
+}
 
 if (0){
   console.log(trimId(parseOne(`
