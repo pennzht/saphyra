@@ -189,7 +189,7 @@ function randrange(n) {
   return Math.floor(Math.random() * n)
 }
 
-$('add-value').onclick = (e) => {
+$('add-value').onclick = addValueAction = () => {
   const newData = parseInt($('value').value) || randrange(100);
   $('value').value = '';
 
@@ -198,12 +198,28 @@ $('add-value').onclick = (e) => {
   $('output').appendChild(dispTree(globals.list));
 }
 
-$('del-value').onclick = (e) => {
+$('del-value').onclick = delValueAction = () => {
   globals.list = delElem(globals.list);
   console.log(globals.list);
   $('output').innerHTML = '';
   $('output').appendChild(dispTree(globals.list));
 }
+
+window.setInterval(() => {
+  const size = globals.list.size;
+  if ($('auto').checked) {
+    if (size >= 50) {
+      delValueAction();
+    } else {
+      const delValueProbability = size / 50 * (0.8 - 0.2) + 0.2;
+      if (Math.random() < delValueProbability) {
+        delValueAction();
+      } else {
+        addValueAction();
+      }
+    }
+  }
+}, 500 /* milliseconds */);
 
 /*
 TODO - use actual insert/delete
