@@ -171,6 +171,61 @@ function lambdaExtract (term) {
 
 /// TODO - add lambdaFullReduce(term, stepLimit = 100)
 
+// Returns # of reductions made.
+function lambdaOneStepReduce(term) {
+    if (isAtomic(term)) return [term, 0];
+    if (isLambda(term)) {
+        const [_, v, body] = term;
+        const [newBody, reductionsMade] = lambdaOneStepReduce(body);
+        return [[':', v, newBody], reductionsMade];
+    }
+
+    // Application.
+    const self = [...term];
+    for (var i = 0; i < self.length; i++) {
+        const [newTerm, reductionsMade] = lambdaOneStepReduce(self[i]);
+        self[i] = newTerm;
+        if (reductionsMade > 0) {
+            return [self, reductionsMade];
+        } else {
+            // Normal case; keep reducing.
+        }
+    }
+    // No reductions yet; check of entire term is reduction.
+    if (/*isRedux*/ self.length === 2 && isLambda(self[0])) {
+        const reduced = lambdaReduce(
+            self[0], self[1]
+        );
+        return [reduced, 1];
+    }
+
+    // No reductions
+    return [self, 0];
+}
+
+function lambdaFullReduce(term, stepLimit = 100) {
+    let t = term, reductionsMade = 0;
+    for (var i = 0; i < stepLimit; i++) {
+        console.log(str(t));
+        [t, reductionsMade] = lambdaOneStepReduce(t);
+        if (reductionsMade <= 0) break;
+    }
+    console.log(str(t));
+    return t;
+}
+
+if (1) {
+    const start = parseOne(`[forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]`)
+    console.log(lambdaFullReduce(start));
+    /*
+      [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]
+      [forall [: _n:O [-> [[: _x:O [= [+ O _x:O] O]] _n:O] [[: _x:O [= [+ O _x:O] O]] [S _n:O]]]]]
+      [forall [: _n:O [-> [= [+ O _n:O] O] [[: _x:O [= [+ O _x:O] O]] [S _n:O]]]]]
+      [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]
+      [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]
+    */
+}
+
 if (0) {
 console.log(str(lambdaReplace(
     parseOne(`(: _x:O (: _y:O [+ _x:O _z:O]))`),
