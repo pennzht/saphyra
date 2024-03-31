@@ -48,10 +48,9 @@ function addElem(node, data) {
   }
 }
 
-// TODO - function delElem(node, data)
-//     Currently deletes a _random_ node
-//     After removing, try to "merge" thinner node with its neighbor.
-//     If resolves in another "thin" node, keep going upwards.
+// Currently deletes a _random_ node
+// After removing, try to "merge" thinner node with its neighbor.
+// If resolves in another "thin" node, keep going upwards.
 function delElem(node) {
   if (node.type === 'empty') {return node}
   else if (node.type === 'leaf') {return empty()}
@@ -205,3 +204,9 @@ $('del-value').onclick = (e) => {
   $('output').innerHTML = '';
   $('output').appendChild(dispTree(globals.list));
 }
+
+/*
+TODO - use actual insert/delete
+TODO - add markers for sorted insertion
+TODO - add slice / merge
+*/
