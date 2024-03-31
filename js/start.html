@@ -22,11 +22,14 @@
 
   </head>
   <body>
-    <div><textarea id="input" rows="8" cols="80"></textarea></div>
-    <input type="button" id="savedata-button" value="· Save"></input>
-    <input type="button" id="loaddata-button" value="· Load"></input>
-    <div><label for="command">Command: </label><input type="text" id="command"></input>
+    <div id="legacy-display-region" style="display:none;">
+      <textarea id="input" rows="8" cols="80"></textarea>
+      <input type="button" id="savedata-button" value="· Save"></input>
+      <input type="button" id="loaddata-button" value="· Load"></input>
+      <div><label for="command">Command: </label><input type="text" id="command"></input>
       <input type="button" id="command-button" value="↑ Execute"></input></div>
+    </div>
+
     <details open><summary>Visual order</summary><div id="visual"></div></details>
     <details open><summary>Display</summary><div id="display"></div></details>
     <details open><summary>Output</summary><div id="output" style="white-space: pre;"></div></details>
