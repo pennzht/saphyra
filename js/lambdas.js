@@ -206,15 +206,13 @@ function lambdaOneStepReduce(term) {
 function lambdaFullReduce(term, stepLimit = 100) {
     let t = term, reductionsMade = 0;
     for (var i = 0; i < stepLimit; i++) {
-        console.log(str(t));
         [t, reductionsMade] = lambdaOneStepReduce(t);
         if (reductionsMade <= 0) break;
     }
-    console.log(str(t));
     return t;
 }
 
-if (1) {
+if (0) {
     const start = parseOne(`[forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]`)
     console.log(lambdaFullReduce(start));
     /*
