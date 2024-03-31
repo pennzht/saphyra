@@ -387,7 +387,68 @@ function autoCompleteNode(
 ) {
   const currentSubs = [];
   const statementParents = new Map();  // statement -> parent statement
+  const labelToNode = new Map();  // Map of label -> renamed node
 
+  for (let i = 0; i < breadcrumbNodes.length; i++) {
+    const newNode = [...breadcrumbNodes[i]];
+    newNode[Label] = '#' + i;
+    labelToNode.set('#' + i, newNode);
+  }
+
+  const remainingLabels = new Set([... labelToNode.keys()]);
+
+  // Set successful nodes.
+  for (const stmt of ins) {
+    statementParents.set(str(stmt), '^a');
+  }
+
+  // Try to link valid nodes.
+  for (let i = 0; i < breadcrumbNodes.length; i++) {
+    const nowProvenNodes = [... remainingLabels].filter((label) => {
+      const node = labelToNode.get(label);
+      const availableNow = node[Ins].every((stmt) => statementParents.has(str(stmt)));
+      return availableNow;
+    });
+
+    if (nowProvenNodes.length === 0) {
+      // No more nodes available.
+      break;
+    }
+
+    for (const label of nowProvenNodes) {
+      // Add pre and post links.
+      const node = labelToNode.get(label);
+      for (const inn of node[Ins]) {
+        currentSubs.push(['link', statementParents.get(str(inn)), node[Label], inn]);
+      }
+      currentSubs.push(node);
+      for (const out of node[Outs]) if (! statementParents.has(str(out))){
+        statementParents.set(str(out), node[Label]);
+      }
+      remainingLabels.delete(node[Label]);
+    }
+  }
+
+  let success = true;
+
+  // No more proven. Is everything resolved?
+  for (const stmt of outs) {
+    if (statementParents.has(str(stmt))) {
+      currentSubs.push(['link', statementParents.get(str(stmt)), '^c', stmt]);
+    } else {
+      success = false;
+    }
+  }
+
+  // Ignore remainign nodes.
+  const finalNode = [
+    'node', '#', ins, outs, ['join'], currentSubs
+  ];
+
+  return {
+    node: finalNode,
+    success,
+  };
 }
 
 /// TODO - "evaluative" nodes
@@ -527,13 +588,19 @@ function getBooleanValue(
 }
 
 if ('Debug') {
-  const evaluation = (evaluateSingleStmtWithValue(
+  const evaluation = evaluateSingleStmtWithValue(
     parseOne(`(-> (and _A _B) _C)`),
-    new Map([[`_A`, +1], [`_B`, +1], [`_C`, -1]]),
-  ));
+    new Map([[`_A`, +1], [`_B`, -1], [`_C`, -1]]),
+  );
 
   console.log(evaluation.value);
   console.log(evaluation.nodes.map(str));
+
+  console.log(autoCompleteNode(
+    /* ins */ parse(`_A (-> _B false) (-> _C false)`),
+    /* outs */ parse(`(-> (and _A _B) _C)`),
+    /* bc */ evaluation.nodes,
+  ));
 
   console.log(getAtomicEvaluativeNodes(
     /* ins */ parse(`(-> _A (-> _B _C))`),

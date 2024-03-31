@@ -15,19 +15,33 @@ const emptyNode = `[node #root [] [] [join] []]`
 
 // TODO: fix case where: after loading a proven module, statement symbols are reused (such as #1 and #1) in the same root.
 
+// Global state: current node
+currentCode = null;
+
 window.onload = (e) => {
+  /*
     $('input').value = emptyNode;
     $('input').value = sampleTreeDeriv9;
     executeInput(e);
     executeLisp(e);
+  */
+
+  const evaluation = evaluateSingleStmtWithValue(
+    parseOne(`(-> (and _A _B) _C)`),
+    new Map([[`_A`, +1], [`_B`, -1], [`_C`, -1]]),
+  );
+
+  currentCode = autoCompleteNode(
+    /* ins */ parse(`_A (-> _B false) (-> _C false)`),
+    /* outs */ parse(`(-> (and _A _B) _C)`),
+    /* bc */ evaluation.nodes,
+  ).node;
+  execute(currentCode);
 }
 
 $('command').onchange = $('command').oninput = (e) => {
     console.log ($("command").value);
 }
-
-// Global state: current node
-currentCode = null;
 
 function executeInput (e) {
     const inValue = $('input').value;
