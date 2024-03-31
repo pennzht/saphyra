@@ -1,11 +1,12 @@
 // Main JS file. Browser only.
 
-// import * as data from  './data.js';
-// import * as lang from  './lang.js';
-// import * as breakdown from './breakdown.js';
-// import * as nodeviz from './nodeviz.js';
+/*
+    At startup, `window.onload` loads a given statement into `currentCode`;
 
-// const $ = (x) => document.getElementById(x);
+    Structure of the operation loop:
+      User selects an "active" node or statement, displaying multiple tactics to use
+      User selects a tactic, setting `currentCode` to the resolved new node.
+*/
 
 $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
