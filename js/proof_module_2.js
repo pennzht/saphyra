@@ -133,6 +133,27 @@ function verifyNode (node) {
             const valid = validIns && validOuts;
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'beta') {
+            // Beta __equivalence__
+            if (outs.length !== 1) {
+                return nodeProper.concat(['#err/incorrect-outs']);
+            }
+            const [out] = outs;
+            const matching = simpleMatch(
+                ['=', '_lhs', '_rhs'],
+                out,
+            );
+            if (! matching.success) {
+                return nodeProper.concat(['#err/format']);
+            }
+
+            const valid = lambdaEq(
+              matching.map.get('_lhs'),
+              matching.map.get('_rhs'),
+            )
+
+            return nodeProper.concat([valid ? '#good' : '#err/beta']);
+
+            /* Old version: one-step expansion.
             // Beta expansion/contraction
             if (outs.length !== 1) {
                 return nodeProper.concat(['#err/incorrect-outs']);
@@ -159,6 +180,7 @@ function verifyNode (node) {
             );
 
             return nodeProper.concat([valid ? '#good' : '#err/beta']);
+            */
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
             const links = subsVerified.filter((x) => x[0] === 'link');

@@ -50,11 +50,9 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
         space, port, io, stmt, 'beta-expansion-stmt',
     ]);
 
-    if (isRedux(stmt)) {
-        applicableRules.push([
-            space, port, io, stmt, 'beta-reduction-stmt',
-        ]);
-    }
+    applicableRules.push([
+        space, port, io, stmt, 'beta-reduction-stmt',
+    ]);
 
     if (io === 'in') {
         // Match exact outs.
@@ -196,11 +194,10 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     }
 
     if (ruleName === 'beta-reduction-stmt') {
-        const [lam, arg] = stmt;
         if (io === 'in') {
-            return applyBeta(code, space, port, io, lam, arg, 'type-expand');
+            return applyBeta(code, space, port, io, stmt, 'type-expand');
         } else {
-            return applyBeta(code, space, port, io, lam, arg, 'type-reduce');
+            return applyBeta(code, space, port, io, stmt, 'type-reduce');
         }
     }
 
@@ -298,9 +295,9 @@ function locateNode(node, path) {
     }
 }
 
-function applyBeta(code, space, port, io, lam, arg, generalDirection) {
-    const redux = [lam, arg];
-    const reduced = lambdaReduce(lam, arg);
+function applyBeta(code, space, port, io, stmt, generalDirection) {
+    const redux = stmt;
+    const reduced = lambdaFullReduce(stmt);
 
     const addedBlocks = [];
 
