@@ -409,29 +409,86 @@ function getAtomicEvaluativeNodes(
 /// stmt = (-> (and _A _B) _C)
 /// assignments = {_A: +1, _B: -1, _C: +1}
 /// Allows 0 for "unknown"; using ternary logic.
-function evaluateSingleStmt(
+/// Returns a collection of nodes if it is provable/disprovable, together with the value of the statement.
+function evaluateSingleStmtWithValue(
   stmt, assignments,
 ) {
+  const neg = (s) => ['->', s, 'false'];
+
   if (assignments.has(str(stmt))) {
-    return [];  // Already given, no need to prove
+    return {
+      nodes: [],
+      value: +1,
+    };
   } else if (stmt === 'true') {
-    return [ ['node', '#', [], ['true'], ['true-intro'], []] ];
+    return {
+      nodes: [['node', '#', [], ['true'], ['true-intro'], []]],
+      value: +1,
+    };
   } else if (stmt === 'false') {
-    return [ ['node', '#', [], parseOne(`(-> false false)`), ['impl-intro'],
-      [ // subs
-        ['link', '^a', '#', 'false'],
-        ['node', '#', ['false'], ['false'], ['id'], []],
-        ['link', '#', '^c', 'false'],
-      ],
-    ] ];
+    return {
+      nodes: [ ['node', '#', [], parseOne(`(-> false false)`), ['impl-intro'],
+        [ // subs
+          ['link', '^a', '#', 'false'],
+          ['node', '#', ['false'], ['false'], ['id'], []],
+          ['link', '#', '^c', 'false'],
+        ],
+      ] ],
+      value: -1,
+    };
   } else if (simpleMatch(parseOne(`(and _A _B)`), stmt).success) {
-    // TODO - find subvalues and evaluate.
+    const [_, A, B] = stmt;
+    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
+    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    // For each case, generate subnodes.
+    const nodes = [];
+    if (resA.value === -1) {
+      nodes.push(['node', '#', [neg(A)], [neg(stmt)], ['and-negate-1'], []]); // TODO: expand.
+    } else if (resB.value === -1) {
+      nodes.push(['node', '#', [neg(B)], [neg(stmt)], ['and-negate-2'], []]); // TODO: expand.
+    } else if (resA.value === 1 && resB.value === 1) {
+      nodes.push(['node', '#', [A, B], [stmt], ['and-intro'], []]);
+    }
+    return {
+      nodes: [...resA.nodes, ...resB.nodes, ...nodes],
+      value: Math.min(resA.value, resB.value);
+    }
   } else if (simpleMatch(parseOne(`(or _A _B)`), stmt).success) {
-    // TODO - find subvalues and evaluate.
+    const [_, A, B] = stmt;
+    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
+    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    // For each case, generate subnodes.
+    const nodes = [];
+    if (resA.value === 1) {
+      nodes.push(['node', '#', [A], [stmt], ['or-intro-1'], []]);
+    } else if (resB.value === 1) {
+      nodes.push(['node', '#', [B], [stmt], ['or-intro-2'], []]);
+    } else if (resA.value === -1 && resB.value === -1) {
+      nodes.push(['node', '#', [neg(A), neg(B)], [neg(stmt)], ['or-negate'], []]); // TODO: expand.
+    }
+    return {
+      nodes: [...resA.nodes, ...resB.nodes, ...nodes],
+      value: Math.max(resA.value, resB.value);
+    }
   } else if (simpleMatch(parseOne(`(-> _A _B)`), stmt).success) {
-    // TODO - find subvalues and evaluate.
+    const [_, A, B] = stmt;
+    const resA = evaluateSingleStmtWithValue(A, assignments, remainingAtomics);
+    const resB = evaluateSingleStmtWithValue(B, assignments, remainingAtomics);
+    // For each case, generate subnodes.
+    const nodes = [];
+    if (resA.value === -1) {
+      nodes.push(['node', '#', [neg(A)], [stmt], ['ex-falso'], []]); // TODO: expand.
+    } else if (resB.value === 1) {
+      nodes.push(['node', '#', [B], [stmt], ['k-combinator'], []]); // TODO: expand.
+    } else if (resA.value === 1 && resB.value === -1) {
+      nodes.push(['node', '#', [A, neg(B)], [neg(stmt)], ['impl-negate'], []]); // TODO: expand.
+    }
+    return {
+      nodes: [...resA.nodes, ...resB.nodes, ...nodes],
+      value: Math.max(0 - resA.value, resB.value);
+    }
   } else {
-    return [];
+    return {nodes: [], value: 0};
   }
   /// TODO: generate nodes for each sub.
   /// TODO: add "simple evaluation" to get sub-evaluations.
