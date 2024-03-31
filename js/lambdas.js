@@ -224,6 +224,10 @@ if (1) {
       [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]
       [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]
     */
+
+    console.log(lambdaFullReduce(parseOne(`
+      [(: _x (_x _x)) (: _x (_x _x))]
+    `)))
 }
 
 if (0) {
