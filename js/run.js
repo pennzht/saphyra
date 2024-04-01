@@ -91,12 +91,12 @@ window.onload = (e) => {
   `));
   */
 
+  state.tabs.set('incomplete', [parseOne(tryProve1)]);
   state.tabs.set('plus_zero', [parseOne(sampleTreeDeriv7Complete)]);
   state.tabs.set('tautology', [tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))
   `))]);
   state.tabs.set('tautology_2', [parseOne(tauto10)]);
-  state.tabs.set('incomplete', [parseOne(tryProve1)]);
 
   state.currentTab = 'empty';
   globalShowState();
