@@ -170,6 +170,21 @@ function dispStmt(obj) {
       ])
     }
 
+    match = simpleMatch([[':', '_v', '_body'], '_arg'], obj);
+    if (match.success) {
+      const v = match.map.get('_v'),
+        body = match.map.get('_body'),
+        arg = match.map.get('_arg');
+
+      return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
+        dispStmt(body),
+        text('where'),
+        dispStmt(v),
+        text('='),
+        dispStmt(arg),
+      ]);
+    }
+
     return elem('div', {class: 'list', 'data-sexp': str(obj)}, obj.map(dispStmt));
   }
 }

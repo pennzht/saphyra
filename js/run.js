@@ -67,7 +67,7 @@ window.onload = (e) => {
     (-> _M (-> _N (and _M (or _Q _N))))
   `)));
 
-  execute(tabs.get('tautology'));
+  execute(tabs.get('plus_zero'));
 
   const pprinted = pprint(currentCode);
   console.log(pprinted);
