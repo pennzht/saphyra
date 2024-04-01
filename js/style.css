@@ -33,6 +33,16 @@ body {
     position: absolute;
 }
 
+.tab {
+    display: inline-block;
+    padding: 0.5em;
+}
+
+.tab.selected {
+    background-color: #004f93;
+    color: white;
+}
+
 /* using vw, vh (window width/height) */
 #visual {
     top: 0;

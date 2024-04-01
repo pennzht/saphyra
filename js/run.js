@@ -25,6 +25,23 @@ state = {
 
 /// Shows current state on page.
 function globalShowState() {
+    // Update div.
+    $('tab-display').innerHTML = '';
+    for (const [tabName, _] of state.tabs.entries()) {
+        const classes = tabName === state.currentTab ? 'tab selected' : 'tab';
+        const newTab = elem('div', {class: classes}, [
+            text(tabName),
+        ]);
+        newTab.onclick = (event) => {
+            state.currentTab = tabName;
+            state.currentStep = state.tabs.get(tabName).length - 1;
+            console.log('switching to tab', tabName);
+            globalShowState();
+        }
+
+        $('tab-display').appendChild(newTab);
+    }
+
     const currentCode = state.tabs.get(state.currentTab)[state.currentStep];
     execute(currentCode);
 }
