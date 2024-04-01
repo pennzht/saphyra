@@ -238,7 +238,7 @@ function execute(code) {
                         return elem('div',
                             {class: 'matched-rule'},
                             [
-                              dispSexp(mr), ...subinput,
+                              dispStmt(stmt), text(ruleName), ...subinput, text(' '),
                               elem('button', {'data-rule': str(mr), class: 'apply-rule'}, [text('Apply')]),
                             ],
                         );
