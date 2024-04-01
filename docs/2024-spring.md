@@ -1,7 +1,7 @@
 Saphyra 2024 Spring Report
 ===
 
-[__Saphyra__](https://github.com/pennzht/saphyra) is a proof assistant under development, with simplicity and user-friendliness as goals. As of April 1, 2024, it is able to verify some simple statements about natural numbers and automatically prove (propositional) tautologies with ≤ 6 variables (the limit is artificial to avoid long running loops). A Web user interface is also added, so you can prove propositions by clicking on suitable tactics.
+[__Saphyra__](https://github.com/pennzht/saphyra) is a proof assistant under development, with simplicity and user-friendliness as goals. As of April 1, 2024, it is able to verify some simple statements about natural numbers and automatically prove (propositional) tautologies with ≤ 6 atomic statements (the limit is artificially imposed to avoid long running loops). A Web user interface is also added, so you can prove propositions by clicking on suitable tactics.
 
 This software is in its early stages and incomplete, but I have plans to continue developing it and improving it.
 
@@ -130,6 +130,7 @@ Codebase Introduction
 - `tactics.js` provides tactics.
   + When the user selects a statement or a node, functions in `tactics.js` determine which rules or tactics are suitable for usage on that statement.
   + When the user selects a tactic, functions in `tactics.js` apply that tactic on the proof tree, generating a new #root node.
+  + The `tauto` tactic breaks down the situation into 2^_n_ cases, where _n_ is the number of atomic statements in the goal, and uses suitable axioms to prove (evaluate) each case.
 
 `src/` contains a Python version, which is temporarily paused.
 
