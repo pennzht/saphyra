@@ -30,9 +30,11 @@
       <input type="button" id="command-button" value="↑ Execute"></input></div>
     </div>
 
-    <details open><summary>Visual order</summary><div id="visual"></div></details>
-    <details open><summary>Display</summary><div id="display"></div></details>
-    <details open><summary>Output</summary><div id="output" style="white-space: pre;"></div></details>
+    <div id="visual"></div>
+    <details id="display-panel" open>
+      <summary>Display Panel</summary><div id="display"></div>
+      <div id="output" style="white-space: pre;"></div>
+    </details>
 
     <!-- hiding table for now. -->
     <table style="display:none;" id="two-columns">

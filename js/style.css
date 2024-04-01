@@ -16,6 +16,25 @@ node {
     border: 1px solid #aaa;
 }
 
+body {
+    overflow-y: hidden;
+}
+
+/* using vw, vh (window width/height) */
+#visual {
+    width: 49vw;
+    height: 98vh;
+    display: inline-block;
+    overflow-y: scroll;
+}
+
+#display-panel {
+    width: 49vw;
+    height: 98vh;
+    display: inline-block;
+    overflow-y: scroll;
+}
+
 /* An element to allow better addressing. */
 stmt {
     display: inline-block;
