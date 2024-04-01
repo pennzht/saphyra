@@ -221,7 +221,10 @@ function execute(code) {
                     matchedRules.map((mr) => {
                         const [space, port, io, stmt, ruleName, ...args] = mr;
                         const subinput = ruleName === 'add-goal' ?
-                            [elem('input', {type: 'text', id: 'add-goal'})] : [];
+                            [
+                              elem('input', {type: 'text', id: 'add-goal'}),
+                              elem('div', {}, [text('Enter an expression in Lisp-like syntax, such as (-> (and _A _B) (-> _C _A))')]),
+                            ] : [];
                         return elem('div',
                             {class: 'matched-rule'},
                             [
