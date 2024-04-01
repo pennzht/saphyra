@@ -36,6 +36,7 @@ body {
 .tab {
     display: inline-block;
     padding: 0.5em;
+    cursor: pointer;
 }
 
 .tab.selected {
@@ -73,6 +74,7 @@ stmt {
     padding: 0.25em;
     border-radius: 0.25em;
     margin: 0.125em;
+    cursor: pointer;
 }
 
 .stmt-group {
