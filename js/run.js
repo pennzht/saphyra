@@ -19,12 +19,33 @@ const emptyNode = `
   ]]
 `
 
+// tab[0] is the current step index.
+function tabInit(node) {
+    return [1, node];
+}
+
+function tabAddStep(tab, newNode) {
+    const [step, ..._] = tab;
+    while(tab.length - 1 > step) tab.pop();
+    tab.push(newNode);
+    tab[0] = step + 1;
+}
+
+function tabBack(tab) {
+    const [step, ..._] = tab;
+    tab[0] = Math.max (0, step - 1);
+}
+
+function tabForward(tab) {
+    const [step, ..._] = tab;
+    tab[0] = Math.min (tab.length - 1, step + 1);
+}
+
 state = {
     tabs: new Map([
-      ['empty', [parseOne(emptyNode)]]   // Initial page, empty.
+      ['empty', tabInit(parseOne(emptyNode))]   // Initial page, empty.
     ]),
     currentTab: 'empty',
-    currentStep: 0,
 }
 
 /// Shows current state on page.
@@ -38,7 +59,6 @@ function globalShowState() {
         ]);
         newTab.onclick = (event) => {
             state.currentTab = tabName;
-            state.currentStep = state.tabs.get(tabName).length - 1;
             console.log('switching to tab', tabName);
             globalShowState();
         }
@@ -46,7 +66,8 @@ function globalShowState() {
         $('tab-display').appendChild(newTab);
     }
 
-    const currentCode = state.tabs.get(state.currentTab)[state.currentStep];
+    const currentTabObj = state.tabs.get(state.currentTab);
+    const currentCode = currentTabObj[currentTabObj[0]];
     execute(currentCode);
 
     $('display').innerHTML = '';
@@ -91,12 +112,12 @@ window.onload = (e) => {
   `));
   */
 
-  state.tabs.set('incomplete', [parseOne(tryProve1)]);
-  state.tabs.set('plus_zero', [parseOne(sampleTreeDeriv7Complete)]);
-  state.tabs.set('tautology', [tryProveTautology(parseOne(`
+  state.tabs.set('incomplete', tabInit(parseOne(tryProve1)));
+  state.tabs.set('plus_zero', tabInit(parseOne(sampleTreeDeriv7Complete)));
+  state.tabs.set('tautology', tabInit(tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))
-  `))]);
-  state.tabs.set('tautology_2', [parseOne(tauto10)]);
+  `))));
+  state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
 
   state.currentTab = 'empty';
   globalShowState();
@@ -203,8 +224,9 @@ function execute(code) {
                                 parseOne(mrElement.getAttribute('data-rule')),
                                 additionalArgs,
                             );
-                        state.tabs.get(state.currentTab).push(newCode);
-                        state.currentStep++;
+
+                        const currentTabObj = state.tabs.get(state.currentTab);
+                        tabAddStep(currentTabObj, newCode);
                         globalShowState();
                     }
                 }
