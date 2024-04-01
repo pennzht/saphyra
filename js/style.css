@@ -18,21 +18,30 @@ node {
 
 body {
     overflow-y: hidden;
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.panel {
+    width: 50vw;
+    height: 100vh;
+    display: inline-block;
+    overflow-y: scroll;
+    margin: 0;
+    border: 0;
+    position: absolute;
 }
 
 /* using vw, vh (window width/height) */
 #visual {
-    width: 49vw;
-    height: 98vh;
-    display: inline-block;
-    overflow-y: scroll;
+    top: 0;
+    left: 0;
 }
 
 #display-panel {
-    width: 49vw;
-    height: 98vh;
-    display: inline-block;
-    overflow-y: scroll;
+    top: 0;
+    left: 50vw;
 }
 
 /* An element to allow better addressing. */
