@@ -13,10 +13,14 @@ Using the Web demo
 Prove a given goal:
 
 1. Click on the “incomplete” tab to enter this workspace.
+  - ![img](./img/op-1.png)
 2. The red block on the left is a goal not yet proven; click on it to see a list of tactics.
+  - ![img](./img/op-2.png)
 3. Apply the tactic `impl-intro` to create a subgoal: proving _(B → (A and A) and B)_ using _A_.
+  - ![img](./img/op-3.png)
 4. Use `impl-intro` on the new goal again.
 5. Use `and-intro` twice to destruct the goal into _A_, _A_, and _B_.
+  - ![img](./img/op-4.png)
 6. _A_ is an exact match with the assumption _A_; use `exact-match` to resolve.
 7. Now the entire workspace is verified.
 
@@ -24,9 +28,12 @@ Prove a custom goal:
 
 1. Click on the “empty” tab.
 2. Click on “node #root” on the top-left.
+  - ![img](./img/op-5.png)
 3. On the right, enter a new goal, such as `(-> (and _A _B) (-> _C _A))`, then click “Apply”.
+  - ![img](./img/op-6.png)
 4. Click on the new goal on the left, and select the `tauto` tactic.
 5. Now the entire workspace is verified.
+  - ![img](./img/op-7.png)
 6. Click on “open/close” under “node #0” to see the whole proof.
 
 Foundation and Proof Structure
@@ -35,6 +42,8 @@ Foundation and Proof Structure
 Currently, Saphyra uses Peano Arithmetic as the foundation, but it can be extended (in the future) to use alternate foundations.
 
 Proofs are structured as nested nodes. Each node represents a conditional truth, similar to a sequent; the following node, for instance, represents that “from the statements _(X → Y) and (Y → Z)_ and _X_, we can derive _Z_”. Unlike a sequent, a node's outputs are conjunctive instead of disjunctive.
+
+![node](./img/node.png)
 
 The node contains subnodes (here hidden) that when combined, proves _Z_ from the assumptions using built-in axioms. Each statement is suffixed with the justification: whether it is given, or derived from a rule.
 
@@ -131,6 +140,7 @@ Codebase Introduction
   + When the user selects a statement or a node, functions in `tactics.js` determine which rules or tactics are suitable for usage on that statement.
   + When the user selects a tactic, functions in `tactics.js` apply that tactic on the proof tree, generating a new #root node.
   + The `tauto` tactic breaks down the situation into 2^_n_ cases, where _n_ is the number of atomic statements in the goal, and uses suitable axioms to prove (evaluate) each case.
+  + ![tauto](./img/tauto.png)
 
 `src/` contains a Python version, which is temporarily paused.
 
