@@ -15,8 +15,6 @@ $('lisp-input').oninput = executeLisp;
 
 const emptyNode = `[node #root [] [] [join] []]`
 
-// TODO: fix case where: after loading a proven module, statement symbols are reused (such as #1 and #1) in the same root.
-
 // Global state: current node
 currentCode = null;
 
@@ -29,22 +27,16 @@ window.onload = (e) => {
     $('input').value = sampleTreeDeriv9;
     executeInput(e);
     executeLisp(e);
-  */
-
-  /*
   const evaluation = evaluateSingleStmtWithValue(
     parseOne(`(-> (and _A _B) _C)`),
     new Map([[`_A`, +1], [`_B`, -1], [`_C`, -1]]),
   );
-
   currentCode = autoCompleteNode(
     parse(`_A (-> _B false) (-> _C false)`),
     parse(`(-> (and _A _B) _C)`),
     evaluation.nodes,
   ).node;
   */
-
-  // SUCCESS !!!
 
   currentCode = tryProveTautology(parseOne(`
     [-> _A
