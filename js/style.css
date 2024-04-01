@@ -133,6 +133,10 @@ hr.node-separator {
     margin-bottom: 0.2em;
 }
 
+summary:hover {
+    background-color: #ffc4ff;
+}
+
 /* hr {
     color: #ff4222;
     margin-top: 2em;

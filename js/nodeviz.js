@@ -93,6 +93,14 @@ function dispNode(node) {
       return elem('span');
     }
 
+    const foldP = justification.includes('folded');
+
+    subsElement = elem('details',
+      foldP ? {} : {open: 'true'},
+      [elem('summary', {}, [text('open/close')]),
+       ... subsVerified.map(dispNode)],
+    );
+
     // Default case.
     return elem('node', {
       'data-trace': label,
@@ -104,7 +112,7 @@ function dispNode(node) {
       elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(dispStmt)),
       dispSexp(justification),
       elem('hr', {class: 'node-separator'}),
-      ... subsVerified.map(dispNode),
+      subsElement,
     ]);
   } else if (head === 'link') {
     const [_, a, b, stmt] = node;

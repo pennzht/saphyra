@@ -611,6 +611,7 @@ function tryProveTautology(stmt) {
   if (proven === null) return null;
   const commentNode = parseOne(`[comment This tautology is proven automatically.]`);
   proven[Subs] = [commentNode, ...proven[Subs]];
+  proven[Just].push('folded');
   return proven;
 }
 
