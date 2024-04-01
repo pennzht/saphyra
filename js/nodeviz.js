@@ -97,12 +97,13 @@ function dispNode(node) {
     return elem('node', {
       'data-trace': label,
     }, [
-      text('node '), elem('span', {class: 'active'}, [text(label)]),
+      elem('span', {class: 'active'}, [text('node ' + label)]),
       dispConclusion(conclusion),
       elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(dispStmt)),
       text('→'),
       elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(dispStmt)),
       dispSexp(justification),
+      elem('hr', {class: 'node-separator'}),
       ... subsVerified.map(dispNode),
     ]);
   } else if (head === 'link') {
@@ -114,11 +115,17 @@ function dispNode(node) {
     return dispSexp(node);
   } else if (head === 'stmt') {
     // Active, referrable statement.
+    // comment is one of 'given', 'proven', 'unproven'
     const [_, content, n, io, comment, ...justification] = node;
-    return elem('div', {class: 'stmt port active', 'data-trace': `${n} ${io}`, 'data-sexp': str(content)}, [
-      text(comment), dispStmt(content),
+    const stmtElement = elem('div',
+      {class: 'stmt port active ' + comment, 'data-trace': `${n} ${io}`, 'data-sexp': str(content)},
+     [
+      dispStmt(content),
       text(justification.length > 0 ? str(justification[0]) : ''),
+      text(comment === 'given' ? '[given]' : comment === 'unproven' ? '[unproven]' : ''),
     ]);
+    const wrapperElement = elem('div', {}, [stmtElement]);
+    return wrapperElement;
   } else if (head === 'comment') {
     return elem('div', {class: 'comment'}, [
       text(node.slice(1).map(str).join(' ')),

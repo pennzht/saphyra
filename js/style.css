@@ -60,6 +60,14 @@ stmt {
     display: inline-block;
 }
 
+div.stmt {
+    display: inline-block;
+}
+
+.active.unproven {
+    background-color: #ffa797;  /* reddish */
+}
+
 /*
 .shade {
     background-color: #00a1c73f;
@@ -119,10 +127,16 @@ table#two-columns td {
     vertical-align: top;
 }
 
-hr {
+hr.node-separator {
+    color: #7777773f;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+/* hr {
     color: #ff4222;
     margin-top: 2em;
     margin-bottom: 2em;
-}
+} */
 
 /* Sync with style.css */
