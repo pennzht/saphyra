@@ -78,6 +78,18 @@ div.stmt {
 }
 */
 
+.step-control-block {
+    width: 20px;
+    height: 20px;
+    border: 1px solid gray;
+    margin: 5px;
+    display: inline-block;
+}
+
+.step-control-block.current-step {
+    background-color: #00a1c73f;
+}
+
 .matched-rule {
     margin-top: 0.75em;
 }

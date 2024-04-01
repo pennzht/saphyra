@@ -71,6 +71,13 @@ function globalShowState() {
     execute(currentCode);
 
     $('display').innerHTML = '';
+
+    $('step-history').innerHTML = '';
+    for (let i = 1; i < currentTabObj.length; i++) {
+        const isCurrent = (i === currentTabObj[0]);
+        const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, []);
+        $('step-history').appendChild(stepControlBlock);
+    }
 }
 
 window.onload = (e) => {
