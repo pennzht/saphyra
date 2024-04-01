@@ -42,3 +42,7 @@ Directory structure
     - JavaScript version
         * Point your browser at `start.html` to view the demo (__WIP__)
 
+Web version
+---
+
+[Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html)
