@@ -69,6 +69,10 @@ stmt {
     display: inline-block;
 }
 
+.type-notice {
+    color: gray;
+}
+
 /* Styles for expressions */
 .number { color: red; }
 .atom { color: blue; }

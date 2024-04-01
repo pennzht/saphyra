@@ -60,8 +60,10 @@ window.onload = (e) => {
   `));
 
   currentCode = tryProveTautology(parseOne(
-    `(and (and _A _B) (-> _A false))`
+    `(and (and _A:P _B:P) (-> _A:P false))`
   ));
+
+  currentCode = parseOne(sampleTreeDeriv7);
 
   execute(currentCode);
 

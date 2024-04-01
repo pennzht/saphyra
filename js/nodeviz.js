@@ -122,15 +122,56 @@ function dispNode(node) {
   }
 }
 
-function dispStmt(stmt) {
-  function transformStmt(stmt) {
-    if (isList(stmt) && stmt.length === 3) {
-      return [transformStmt(stmt[1]), stmt[0], transformStmt(stmt[2])];
-    }
-    return stmt;
-  }
+function dispStmt(obj) {
+  if (! isList(obj)) {
+    if (isVar(obj)) {
+      let varBody = obj.slice(1), varType = '';
+      // Possible typed structure.
+      const colon = obj.lastIndexOf(':');
+      if (colon > 0) {
+        varBody = obj.slice(1, colon), varType = obj.slice(colon + 1);
+      }
 
-  return elem('stmt', {'data-sexp': str(stmt)}, [dispSexp(transformStmt(stmt))]);
+      return elem('span', {class: 'atom', 'data-sexp': str(obj)}, [
+        text(varBody),
+        elem('sup', {class: 'type-notice'}, [text(varType)])
+      ]);
+    }
+
+    return dispSexp(obj);
+  } else {
+    let match = simpleMatch(['_head', '_a', '_b'], obj);
+    if (match.success) {
+      const [head, a, b] = obj;
+
+      if (isAtomic(head) && head !== ':') {
+        return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
+          dispStmt(a),
+          text(head),
+          dispStmt(b),
+        ])
+      } else if (head === ':') {
+        return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
+          dispStmt(a),
+          text('\u21a6'),
+          dispStmt(b),
+        ])
+      }
+    }
+
+    match = simpleMatch(['forall', [':', '_v', '_body']], obj);
+    if (match.success) {
+      const v = match.map.get('_v'), body = match.map.get('_body');
+
+      return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
+        text('∀'),
+        dispStmt(v),
+        dispStmt(body),
+      ])
+    }
+
+    return elem('div', {class: 'list', 'data-sexp': str(obj)}, obj.map(dispStmt));
+  }
 }
 
 function dispConclusion(conclusion) {
