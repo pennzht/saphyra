@@ -108,3 +108,28 @@ sampleTreeDeriv9 = `
 `
 
 sampleTreeDeriv9Partial = "[node #root [] [[forall [: _x:O [= [+ O _x:O] O]]]] [join] [[node #1 [[[: _x:O [= [+ O _x:O] O]] O] [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]] [[forall [: _x:O [= [+ O _x:O] O]]]] [peano-2] []] [link #1 ^c [forall [: _x:O [= [+ O _x:O] O]]]] [node #2 [] [[= [[: _x:O [= [+ O _x:O] O]] O] [= [+ O O] O]]] [beta] []] [node #3 [[= [[: _x:O [= [+ O _x:O] O]] O] [= [+ O O] O]]] [[= [= [+ O O] O] [[: _x:O [= [+ O _x:O] O]] O]]] [=-sym] []] [node #4 [[= [= [+ O O] O] [[: _x:O [= [+ O _x:O] O]] O]] [= [+ O O] O]] [[[: _x:O [= [+ O _x:O] O]] O]] [equiv-elim] []] [link #2 #3 [= [[: _x:O [= [+ O _x:O] O]] O] [= [+ O O] O]]] [link #3 #4 [= [= [+ O O] O] [[: _x:O [= [+ O _x:O] O]] O]]] [link #4 #1 [[: _x:O [= [+ O _x:O] O]] O]] [node #5 [] [[= [+ O O] O]] [+-O] []] [link #5 #4 [= [+ O O] O]] [node #6 [] [[= [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [beta] []] [node #7 [[= [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]]] [=-sym] []] [node #8 [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [[forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]] [equiv-elim] []] [link #6 #7 [= [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [link #7 #8 [= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]]] [link #8 #1 [forall [[: _p:<OP> [: _n:O [-> [_p:<OP> _n:O] [_p:<OP> [S _n:O]]]]] [: _x:O [= [+ O _x:O] O]]]]] [node #9 [] [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [beta] []] [node #10 [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [=-sym] []] [node #11 [[= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [[forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [equiv-elim] []] [link #9 #10 [= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [link #10 #11 [= [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]] [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]] [link #11 #8 [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [node #13 [] [[forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]] [forall-intro] [[node #12 [] [[[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]] [join] [[node #14 [] [[= [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O] [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]]]] [beta] []] [node #15 [[= [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O] [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]]]] [[= [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]] [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]]] [=-sym] []] [node #16 [[= [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]] [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]] [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]]] [[[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]] [equiv-elim] []] [link #14 #15 [= [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O] [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]]]] [link #15 #16 [= [-> [= [+ O _v0:O] O] [= [+ O [S _v0:O]] O]] [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]]] [link #16 ^c [[: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]] _v0:O]]]]]] [link #13 #11 [forall [: _n:O [-> [= [+ O _n:O] O] [= [+ O [S _n:O]] O]]]]]]]" ;
+
+tauto10 = `[node #root [] [[-> [and [-> _X _Y] [-> _Y _Z]] [-> _X _Z]]] [join] [
+  [node #1 [] [[-> [and [-> _X _Y] [-> _Y _Z]] [-> _X _Z]]] [impl-intro] [
+    [node #0 [[and [-> _X _Y] [-> _Y _Z]]] [[-> _X _Z]] [join] [
+      [node #2 [[and [-> _X _Y] [-> _Y _Z]]] [[-> _X _Y] [-> _Y _Z]] [and-elim] []]
+      [link ^a #2 [and [-> _X _Y] [-> _Y _Z]]]
+      [node #4 [[and [-> _X _Y] [-> _Y _Z]]] [[-> _X _Z]] [impl-intro] [
+        [node #3 [[and [-> _X _Y] [-> _Y _Z]] _X] [_Z] [join] [
+          [node #5 [[and [-> _X _Y] [-> _Y _Z]]] [[-> _X _Y] [-> _Y _Z]] [and-elim] []]
+          [link ^a #5 [and [-> _X _Y] [-> _Y _Z]]]
+          [node #6 [_X [-> _X _Y]] [_Y] [mp] []]
+          [link #5 #6 [-> _X _Y]]
+          [node #7 [_Y [-> _Y _Z]] [_Z] [mp] []]
+          [link #5 #7 [-> _Y _Z]]
+          [link #7 ^c _Z]
+          [link #6 #7 _Y]
+          [link ^a #6 _X]
+        ]]
+      ]]
+      [link ^a #4 [and [-> _X _Y] [-> _Y _Z]]]
+      [link #4 ^c [-> _X _Z]]
+    ]]
+  ]]
+  [link #1 ^c [-> [and [-> _X _Y] [-> _Y _Z]] [-> _X _Z]]]
+]]`;

@@ -91,7 +91,7 @@ stmt {
 .bool { color: green; }
 .null { color: gray; }
 
-.list { border: 1px solid black; }
+.list { border: 1px solid #3333337f; }
 .frame { border: 1px solid gray; }
 .map { border: 1px solid orange; }
 .cons { border: 1px solid #77777777; }
