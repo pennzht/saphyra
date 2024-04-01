@@ -50,16 +50,16 @@ stmt {
 }
 
 .shade {
-    background-color: #93efff;
+    background-color: #00a1c73f;
 }
 
 .matched-rule {
-    background-color: #93efff;
+    background-color: #00a1c73f;
 }
 
 /* A clickable node/port to connect nodes on. */
 .active {
-    background-color: #00d5e8;
+    background-color: #00a1c73f;
     padding: 0.25em;
     border-radius: 0.25em;
     margin: 0.125em;
