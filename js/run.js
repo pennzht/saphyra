@@ -33,7 +33,7 @@ function tabAddStep(tab, newNode) {
 
 function tabBack(tab) {
     const [step, ..._] = tab;
-    tab[0] = Math.max (0, step - 1);
+    tab[0] = Math.max (1, step - 1);
 }
 
 function tabForward(tab) {
@@ -73,9 +73,25 @@ function globalShowState() {
     $('display').innerHTML = '';
 
     $('step-history').innerHTML = '';
+
+    const undoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('←')]);
+    undoButton.onclick = () => {
+        tabBack(currentTabObj);
+        globalShowState();
+    }
+    $('step-history').appendChild(undoButton);
+
+    const redoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('→')]);
+    redoButton.onclick = () => {
+        tabForward(currentTabObj);
+        globalShowState();
+    }
+    $('step-history').appendChild(redoButton);
+
     for (let i = 1; i < currentTabObj.length; i++) {
         const isCurrent = (i === currentTabObj[0]);
-        const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, []);
+        const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, [text('.')]);
+        stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; globalShowState();};
         $('step-history').appendChild(stepControlBlock);
     }
 }

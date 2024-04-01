@@ -84,6 +84,8 @@ div.stmt {
     border: 1px solid gray;
     margin: 5px;
     display: inline-block;
+    color: transparent;
+    cursor: pointer;
 }
 
 .step-control-block.current-step {
