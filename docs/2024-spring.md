@@ -34,9 +34,11 @@ Foundation and Proof Structure
 
 Currently, Saphyra uses Peano Arithmetic as the foundation, but it can be extended (in the future) to use alternate foundations.
 
-Proofs are structured as nested nodes. Each node represents a conditional truth, similar to a sequent; the following node, for instance, represents that “from the statements _(X → Y) and (Y → Z)_ and _X_, we can derive _Z_”. The node contains subnodes (here hidden) that when combined, proves _Z_ from the assumptions using built-in axioms. Each statement is suffixed with the justification: whether it is given, or derived from a rule.
+Proofs are structured as nested nodes. Each node represents a conditional truth, similar to a sequent; the following node, for instance, represents that “from the statements _(X → Y) and (Y → Z)_ and _X_, we can derive _Z_”. Unlike a sequent, a node's outputs are conjunctive instead of disjunctive.
 
-Unlike a sequent, a node's outputs are conjunctive instead of disjunctive.
+The node contains subnodes (here hidden) that when combined, proves _Z_ from the assumptions using built-in axioms. Each statement is suffixed with the justification: whether it is given, or derived from a rule.
+
+In a large proof, nodes represent structure; in the interface, nodes may be expanded or collapsed, so the user can focus on important parts of the proof.
 
 The entire workspace is also a node, usually named “#root”.
 
@@ -114,9 +116,27 @@ Statements are entered in a Lisp-like format, with variables (propositions or ob
 Codebase Introduction
 ---
 
+`js/` contains the code for the Web demo.
+- The entry page is located at `start.html`, which provides the page layout and imports JS files.
+- `run.js` contains most functionality for the user-interface.
+- `axioms.js` contains axioms for first-order logic and Peano axioms that can be verified by simple pattern-matching. More complicated axioms, such as `impl-intro`, are given in `proof_module_2.js`
+- `lisp.js` contains an implementation of a minimal Lisp language. It is intended to be used for writing tactics, but is currently inactive.
+- `toposort.js` implements topological sorting for dependencies of nodes, which denies circular reasoning.
+- `lambdas.js` provides utilities necessary for lambda expression reasoning.
+- `simple_typing.js` offers a simple type system.
+- `proof_module_2.js` is the main verifier. It takes a node (usually the entire proof tree), points out any incorrect nodes, and annotates the nodes for user-friendly displaying.
+- `nodeviz.js` visualizes various objects. For example, `dispStmt(obj)` displays a statement in a user-readable way.
+- `tree_derivs.js` contains some example derivations.
+- `tactics.js` provides tactics.
+  + When the user selects a statement or a node, functions in `tactics.js` determine which rules or tactics are suitable for usage on that statement.
+  + When the user selects a tactic, functions in `tactics.js` apply that tactic on the proof tree, generating a new #root node.
+
+`src/` contains a Python version, which is temporarily paused.
+
 Future Plans
 ---
 
 * Complete Peano arithmetic and add tactics for natural numbers.
+* Add unification for statements and types.
 * Switch to ZFC / ETCS / Dependent Types as foundation, so that it may formalize most of modern mathematics.
 * Improve automatic reasoning.
