@@ -15,11 +15,19 @@ $('lisp-input').oninput = executeLisp;
 
 const emptyNode = `[node #root [] [] [join] []]`
 
-// Global state: current node
-currentCode = null;
+state = {
+    tabs: new Map([
+      ['empty', [parseOne(emptyNode)]]   // Initial page, empty.
+    ]),
+    currentTab: 'empty',
+    currentStep: 0,
+}
 
-tabs = new Map();
-currentTab = 'plus_zero';
+/// Shows current state on page.
+function globalShowState() {
+    const currentCode = state.tabs.get(state.currentTab)[state.currentStep];
+    execute(currentCode);
+}
 
 window.onload = (e) => {
   /*
@@ -36,7 +44,6 @@ window.onload = (e) => {
     parse(`(-> (and _A _B) _C)`),
     evaluation.nodes,
   ).node;
-  */
 
   currentCode = tryProveTautology(parseOne(`
     [-> _A
@@ -59,19 +66,21 @@ window.onload = (e) => {
   currentCode = tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))
   `));
+  */
 
-  currentCode = parseOne(sampleTreeDeriv7);
-
-  tabs.set('plus_zero', parseOne(sampleTreeDeriv7Complete));
-  tabs.set('tautology', tryProveTautology(parseOne(`
+  state.tabs.set('plus_zero', [parseOne(sampleTreeDeriv7Complete)]);
+  state.tabs.set('tautology', [tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))
-  `)));
+  `))]);
 
-  execute(tabs.get('plus_zero'));
+  state.currentTab = 'plus_zero';
+  globalShowState();
 
-  const pprinted = pprint(currentCode);
+  const sampleCode = parseOne(sampleTreeDeriv7);
+
+  const pprinted = pprint(sampleCode);
   console.log(pprinted);
-  console.log(eq( parseOne(pprinted), currentCode ))
+  console.log(eq( parseOne(pprinted), sampleCode ));
 }
 
 $('command').onchange = $('command').oninput = (e) => {
@@ -160,13 +169,18 @@ function execute(code) {
                         if ($('add-goal')) {
                             additionalArgs.goalContent = $('add-goal').value;
                         }
-                        currentCode =
+
+                        // Updates state.
+
+                        const newCode =
                             applyMatchedRule(
                                 code,
                                 parseOne(mrElement.getAttribute('data-rule')),
                                 additionalArgs,
                             );
-                        execute(currentCode);
+                        state.tabs.get(state.currentTab).push(newCode);
+                        state.currentStep++;
+                        globalShowState();
                     }
                 }
             };
