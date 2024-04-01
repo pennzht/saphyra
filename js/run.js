@@ -8,8 +8,10 @@
       User selects a tactic, setting `currentCode` to the resolved new node.
 */
 
+/*
 $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
+*/
 
 const emptyNode = `[node #root [] [] [join] []]`
 
@@ -19,6 +21,7 @@ const emptyNode = `[node #root [] [] [join] []]`
 currentCode = null;
 
 tabs = new Map();
+currentTab = 'plus_zero';
 
 window.onload = (e) => {
   /*
@@ -83,6 +86,7 @@ $('command').onchange = $('command').oninput = (e) => {
     console.log ($("command").value);
 }
 
+/*
 function executeInput (e) {
     const inValue = $('input').value;
     try {
@@ -112,6 +116,7 @@ function executeLisp(e) {
         );
     }
 }
+*/
 
 function execute(code) {
     try {
