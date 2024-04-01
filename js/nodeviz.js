@@ -119,6 +119,10 @@ function dispNode(node) {
       text(comment), dispStmt(content),
       text(justification.length > 0 ? str(justification[0]) : ''),
     ]);
+  } else if (head === 'comment') {
+    return elem('div', {class: 'comment'}, [
+      text(node.slice(1).map(str).join(' ')),
+    ]);
   }
 }
 

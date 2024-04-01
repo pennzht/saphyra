@@ -562,12 +562,17 @@ function tryProveTautology(stmt) {
     return null;
   }
 
-  return proveJudgment(
+  const proven = proveJudgment(
     /* ins */ [],
     /* polarities */ [],
     /* upcoming */ atomics,
     /* statement */ stmt,
   );
+
+  if (proven === null) return null;
+  const commentNode = parseOne(`[comment This tautology is proven automatically.]`);
+  proven[Subs] = [commentNode, ...proven[Subs]];
+  return proven;
 }
 
 /// Example input:

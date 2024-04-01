@@ -13,7 +13,11 @@ $('input').oninput = execute;
 $('lisp-input').oninput = executeLisp;
 */
 
-const emptyNode = `[node #root [] [] [join] []]`
+const emptyNode = `
+  [node #root [] [] [join] [
+    [comment This is an empty workspace. Add a goal to start proving.]
+  ]]
+`
 
 state = {
     tabs: new Map([

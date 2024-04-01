@@ -227,9 +227,15 @@ function verifyNode (node) {
 
             const failures = [];
 
+            const outSubs = [];
+
+            // First, add comments.
+            for (const y of subsVerified.filter((x) => x[0] === 'comment')) {
+                outSubs.push(y);
+            }
+
             // Along the order, check if each block is valid,
             // constructing an order of links and blocks.
-            const outSubs = [];
             for (const n of order) {
                 // Check pre-stmts.
                 for (const l of links) {

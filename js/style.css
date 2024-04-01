@@ -85,6 +85,11 @@ stmt {
     color: gray;
 }
 
+.comment {
+    background-color: #ffdaa47f;
+    padding: 0.25em;
+}
+
 /* Styles for expressions */
 .number { color: red; }
 .atom { color: blue; }
