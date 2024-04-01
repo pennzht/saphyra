@@ -82,6 +82,10 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
         if (simpleMatch(parse('forall _P'), stmt).success) {
             applicableRules.push([space, port, 'in', stmt, 'forall-intro']);
         }
+
+
+        // Attempt tautology.
+        applicableRules.push([space, port, io, stmt, 'tauto']);
     }
 
     if (io === 'out') {
@@ -157,6 +161,22 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
                 return newNode;
             }
         );
+    }
+
+    if (ruleName === 'add-output') {
+        return replaceNodeAdjustImplIntro(code, space,
+            (node) => {
+                const [_, label, ins, outs, justification, subs, ...__]
+                    = node;
+                const newLink = ['link', port, '^c', stmt];
+                const newNode = [
+                    'node', label, ins, outs.concat([stmt]),
+                    justification,
+                    subs.concat([newLink]), ...__,
+                ];
+                return newNode;
+            }
+        )
     }
 
     if (ruleName === 'impl-intro') {
