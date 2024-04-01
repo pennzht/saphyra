@@ -47,37 +47,37 @@ Statements are entered in a Lisp-like format, with variables (propositions or ob
 
   <tr>
     <td>
-      _A_
+      <em>A</em>
     </td>
     <td>
-      `_A`
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      (_A_ and _B_) → _C_
-    </td>
-    <td>
-      `(-> (and _A _B) _C)`
+      <code>_A</code>
     </td>
   </tr>
 
   <tr>
     <td>
-      not _A_ (equivalently, _A_ → false)
+      (<em>A</em> and <em>B</em>) → <em>C</em>
     </td>
     <td>
-      `(-> _A false)`
+      <code>(-> (and _A _B) _C)</code>
     </td>
   </tr>
 
   <tr>
     <td>
-      ∀_x_ : Nat, _x_ = _x_
+      not <em>A</em> (equivalently, <em>A</em> → false)
     </td>
     <td>
-      `(forall (: _x:O (= _x:O _x:O)))`
+      <code>(-> _A false)</code>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      ∀ <em>x</em> : Nat, <em>x</em> = <em>x</em>
+    </td>
+    <td>
+      <code>(forall (: _x:O (= _x:O _x:O)))</code>
     </td>
   </tr>
 </table>
