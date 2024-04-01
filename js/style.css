@@ -60,12 +60,18 @@ stmt {
     display: inline-block;
 }
 
+/*
 .shade {
     background-color: #00a1c73f;
 }
 
 .matched-rule {
     background-color: #00a1c73f;
+}
+*/
+
+.matched-rule {
+    margin-top: 0.75em;
 }
 
 /* A clickable node/port to connect nodes on. */
