@@ -639,6 +639,36 @@ function str (obj) {
     else return '[' + obj.map (str).join(' ') + ']';
 }
 
+// Pretty-print
+function pprint(obj, indent = '', hasIndent = false) {
+    const ans = [];
+    if (hasIndent) ans.push(indent);
+
+    if (isList(obj)) {
+        if (obj[0] === 'node') {
+            ans.push('[');
+            for (let i = 0; i < obj.length; i++) {
+                if (i > 0) ans.push(' ');
+
+                const term = obj[i], isSubs = (i === Subs) && isList(term) && term.length > 0;
+                if (isSubs) {
+                    ans.push('[\n');
+                    for (const sub of term) {
+                        ans.push(pprint(sub, indent + '  ', true));
+                        ans.push('\n');
+                    }
+                    ans.push(indent + ']');
+                } else {
+                    ans.push(str(term));
+                }
+            }
+            ans.push(']');
+        } else ans.push(str(obj));
+    } else ans.push(str(obj));
+
+    return ans.join('');
+}
+
 function hasMember(arr, elem) {
     return arr.some((x) => eq(x, elem));
 }

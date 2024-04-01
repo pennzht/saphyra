@@ -64,6 +64,10 @@ window.onload = (e) => {
   ));
 
   execute(currentCode);
+
+  const pprinted = pprint(currentCode);
+  console.log(pprinted);
+  console.log(eq( parseOne(pprinted), currentCode ))
 }
 
 $('command').onchange = $('command').oninput = (e) => {
