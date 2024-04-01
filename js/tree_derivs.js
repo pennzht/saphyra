@@ -138,3 +138,11 @@ tauto10 = `[node #root [] [[-> [and [-> _X _Y] [-> _Y _Z]] [-> _X _Z]]] [join] [
   ]]
   [link #1 ^c [-> [and [-> _X _Y] [-> _Y _Z]] [-> _X _Z]]]
 ]]`;
+
+tryProve1 = `
+  [node #root [] [(-> _A:P (-> _B:P (and (and _A:P _A:P) _B:P)))]
+    [join] [
+      [comment Try proving this statement.]
+    ]
+  ]
+`

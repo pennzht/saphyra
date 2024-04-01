@@ -94,6 +94,7 @@ window.onload = (e) => {
     (-> _M (-> _N (and _M (or _Q _N))))
   `))]);
   state.tabs.set('tautology_2', [parseOne(tauto10)]);
+  state.tabs.set('incomplete', [parseOne(tryProve1)]);
 
   state.currentTab = 'plus_zero';
   globalShowState();
