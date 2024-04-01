@@ -8,6 +8,16 @@ Overview
 
 Saphyra /səˈfaɪ.ɹə/ is a proof assistant under development.
 
+2024 Spring Report
+---
+
+[2024 Spring Report](./docs/2024-spring.md)
+
+Web version
+---
+
+[Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html)
+
 How to run
 ---
 
@@ -41,8 +51,3 @@ Directory structure
 * `js/`
     - JavaScript version
         * Point your browser at `start.html` to view the demo (__WIP__)
-
-Web version
----
-
-[Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html)
