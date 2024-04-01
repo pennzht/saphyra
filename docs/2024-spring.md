@@ -32,7 +32,36 @@ Prove a custom goal:
 Foundation and Proof Structure
 ---
 
-<!-- node-based -->
+Currently, Saphyra uses Peano Arithmetic as the foundation, but it can be extended (in the future) to use alternate foundations.
+
+Proofs are structured as nested nodes. Each node represents a conditional truth, similar to a sequent; the following node, for instance, represents that “from the statements _(X → Y) and (Y → Z)_ and _X_, we can derive _Z_”. The node contains subnodes (here hidden) that when combined, proves _Z_ from the assumptions using built-in axioms. Each statement is suffixed with the justification: whether it is given, or derived from a rule.
+
+Unlike a sequent, a node's outputs are conjunctive instead of disjunctive.
+
+The entire workspace is also a node, usually named “#root”.
+
+Below is the internal representation of a successful proof.
+
+```
+[node #root [] [[forall [: _x:O [= _x:O [+ _x:O O]]]]] [join] [
+  [comment This is a proof of the theorem: forall x, x = x + 0.]
+  [node #2 [] [[forall [: _x:O [= _x:O [+ _x:O O]]]]] [forall-intro] [
+    [node #1 [] [[[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [join] [
+      [node #3 [] [[= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]] [beta] []]
+      [node #4 [[= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]] [[= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]]] [=-sym] []]
+      [node #5 [[= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [= _v0:O [+ _v0:O O]]] [[[: _x:O [= _x:O [+ _x:O O]]] _v0:O]] [equiv-elim] []]
+      [link #3 #4 [= [[: _x:O [= _x:O [+ _x:O O]]] _v0:O] [= _v0:O [+ _v0:O O]]]]
+      [link #4 #5 [= [= _v0:O [+ _v0:O O]] [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]]]
+      [link #5 ^c [[: _x:O [= _x:O [+ _x:O O]]] _v0:O]]
+      [node #6 [[= [+ _v0:O O] _v0:O]] [[= _v0:O [+ _v0:O O]]] [=-sym] []]
+      [link #6 #5 [= _v0:O [+ _v0:O O]]]
+      [node #7 [] [[= [+ _v0:O O] _v0:O]] [+-O] []]
+      [link #7 #6 [= [+ _v0:O O] _v0:O]]
+    ]]
+  ]]
+  [link #2 ^c [forall [: _x:O [= _x:O [+ _x:O O]]]]]
+]]
+```
 
 Statement Syntax
 ---
@@ -86,6 +115,7 @@ Codebase Introduction
 ---
 
 Future Plans
+---
 
 * Complete Peano arithmetic and add tactics for natural numbers.
 * Switch to ZFC / ETCS / Dependent Types as foundation, so that it may formalize most of modern mathematics.
