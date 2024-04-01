@@ -48,6 +48,8 @@ function globalShowState() {
 
     const currentCode = state.tabs.get(state.currentTab)[state.currentStep];
     execute(currentCode);
+
+    $('display').innerHTML = '';
 }
 
 window.onload = (e) => {
