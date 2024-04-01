@@ -222,9 +222,18 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     [ruleVars, ruleIns, ruleOuts] = rule;
 
     const replacementMap = new Map(replacementList);
+
+    // Beginning with "?" for holes. Allows better unification.
+    const newSymbols = gensyms(
+        code, ruleVars.length, '_?P', ''
+    );
     for (const vn of ruleVars) {
         if (! replacementMap.has(vn)) {
-            replacementMap.set(vn, gensyms(code, 1, '_?P')[0]);  // Beginning with "?" for holes. Allows better unification.
+            const typeSuffix = typeString(vn) ?
+                ':' + typeString(vn) :
+                '';
+            const thisSymbol = newSymbols.pop() + typeSuffix;
+            replacementMap.set(vn, thisSymbol);
         }
     }
 
