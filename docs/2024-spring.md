@@ -34,6 +34,54 @@ Foundation and Proof Structure
 
 <!-- node-based -->
 
+Statement Syntax
+---
+
+Statements are entered in a Lisp-like format, with variables (propositions or objects) beginning with an underscore (`_`).
+
+<table>
+  <tr>
+    <th scope="col">Statement</th>
+    <th scope="col">Code</th>
+  </tr>
+
+  <tr>
+    <td>
+      _A_
+    </td>
+    <td>
+      `_A`
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      (_A_ and _B_) → _C_
+    </td>
+    <td>
+      `(-> (and _A _B) _C)`
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      not _A_ (equivalently, _A_ → false)
+    </td>
+    <td>
+      `(-> _A false)`
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      ∀_x_ : Nat, _x_ = _x_
+    </td>
+    <td>
+      `(forall (: _x:O (= _x:O _x:O)))`
+    </td>
+  </tr>
+</table>
+
 Codebase Introduction
 ---
 
