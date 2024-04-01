@@ -42,10 +42,6 @@ window.onload = (e) => {
   // SUCCESS !!!
 
   currentCode = tryProveTautology(parseOne(`
-    (-> _M (-> _N (and _M (or _Q _N))))
-  `));
-
-  currentCode = tryProveTautology(parseOne(`
     [-> _A
       [-> (-> _A _B)
         [-> (-> _A _C)
@@ -62,6 +58,10 @@ window.onload = (e) => {
   currentCode = tryProveTautology(parseOne(
     `(and (and _A:P _B:P) (-> _A:P false))`
   ));
+
+  currentCode = tryProveTautology(parseOne(`
+    (-> _M (-> _N (and _M (or _Q _N))))
+  `));
 
   currentCode = parseOne(sampleTreeDeriv7);
 
