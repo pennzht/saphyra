@@ -224,7 +224,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
     const replacementMap = new Map(replacementList);
     for (const vn of ruleVars) {
         if (! replacementMap.has(vn)) {
-            replacementMap.set(vn, gensym(code, '_P'));
+            replacementMap.set(vn, gensyms(code, 1, '_?P')[0]);  // Beginning with "?" for holes. Allows better unification.
         }
     }
 
