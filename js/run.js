@@ -66,6 +66,16 @@ function globalShowState() {
         $('tab-display').appendChild(newTab);
     }
 
+    // Add new tab.
+    const addNewTabButton = elem('div', {class: 'tab', style: 'background-color: #eaeaea;'}, [text('+ Workspace')]);;
+    addNewTabButton.onclick = () => {
+        const tabName = gensyms([... state.tabs.keys()], 1, 'space_')[0];
+        state.tabs.set(tabName, tabInit(parseOne(emptyNode)));
+        state.currentTab = tabName;
+        globalShowState();
+    };
+    $('tab-display').appendChild(addNewTabButton);
+
     const currentTabObj = state.tabs.get(state.currentTab);
     const currentCode = currentTabObj[currentTabObj[0]];
     execute(currentCode);
