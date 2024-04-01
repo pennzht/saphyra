@@ -15,7 +15,7 @@ $('lisp-input').oninput = executeLisp;
 
 const emptyNode = `
   [node #root [] [] [join] [
-    [comment This is an empty workspace. Add a goal to start proving.]
+    [comment This is an empty workspace. Add a goal to start proving, or choose a different workspace in the panel on the right.]
   ]]
 `
 
@@ -96,7 +96,7 @@ window.onload = (e) => {
   state.tabs.set('tautology_2', [parseOne(tauto10)]);
   state.tabs.set('incomplete', [parseOne(tryProve1)]);
 
-  state.currentTab = 'plus_zero';
+  state.currentTab = 'empty';
   globalShowState();
 
   const sampleCode = parseOne(sampleTreeDeriv7);
