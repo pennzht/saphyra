@@ -204,6 +204,25 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
         return addBlocksToNode(code, space, [mainBlock, newLink]);
     }
 
+    if (ruleName === 'tauto') {
+        // Attempts to prove by tautology.
+        const newNode = tryProveTautology(stmt);
+        if (newNode === null) {
+            alert('Tautology tactic failed.'); return code;
+        } else {
+            if (eq (newNode[Outs][0], stmt)) {
+                // If positive is proven ...
+                const [newLabel] = gensyms(code, 1);
+                const renamedNode = [...newNode];
+                renamedNode[Label] = newLabel;
+                const newLink = ['link', newLabel, '^c', stmt];
+                return addBlocksToNode(code, space, [renamedNode, newLink]);
+            } else {
+                alert('This statement is always false.'); return code;
+            }
+        }
+    }
+
     if (ruleName === 'beta-expansion-stmt') {
         // TODO.
         /*
