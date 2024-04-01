@@ -18,6 +18,8 @@ const emptyNode = `[node #root [] [] [join] []]`
 // Global state: current node
 currentCode = null;
 
+tabs = new Map();
+
 window.onload = (e) => {
   /*
     $('input').value = emptyNode;
@@ -65,7 +67,12 @@ window.onload = (e) => {
 
   currentCode = parseOne(sampleTreeDeriv7);
 
-  execute(currentCode);
+  tabs.set('plus_zero', parseOne(sampleTreeDeriv7Complete));
+  tabs.set('tautology', tryProveTautology(parseOne(`
+    (-> _M (-> _N (and _M (or _Q _N))))
+  `)));
+
+  execute(tabs.get('tautology'));
 
   const pprinted = pprint(currentCode);
   console.log(pprinted);
