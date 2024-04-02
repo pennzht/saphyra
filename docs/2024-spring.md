@@ -22,7 +22,8 @@ Prove a given goal:
 5. Use `and-intro` twice to destruct the goal into _A_, _A_, and _B_.
   - ![img](./img/op-4.png)
 6. _A_ is an exact match with the assumption _A_; use `exact-match` to resolve.
-7. Now the entire workspace is verified.
+7. Similar for _B_.
+8. Now the entire workspace is verified.
 
 Prove a custom goal:
 
