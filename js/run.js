@@ -146,6 +146,9 @@ function execute(code) {
         $('visual').appendChild(dispNode (module));
         $('output').innerText = '';
 
+        // TODO - depending on current tab root node + `state.highlighted`,
+        //     find corresponding rules and display them in $('display').
+
         // Set actions
         // Only consider active ports.
         for(const stmt of document.getElementsByClassName('active')) {
