@@ -105,6 +105,10 @@ div.stmt {
     cursor: pointer;
 }
 
+.active.selected {
+    background-color: #fbc900ff;
+}
+
 .stmt-group {
     display: inline-block;
 }

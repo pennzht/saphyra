@@ -103,11 +103,13 @@ function dispNode(node, pathPrefix = null) {
        ... subsVerified.map((sub) => dispNode(sub, prefix))],
     );
 
+    const selected = state.highlighted.has(str(prefix)) ? ' selected' : '';
+
     // Default case.
     return elem('node', {
       'data-fulltrace': str(prefix),
     }, [
-      elem('span', {class: 'active', 'data-fulltrace': str(prefix)}, [text('node ' + label)]),
+      elem('span', {class: `active${selected}`, 'data-fulltrace': str(prefix)}, [text('node ' + label)]),
       dispConclusion(conclusion),
       elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(dispStmt)),
       text('→'),
@@ -127,12 +129,13 @@ function dispNode(node, pathPrefix = null) {
     // Active, referrable statement.
     // comment is one of 'given', 'proven', 'unproven'
     const [_, content, n, io, comment, ...justification] = node;
-    const fullTrace = (pathPrefix || []).concat([n, io]);
+    const prefix = (pathPrefix || []).concat([n, io]);
+    const selected = state.highlighted.has(str(prefix)) ? ' selected' : '';
     const stmtElement = elem('div',
       {
-        class: 'stmt port active ' + comment,
+        class: `stmt port active${selected} ` + comment,
         'data-trace': `${n} ${io}`,
-        'data-fulltrace': str(fullTrace),
+        'data-fulltrace': str(prefix),
         'data-sexp': str(content),
       },
      [

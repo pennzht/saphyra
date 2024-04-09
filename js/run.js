@@ -36,6 +36,11 @@ function tabForward(tab) {
     tab[0] = Math.min (tab.length - 1, step + 1);
 }
 
+function toggleSetElement(set, element) {
+    if (set.has(element)) set.delete(element);
+    else set.add(element);
+}
+
 state = {
     tabs: new Map([
       ['empty', tabInit(parseOne(emptyNode))]   // Initial page, empty.
@@ -43,11 +48,11 @@ state = {
     currentTab: 'empty',
 
     // Add transient state for "highlighted ports"
-    highlighted: [],
+    highlighted: new Set(),
 }
 
 function clearTransientState() {
-    state.highlighted = [];
+    state.highlighted = new Set();
 }
 
 /// Shows current state on page.
@@ -145,8 +150,8 @@ function execute(code) {
         // Only consider active ports.
         for(const stmt of document.getElementsByClassName('active')) {
             stmt.onclick = (e) => {
-                state.highlighted.push(stmt.getAttribute('data-fulltrace'));
-                console.log(state.highlighted);
+                toggleSetElement(state.highlighted, stmt.getAttribute('data-fulltrace'));
+                // console.log(state.highlighted);
                 globalShowState();
                 /*
 
