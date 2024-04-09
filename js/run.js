@@ -8,11 +8,6 @@
       User selects a tactic, setting `currentCode` to the resolved new node.
 */
 
-/*
-$('input').oninput = execute;
-$('lisp-input').oninput = executeLisp;
-*/
-
 const emptyNode = `
   [node #root [] [] [join] [
     [comment This is an empty workspace. Add a goal to start proving, or choose a different workspace in the panel on the right.]
@@ -51,6 +46,10 @@ state = {
     highlighted: [],
 }
 
+function clearTransientState() {
+    state.highlighted = [];
+}
+
 /// Shows current state on page.
 function globalShowState() {
     // Update div.
@@ -63,6 +62,7 @@ function globalShowState() {
         newTab.onclick = (event) => {
             state.currentTab = tabName;
             console.log('switching to tab', tabName);
+            clearTransientState();
             globalShowState();
         }
 
@@ -75,6 +75,7 @@ function globalShowState() {
         const tabName = gensyms([... state.tabs.keys()], 1, 'space_')[0];
         state.tabs.set(tabName, tabInit(parseOne(emptyNode)));
         state.currentTab = tabName;
+        clearTransientState();
         globalShowState();
     };
     $('tab-display').appendChild(addNewTabButton);
@@ -90,6 +91,7 @@ function globalShowState() {
     const undoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('←')]);
     undoButton.onclick = () => {
         tabBack(currentTabObj);
+        clearTransientState();
         globalShowState();
     }
     $('step-history').appendChild(undoButton);
@@ -97,6 +99,7 @@ function globalShowState() {
     const redoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('→')]);
     redoButton.onclick = () => {
         tabForward(currentTabObj);
+        clearTransientState();
         globalShowState();
     }
     $('step-history').appendChild(redoButton);
@@ -104,7 +107,7 @@ function globalShowState() {
     for (let i = 1; i < currentTabObj.length; i++) {
         const isCurrent = (i === currentTabObj[0]);
         const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, [text('.')]);
-        stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; globalShowState();};
+        stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; clearTransientState(); globalShowState();};
         $('step-history').appendChild(stepControlBlock);
     }
 }
@@ -142,22 +145,7 @@ function execute(code) {
         // Only consider active ports.
         for(const stmt of document.getElementsByClassName('active')) {
             stmt.onclick = (e) => {
-                let y = stmt;
-                let content = null;
-                let trace = '';
-                while(y.id !== 'visual') {
-                    if (y.hasAttribute('data-trace')) {
-                        trace = y.getAttribute('data-trace') + ' ' + trace;
-                    }
-                    if (y.hasAttribute('data-sexp')) {
-                        content = parseOne(y.getAttribute('data-sexp'));
-                    }
-                    y = y.parentNode;
-                }
-                trace = parse(trace);
-
-                const fullTrace = {trace, content};
-                state.highlighted.push(fullTrace);
+                state.highlighted.push(stmt.getAttribute('data-fulltrace'));
                 console.log(state.highlighted);
                 globalShowState();
                 /*

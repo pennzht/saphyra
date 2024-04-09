@@ -1,4 +1,9 @@
 
+/*
+$('input').oninput = execute;
+$('lisp-input').oninput = executeLisp;
+*/
+
   /*
     $('input').value = emptyNode;
     $('input').value = sampleTreeDeriv9;

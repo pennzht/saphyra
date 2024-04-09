@@ -83,7 +83,7 @@ function dispModule(module) {
 
 HIDE_EMPTY_NODES = true;
 
-function dispNode(node) {
+function dispNode(node, pathPrefix = null) {
   const head = node[0];
   if (head === 'node') {
     const [_, label, ins, outs, justification, subsVerified, ...conclusion] = node;
@@ -95,17 +95,19 @@ function dispNode(node) {
 
     const foldP = justification.includes('folded');
 
+    const prefix = (pathPrefix || []).concat(label);
+
     subsElement = elem('details',
       foldP ? {} : {open: 'true'},
       [elem('summary', {}, [text('open/close')]),
-       ... subsVerified.map(dispNode)],
+       ... subsVerified.map((sub) => dispNode(sub, prefix))],
     );
 
     // Default case.
     return elem('node', {
-      'data-trace': label,
+      'data-fulltrace': str(prefix),
     }, [
-      elem('span', {class: 'active'}, [text('node ' + label)]),
+      elem('span', {class: 'active', 'data-fulltrace': str(prefix)}, [text('node ' + label)]),
       dispConclusion(conclusion),
       elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(dispStmt)),
       text('→'),
@@ -125,8 +127,14 @@ function dispNode(node) {
     // Active, referrable statement.
     // comment is one of 'given', 'proven', 'unproven'
     const [_, content, n, io, comment, ...justification] = node;
+    const fullTrace = (pathPrefix || []).concat([n, io]);
     const stmtElement = elem('div',
-      {class: 'stmt port active ' + comment, 'data-trace': `${n} ${io}`, 'data-sexp': str(content)},
+      {
+        class: 'stmt port active ' + comment,
+        'data-trace': `${n} ${io}`,
+        'data-fulltrace': str(fullTrace),
+        'data-sexp': str(content),
+      },
      [
       dispStmt(content),
       text(justification.length > 0 ? str(justification[0]) : ''),
