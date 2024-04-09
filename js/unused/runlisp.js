@@ -1,6 +1,3 @@
-import * as lisp from './lisp.js';
-import * as lang from './lang.js';
-
 const $ = (x) => document.getElementById(x);
 
 const tests = [
@@ -14,8 +11,8 @@ const tests = [
 ]
 
 for (const t of tests) {
-    const sexp = lang.parse(t)[0];
+    const sexp = parseOne(t);
     console.log (sexp);
-    const res = lisp.evaluate(sexp);
+    const res = evaluate(sexp);
     $('output').innerText += res;
 }
