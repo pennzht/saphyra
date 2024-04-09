@@ -16,3 +16,17 @@ for (const t of tests) {
     const res = evaluate(sexp);
     $('output').innerText += res;
 }
+
+state = {selection: [0, 0]};
+
+function updateSelectionInfo () {
+    const selection = [$('input').selectionStart, $('input').selectionEnd];
+    if (str(state.selection) != str(selection)) {
+        state.selection = selection;
+        console.log(selection);
+        const content = $('input').value.slice(...selection);
+        $('output').innerText = `Selected: ${selection}, text: [${content}]`;
+    }
+}
+
+window.setInterval(updateSelectionInfo, 10);
