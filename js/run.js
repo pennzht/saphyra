@@ -178,7 +178,7 @@ function execute(code) {
         // Only consider active ports.
         for(const stmt of document.getElementsByClassName('active')) {
             stmt.onclick = (e) => {
-                toggleSetElement(state.highlighted, stmt.getAttribute('data-fulltrace'));
+                toggleSetElement(state.highlighted, stmt.dataset.fulltrace + ' ' + (stmt.dataset.sexp || '--fullnode--'));
                 // console.log(state.highlighted);
                 updateState();
                 /*

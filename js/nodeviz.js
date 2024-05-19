@@ -103,7 +103,7 @@ function dispNode(node, pathPrefix = null) {
        ... subsVerified.map((sub) => dispNode(sub, prefix))],
     );
 
-    const selected = state.highlighted.has(str(prefix)) ? ' selected' : '';
+    const selected = state.highlighted.has(str(prefix) + ' --fullnode--') ? ' selected' : '';
 
     // Default case.
     return elem('node', {
@@ -130,7 +130,7 @@ function dispNode(node, pathPrefix = null) {
     // comment is one of 'given', 'proven', 'unproven'
     const [_, content, n, io, comment, ...justification] = node;
     const prefix = (pathPrefix || []).concat([n, io]);
-    const selected = state.highlighted.has(str(prefix)) ? ' selected' : '';
+    const selected = state.highlighted.has(str(prefix) + ' ' + str(content)) ? ' selected' : '';
     const stmtElement = elem('div',
       {
         class: `stmt port active${selected} ` + comment,
