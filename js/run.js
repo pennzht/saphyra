@@ -141,6 +141,16 @@ window.onload = (e) => {
   state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
 
   state.currentTab = 'empty';
+
+  // Recover state from state.
+  if(window.localStorage && localStorage.getItem('state')) {
+    // Recover state
+    const recState = JSON.parse(localStorage.getItem('state'));
+    state.tabs = new Map(recState.tabs);
+    state.currentTab = recState.currentTab;
+    state.highlighted = new Set(recState.highlighted);
+  }
+
   updateState();
 
   const sampleCode = parseOne(sampleTreeDeriv7);
