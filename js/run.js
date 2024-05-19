@@ -47,7 +47,8 @@ state = {
     ]),
     currentTab: 'empty',
 
-    // Add transient state for "highlighted ports"
+    // A state for highlighted NODES and PORTS. Example:
+    // {[#root ^c in], [#root]}
     highlighted: new Set(),
 }
 
@@ -57,6 +58,9 @@ function clearTransientState() {
 
 /// Shows current state on page.
 function updateState() {
+    // Prints state for debugging.
+    console.log('Current state is', state);
+
     // Update div.
     $('tab-display').innerHTML = '';
     for (const [tabName, _] of state.tabs.entries()) {
