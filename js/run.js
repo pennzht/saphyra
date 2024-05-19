@@ -42,6 +42,8 @@ function toggleSetElement(set, element) {
 }
 
 state = {
+    // A map of tabs, map of TABNAME:STRING -> [CURRENTPAGENUMBER, PAGECONTENT]
+    // PAGECONTENT is a tree.
     tabs: new Map([
       ['empty', tabInit(parseOne(emptyNode))]   // Initial page, empty.
     ]),
