@@ -63,6 +63,15 @@ function updateState() {
     // Prints state for debugging.
     console.log('Current state is', state);
 
+    // Set localStorage.
+    localStorage.setItem('state',
+        JSON.stringify({
+            tabs: [...state.tabs],
+            currentTab: state.currentTab,
+            highlighted: [...state.highlighted],
+        })
+    );
+
     // Update div.
     $('tab-display').innerHTML = '';
     for (const [tabName, _] of state.tabs.entries()) {
