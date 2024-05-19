@@ -56,7 +56,7 @@ function clearTransientState() {
 }
 
 /// Shows current state on page.
-function globalShowState() {
+function updateState() {
     // Update div.
     $('tab-display').innerHTML = '';
     for (const [tabName, _] of state.tabs.entries()) {
@@ -68,7 +68,7 @@ function globalShowState() {
             state.currentTab = tabName;
             console.log('switching to tab', tabName);
             clearTransientState();
-            globalShowState();
+            updateState();
         }
 
         $('tab-display').appendChild(newTab);
@@ -81,7 +81,7 @@ function globalShowState() {
         state.tabs.set(tabName, tabInit(parseOne(emptyNode)));
         state.currentTab = tabName;
         clearTransientState();
-        globalShowState();
+        updateState();
     };
     $('tab-display').appendChild(addNewTabButton);
 
@@ -97,7 +97,7 @@ function globalShowState() {
     undoButton.onclick = () => {
         tabBack(currentTabObj);
         clearTransientState();
-        globalShowState();
+        updateState();
     }
     $('step-history').appendChild(undoButton);
 
@@ -105,14 +105,14 @@ function globalShowState() {
     redoButton.onclick = () => {
         tabForward(currentTabObj);
         clearTransientState();
-        globalShowState();
+        updateState();
     }
     $('step-history').appendChild(redoButton);
 
     for (let i = 1; i < currentTabObj.length; i++) {
         const isCurrent = (i === currentTabObj[0]);
         const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, [text('.')]);
-        stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; clearTransientState(); globalShowState();};
+        stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; clearTransientState(); updateState();};
         $('step-history').appendChild(stepControlBlock);
     }
 }
@@ -126,7 +126,7 @@ window.onload = (e) => {
   state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
 
   state.currentTab = 'empty';
-  globalShowState();
+  updateState();
 
   const sampleCode = parseOne(sampleTreeDeriv7);
 
@@ -155,7 +155,7 @@ function execute(code) {
             stmt.onclick = (e) => {
                 toggleSetElement(state.highlighted, stmt.getAttribute('data-fulltrace'));
                 // console.log(state.highlighted);
-                globalShowState();
+                updateState();
                 /*
 
                 const matchedRules = getMatchedRules(module, trace, content);
@@ -198,7 +198,7 @@ function execute(code) {
 
                         const currentTabObj = state.tabs.get(state.currentTab);
                         tabAddStep(currentTabObj, newCode);
-                        globalShowState();
+                        updateState();
                     }
                 }
                 */
