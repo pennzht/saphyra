@@ -135,6 +135,7 @@ function updateState() {
 
 window.onload = (e) => {
   state.tabs.set('incomplete', tabInit(parseOne(tryProve1)));
+  state.tabs.set('simple', tabInit(parseOne(tryProve2)));
   state.tabs.set('plus_zero', tabInit(parseOne(sampleTreeDeriv7Complete)));
   state.tabs.set('tautology', tabInit(tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))

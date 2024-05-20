@@ -146,3 +146,14 @@ tryProve1 = `
     ]
   ]
 `
+
+tryProve2 = `
+  [node #root
+    [_A:P _C:P _E:P]
+    [(and (or _A:P _E:P) (or _B:P _C:P))]
+    [join]
+    [
+      [comment Try proving this statement with tactics.]
+    ]
+  ]
+`
