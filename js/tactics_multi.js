@@ -23,14 +23,25 @@ function tacticsMultiMatchAll() {
       continue;
     }
 
-    // console.log(axiomName, str(conclusions));
+    // Finds all ways to pair pattern and statement.
     console.log('=== Matches for ===', axiomName);
 
     const fromsMatch = tmFindMatches(assumptions, froms);
     const tosMatch = tmFindMatches(conclusions, tos);
 
-    console.log(fromsMatch);
-    console.log(tosMatch);
+    // For each pair, attempt to find a match for the block.
+    for (const fm of fromsMatch) for (const tm of tosMatch) {
+      // A list of {slot, sexpWithPath}
+      const pairs = fm.concat(tm);
+
+      const pattern = pairs.map((x) => x.slot);
+      const content = pairs.map((x) => x.sexpWithPath.sexp);
+
+      const match = simpleMatch(pattern, content);
+      if (match.success) {
+        console.log('Match found', match);
+      }
+    }
   }
 }
 
@@ -38,11 +49,12 @@ function tacticsMultiMatchAll() {
   Itertools.
 ******************************/
 
+// Returns a list of list of {slot, sexpWithPath}
 function tmFindMatches(slots, statements) {
   return arrangements(slots, statements.length).map(
     (arrangement) => arrangement.map((slotStmt, ind) => ({
       slot: slotStmt,
-      sexp: statements[ind],
+      sexpWithPath: statements[ind],
     }))
   );
 }
