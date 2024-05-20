@@ -62,6 +62,7 @@ function clearTransientState() {
 function updateState() {
     // Prints state for debugging.
     console.log('Current state is', state);
+    tacticsMultiMatchAll();
 
     // Set localStorage.
     localStorage.setItem('state',
