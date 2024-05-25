@@ -5,6 +5,8 @@
     answer: a list of "additions" (commands in the format "path -> block", where "block" is either a "node" or a "link")
 
     Sometimes this would add multiple blocks.
+
+    Use the function `addBlocksToNode`
  */
 function tacticsMultiMatchAll() {
   const ans = [];
