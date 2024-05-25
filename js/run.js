@@ -62,7 +62,14 @@ function clearTransientState() {
 function updateState() {
     // Prints state for debugging.
     console.log('Current state is', state);
-    tacticsMultiMatchAll();
+    const allMatches = tacticsMultiMatchAll();
+
+    $('display').innerHTML = '';
+    $('display').appendChild(dispSexp(allMatches.map((m) => {
+      return [
+        'rule', m.rule, m.ins, '=>', m.outs
+      ]
+    })));
 
     // Set localStorage.
     localStorage.setItem('state',
@@ -104,8 +111,6 @@ function updateState() {
     const currentTabObj = state.tabs.get(state.currentTab);
     const currentCode = currentTabObj[currentTabObj[0]];
     execute(currentCode);
-
-    $('display').innerHTML = '';
 
     $('step-history').innerHTML = '';
 

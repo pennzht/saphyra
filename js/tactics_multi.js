@@ -1,6 +1,8 @@
 // Detect which tactics to use, when multiple ports are selected.
 
 function tacticsMultiMatchAll() {
+  const ans = [];
+
   const labels = [...state.highlighted].map(parse).map((pair) => {
     return ({
       path: pair[0],
@@ -39,15 +41,20 @@ function tacticsMultiMatchAll() {
 
       const match = simpleMatch(pattern, content);
       if (match.success) {
-        console.log('Match found', match);
+        const thisAns = {
+          map: match.map,
+          rule: axiomName,
+          ins: replaceAll(assumptions, match.map),
+          outs: replaceAll(conclusions, match.map),
+        };
+        ans.push(thisAns);
 
-        console.log(str(replaceAll(assumptions, match.map)));
-        console.log('↓');
-        console.log(str(replaceAll(conclusions, match.map)));
-        console.log('-----');
+        console.log('Match found', thisAns);
       }
     }
   }
+
+  return ans;
 }
 
 /******************************
