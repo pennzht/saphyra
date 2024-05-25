@@ -4,11 +4,13 @@
     TODO: what should this function return?
     answer: a list of "additions" (commands in the format "path -> block", where "block" is either a "node" or a "link")
 
-    Sometimes this would add multiple blocks. 
+    Sometimes this would add multiple blocks.
  */
 function tacticsMultiMatchAll() {
   const ans = [];
 
+  // in each pathAndSexp, path is something like [#root #1 ^a in].
+  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
   const labels = [...state.highlighted].map(parse).map((pair) => {
     return ({
       path: pair[0],
