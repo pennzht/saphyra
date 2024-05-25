@@ -1,5 +1,9 @@
 // Detect which tactics to use, when multiple ports are selected.
 
+/*
+    TODO: what should this function return?
+    answer: a list of "additions" (commands in the format "path -> block", where "block" is either a "node" or a "link")
+ */
 function tacticsMultiMatchAll() {
   const ans = [];
 
