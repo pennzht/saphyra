@@ -40,6 +40,11 @@ function tacticsMultiMatchAll() {
       const match = simpleMatch(pattern, content);
       if (match.success) {
         console.log('Match found', match);
+
+        console.log(str(replaceAll(assumptions, match.map)));
+        console.log('↓');
+        console.log(str(replaceAll(conclusions, match.map)));
+        console.log('-----');
       }
     }
   }
