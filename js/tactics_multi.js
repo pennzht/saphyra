@@ -46,6 +46,7 @@ function tacticsMultiMatchAll() {
           rule: axiomName,
           ins: replaceAll(assumptions, match.map),
           outs: replaceAll(conclusions, match.map),
+          labels,
         };
         ans.push(thisAns);
 
