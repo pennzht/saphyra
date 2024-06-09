@@ -65,11 +65,17 @@ function updateState() {
     const allMatches = tacticsMultiMatchAll();
 
     $('display').innerHTML = '';
-    $('display').appendChild(dispSexp(allMatches.map((m) => {
-      return [
-        'rule', m.rule, m.ins, '=>', m.outs
-      ]
-    })));
+
+    // Append each rule, with a button for application.
+
+    for (const m of allMatches) {
+      $('display').appendChild(
+        elem('div', null, [
+          elem('input', {type: 'button', value: 'Apply'}),
+          dispSexp([m.rule, ... m.ins, '=>', ... m.outs]),
+        ])
+      )
+    }
 
     // Set localStorage.
     localStorage.setItem('state',
