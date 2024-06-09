@@ -58,13 +58,41 @@ function tacticsMultiMatchAll() {
       ]);
 
       if (match.success) {
+        const newNodeName = gensyms(
+          /*avoid*/ '3', // getSubnodeNodeNames(subnode), // TODO - Use actual avoid set!
+          /*count*/ 1,
+          /*prefix*/ '#',
+          /*suffix*/ '',
+        ) [0];
+
+        const newNode = [
+          'node', newNodeName, replaceAll(assumptions, matchMap),
+          replaceAll(conclusions, matchMap),
+          axiomName, [] /*subs*/,
+        ];
+
+        const links = [];
+        for (const matchPair of fm.concat(tm)) {
+          const previousPort = [... matchPair.sexpWithPath.path];
+          const outOrIn = previousPort.pop();
+          const portName = previousPort.pop();
+          if (outOrIn === 'out') {
+            links.push(['link', portName, newNodeName, matchPair.sexpWithPath.sexp]);
+          } else {
+            links.push(['link', newNodeName, portName, matchPair.sexpWithPath.sexp]);
+          }
+        }
+
         const thisAns = {
           map: matchMap,
           rule: axiomName,
-          ins: replaceAll(assumptions, matchMap),
-          outs: replaceAll(conclusions, matchMap),
+          ins: newNode[Ins],
+          outs: newNode[Outs],
           subnode,
-          addnodes: ['so', 'am', 'i'],
+          addnodes: [
+            newNode,
+            ... links,
+          ],
           labels,
         };
         ans.push(thisAns);
