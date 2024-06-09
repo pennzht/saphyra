@@ -54,6 +54,11 @@ state = {
     highlighted: new Set(),
 }
 
+function getCurrentRootNode() {
+  const currentTab = state.tabs.get(state.currentTab);
+  return currentTab[currentTab[0]];
+}
+
 function clearTransientState() {
     state.highlighted = new Set();
 }

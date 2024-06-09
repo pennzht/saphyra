@@ -58,8 +58,10 @@ function tacticsMultiMatchAll() {
       ]);
 
       if (match.success) {
+        console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
+
         const newNodeName = gensyms(
-          /*avoid*/ '3', // getSubnodeNodeNames(subnode), // TODO - Use actual avoid set!
+          /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
           /*count*/ 1,
           /*prefix*/ '#',
           /*suffix*/ '',
@@ -123,6 +125,7 @@ function extendMatchMap(map, vars, avoids) {
   return map;
 }
 
+// Finds the "innermost" subnode from a list of paths.
 function findSubnodeFromPorts(nodesAndPorts) {
   let ans = [];
 
@@ -138,6 +141,20 @@ function findSubnodeFromPorts(nodesAndPorts) {
   }
 
   return ans;
+}
+
+function findSubnodeByPath(node, path) {
+  if (path.length <= 1) {
+    if (node[Label] === path[0]) return node;
+    return null;  // Not found
+  } else {
+    const matchedSubs = node[Subs].filter(
+      (s) => s[0] == 'node' && s[Label] === path[0]
+    );
+    if (matchedSubs.length > 0) {
+      return findSubnodeByPath(matchedSubs[0], path.slice(1));
+    } else return null;
+  }
 }
 
 /******************************
