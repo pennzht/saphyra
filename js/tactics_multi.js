@@ -50,12 +50,17 @@ function tacticsMultiMatchAll() {
       const content = pairs.map((x) => x.sexpWithPath.sexp);
 
       const match = simpleMatch(pattern, content);
+      // Extend map by using generated statement names.
+      const matchMap = extendMatchMap(match.map, vars, [
+        froms, tos, assumptions, conclusions,
+      ]);
+
       if (match.success) {
         const thisAns = {
-          map: match.map,
+          map: matchMap,
           rule: axiomName,
-          ins: replaceAll(assumptions, match.map),
-          outs: replaceAll(conclusions, match.map),
+          ins: replaceAll(assumptions, matchMap),
+          outs: replaceAll(conclusions, matchMap),
           labels,
         };
         ans.push(thisAns);
@@ -66,6 +71,24 @@ function tacticsMultiMatchAll() {
   }
 
   return ans;
+}
+
+/******************************
+  Extending a match map.
+******************************/
+
+function extendMatchMap(map, vars, avoids) {
+  const syms = gensyms (avoids, vars.length, '_P', ':P');
+  syms.reverse();
+
+  for (const v of vars) {
+    if (! map.has(v)) {
+      const sym = syms.pop();
+      map.set(v, sym);
+    }
+  }
+
+  return map;
 }
 
 /******************************
