@@ -22,6 +22,8 @@ function tacticsMultiMatchAll() {
   const froms = labels.filter((a) => str(a.path).endsWith(' out]'));
   const tos = labels.filter((a) => str(a.path).endsWith(' in]'));
 
+  const subnode = findSubnodeFromPorts(labels.map((x) => x.path));
+
   // Find matching axioms.
   for(const [axiomName, [vars, assumptions, conclusions]] of folAxiomsMap.entries()) {
     /*
@@ -61,6 +63,8 @@ function tacticsMultiMatchAll() {
           rule: axiomName,
           ins: replaceAll(assumptions, matchMap),
           outs: replaceAll(conclusions, matchMap),
+          subnode,
+          addnodes: ['so', 'am', 'i'],
           labels,
         };
         ans.push(thisAns);
@@ -74,7 +78,7 @@ function tacticsMultiMatchAll() {
 }
 
 /******************************
-  Extending a match map.
+  Helper functions.
 ******************************/
 
 function extendMatchMap(map, vars, avoids) {
@@ -89,6 +93,23 @@ function extendMatchMap(map, vars, avoids) {
   }
 
   return map;
+}
+
+function findSubnodeFromPorts(nodesAndPorts) {
+  let ans = [];
+
+  for (const label of nodesAndPorts) {
+    const trimlabel = [...label];
+    if (trimlabel.length >= 2 &&
+      ['in', 'out'].includes(trimlabel[trimlabel.length - 1])) {
+        trimlabel.pop();
+        trimlabel.pop();
+      }
+    // Find longer one.
+    if (trimlabel.length > ans.length) ans = trimlabel;
+  }
+
+  return ans;
 }
 
 /******************************

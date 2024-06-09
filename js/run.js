@@ -71,7 +71,11 @@ function updateState() {
     for (const m of allMatches) {
       $('display').appendChild(
         elem('div', null, [
-          elem('input', {type: 'button', value: 'Apply'}),
+          elem('input', {
+            type: 'button', value: 'Apply',
+            'data-subnode': str(m.subnode),
+            'data-addnodes': str(m.addnodes),
+          }),
           dispSexp([m.rule, ... m.ins, '=>', ... m.outs]),
         ])
       )
