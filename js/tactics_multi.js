@@ -157,6 +157,28 @@ function findSubnodeByPath(node, path) {
   }
 }
 
+// Updates a module by adding elements into a subnode.
+function addToSubnode(node, path, newNodes) {
+  if (path.length <= 1) {
+    if (node[Label] === path[0]) return [
+      ... node.slice(0, Subs),
+      node[Subs].concat(newNodes),
+      ... node.slice(Subs+1),
+    ];
+    return node;
+  } else {
+    return [
+      ... node.slice(0, Subs),
+      // Operate on each subnode.
+      node[Subs].map((sub) => {
+        if (sub[0] === 'node' && sub[Label] === path[0]) return addToSubnode(sub, path.slice(1), newNodes);
+        return sub;
+      }),
+      ... node.slice(Subs+1),
+    ];
+  }
+}
+
 /******************************
   Itertools.
 ******************************/

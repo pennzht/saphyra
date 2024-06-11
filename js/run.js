@@ -74,9 +74,11 @@ function updateState() {
     // Append each rule, with a button for application.
 
     for (const m of allMatches) {
+      let inputButton;
+
       $('display').appendChild(
         elem('div', null, [
-          elem('input', {
+          inputButton = elem('input', {
             type: 'button', value: 'Apply',
             'data-subnode': str(m.subnode),
             'data-addnodes': str(m.addnodes),
@@ -84,6 +86,16 @@ function updateState() {
           dispSexp([m.rule, ... m.ins, '=>', ... m.outs]),
         ])
       )
+
+      inputButton.onclick = () => {
+        // Compute new root.
+        const newRoot = addToSubnode(
+          getCurrentRootNode(),
+          m.subnode,
+          m.addnodes,
+        )
+        console.log(pprint(newRoot))
+      }
     }
 
     // Set localStorage.
