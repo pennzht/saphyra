@@ -59,6 +59,11 @@ function getCurrentRootNode() {
   return currentTab[currentTab[0]];
 }
 
+function setCurrentRootNode(newRoot) {
+  tabAddStep(state.tabs.get(state.currentTab), newRoot);
+  state.highlighted = new Set();
+}
+
 function clearTransientState() {
     state.highlighted = new Set();
 }
@@ -94,7 +99,9 @@ function updateState() {
           m.subnode,
           m.addnodes,
         )
-        console.log(pprint(newRoot))
+        console.log(pprint(newRoot));
+        setCurrentRootNode(newRoot);
+        updateState();
       }
     }
 
