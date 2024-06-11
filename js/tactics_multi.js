@@ -4,6 +4,7 @@
     TODO: next step - following necessary tactics
     impl-intro
     forall-intro, exists-elim
+    add-goal
     (variable-level changes)
 
     TODO: stretch step - tactic ordering ("most relevant" tactics first)
