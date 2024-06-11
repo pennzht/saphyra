@@ -5,6 +5,8 @@
     impl-intro
     forall-intro, exists-elim
     (variable-level changes)
+
+    TODO: stretch step - tactic ordering ("most relevant" tactics first)
 */
 
 /*
