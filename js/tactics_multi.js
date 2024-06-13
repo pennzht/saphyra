@@ -77,6 +77,14 @@ function tacticsMultiMatchAll() {
           /*suffix*/ '',
         ) [0];
 
+                console.log(
+                  'debugging', axiomName,
+                  'current root =', pprint(getCurrentRootNode()),
+                  'subnode =', str(subnode),
+                  'subnode content =', pprint(findSubnodeByPath(getCurrentRootNode(), subnode)),
+                  'newnodename =', newNodeName,
+                );
+
         const newNode = [
           'node', newNodeName, replaceAll(assumptions, matchMap),
           replaceAll(conclusions, matchMap),
@@ -112,6 +120,43 @@ function tacticsMultiMatchAll() {
         console.log('Match found', thisAns);
       }
     }
+  }
+
+  // Special cases
+
+  // impl-intro
+  if (tos.length === 1 && tos[0].sexp[0] === '->') {
+    const newSym = '#' + Math.random();
+
+    const [_arrow, a, b] = tos[0].sexp;
+
+    // Construct an impl-intro node.
+    const implIntroNode = [
+      'node', newSym,
+      froms.map((a) => a.sexp),
+      tos.map((a) => a.sexp),
+      ['impl-intro'],
+      // Subs: [join].
+      [[
+        'node', '#0',
+        froms.map((a) => a.sexp).concat([a]),
+        [b],
+        ['join'],
+        [],
+      ]],
+    ];
+
+    const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], newSym, a.sexp]);
+    const linksOut = tos.map((a) => ['link', newSym, a.path[a.path.length-2], a.sexp]);
+
+    const thisAns = {
+      rule: 'impl-intro',
+      ins: [],
+      outs: [tos[0].sexp],
+      subnode,
+      addnodes: [implIntroNode, ...linksIn, ...linksOut],
+    };
+    ans.push(thisAns);
   }
 
   return ans;
@@ -154,21 +199,22 @@ function findSubnodeFromPorts(nodesAndPorts) {
 }
 
 function findSubnodeByPath(node, path) {
-  if (path.length <= 1) {
-    if (node[Label] === path[0]) return node;
-    return null;  // Not found
-  } else {
-    const matchedSubs = node[Subs].filter(
-      (s) => s[0] == 'node' && s[Label] === path[0]
-    );
-    if (matchedSubs.length > 0) {
-      return findSubnodeByPath(matchedSubs[0], path.slice(1));
-    } else return null;
+  if (node[Label] !== path[0]) return null;
+
+  if (path.length <= 1) return node;
+
+  for (const sub of node[Subs]) {
+    const found = findSubnodeByPath(sub, path.slice(1));
+    if (found) return found;
   }
+  return null;
 }
 
 // Updates a module by adding elements into a subnode.
 function addToSubnode(node, path, newNodes) {
+  // Debugging info
+  console.log("node is", node, "path is", path);
+
   if (path.length <= 1) {
     if (node[Label] === path[0]) return [
       ... node.slice(0, Subs),
@@ -176,16 +222,18 @@ function addToSubnode(node, path, newNodes) {
       ... node.slice(Subs+1),
     ];
     return node;
-  } else {
+  } else if (node[Label] === path[0]) {
     return [
       ... node.slice(0, Subs),
       // Operate on each subnode.
       node[Subs].map((sub) => {
-        if (sub[0] === 'node' && sub[Label] === path[0]) return addToSubnode(sub, path.slice(1), newNodes);
+        if (sub[0] === 'node') return addToSubnode(sub, path.slice(1), newNodes);
         return sub;
       }),
       ... node.slice(Subs+1),
     ];
+  } else {
+    return node;
   }
 }
 
