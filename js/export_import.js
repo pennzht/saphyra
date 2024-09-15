@@ -20,5 +20,23 @@ function exportState() {
 }
 
 function importState(state) {
+    const fileInput = elem('input', {
+        type: 'file',
+    });
+    fileInput.click();
+
+    fileInput.onchange = (e) => {
+        console.log('file', e.target.files[0]);
+
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e2) => {setEditorState(reader.result);};
+        reader.readAsText(file);
+    }
 }
 
+function setEditorState(result) {
+    console.log('Finished reading', result);
+    const data = JSON.parse(result);
+    // TODO - continue
+}
