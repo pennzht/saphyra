@@ -1,15 +1,15 @@
-// TODO - use better (terser) exporting.
-
 function exportState() {
-    const tabs = [...state.tabs];
+    const tabs = [...state.tabs].map ((pair) => {
+        const [name, [activeStep, ...steps]] = pair;
+        const stepsTranslated = steps.map((s) => str(s));
+        return [name, [activeStep, stepsTranslated]];
+    });
     const highlighted = [...state.highlighted];
     const json = JSON.stringify({
-        tabs,
         currentTab: state.currentTab,
         highlighted,
+        tabs,
     }, null, 2);
-
-    // console.log('exported', json);
 
     // Add element and download.
     const a = elem('a', {
