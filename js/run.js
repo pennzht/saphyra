@@ -41,6 +41,7 @@ function toggleSetElement(set, element) {
     else set.add(element);
 }
 
+// State definition
 state = {
     // A map of tabs, map of TABNAME:STRING -> [CURRENTPAGENUMBER, PAGECONTENT]
     // PAGECONTENT is a tree.
@@ -173,32 +174,40 @@ function updateState() {
 }
 
 window.onload = (e) => {
-  state.tabs.set('incomplete', tabInit(parseOne(tryProve1)));
-  state.tabs.set('simple', tabInit(parseOne(tryProve2)));
-  state.tabs.set('plus_zero', tabInit(parseOne(sampleTreeDeriv7Complete)));
-  state.tabs.set('tautology', tabInit(tryProveTautology(parseOne(`
+    state.tabs.set('incomplete', tabInit(parseOne(tryProve1)));
+    state.tabs.set('simple', tabInit(parseOne(tryProve2)));
+    state.tabs.set('plus_zero', tabInit(parseOne(sampleTreeDeriv7Complete)));
+    state.tabs.set('tautology', tabInit(tryProveTautology(parseOne(`
     (-> _M (-> _N (and _M (or _Q _N))))
   `))));
-  state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
-
-  state.currentTab = 'empty';
-
-  // Recover state from state.
-  if(window.localStorage && localStorage.getItem('state')) {
-    // Recover state
-    const recState = JSON.parse(localStorage.getItem('state'));
-    state.tabs = new Map(recState.tabs);
-    state.currentTab = recState.currentTab;
-    state.highlighted = new Set(recState.highlighted);
-  }
-
-  updateState();
-
-  const sampleCode = parseOne(sampleTreeDeriv7);
-
-  const pprinted = pprint(sampleCode);
-  console.log(pprinted);
-  console.log(eq( parseOne(pprinted), sampleCode ));
+    state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
+    
+    state.currentTab = 'empty';
+    
+    // Recover state from state.
+    if(window.localStorage && localStorage.getItem('state')) {
+        // Recover state
+        const recState = JSON.parse(localStorage.getItem('state'));
+        state.tabs = new Map(recState.tabs);
+        state.currentTab = recState.currentTab;
+        state.highlighted = new Set(recState.highlighted);
+    }
+    
+    updateState();
+    
+    const sampleCode = parseOne(sampleTreeDeriv7);
+    
+    const pprinted = pprint(sampleCode);
+    console.log(pprinted);
+    console.log(eq( parseOne(pprinted), sampleCode ));
+    
+    // Add Exporting/importing.
+    $('export-editor-button').onclick = (e) => {
+        exportState();
+    }
+    $('import-editor-button').onclick = (e) => {
+        importState(/*state*/);
+    }
 }
 
 $('command').onchange = $('command').oninput = (e) => {
