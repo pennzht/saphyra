@@ -17,7 +17,8 @@
     Sometimes this would add multiple blocks.
 
     Use the function `addBlocksToNode`
- */
+*/
+
 function tacticsMultiMatchAll() {
   const ans = [];
 
@@ -29,8 +30,14 @@ function tacticsMultiMatchAll() {
       sexp: pair[1],
     });
   });
-  const froms = labels.filter((a) => str(a.path).endsWith(' out]'));
-  const tos = labels.filter((a) => str(a.path).endsWith(' in]'));
+
+  const froms = [], tos = [], nodes = [];
+  for (const label of labels) {
+    const tail = _last_elem(label.path);
+    if (tail === 'out') froms.push(label);
+    else if (tail === 'in') tos.push(label);
+    else nodes.push(label);
+  }
 
   const subnode = findSubnodeFromPorts(labels.map((x) => x.path));
 
@@ -159,6 +166,21 @@ function tacticsMultiMatchAll() {
     ans.push(thisAns);
   }
 
+  // add-node-input, add-node-output
+  if (froms.length === 0 && tos.length === 0) {
+    // node-only
+    ans.push({
+      rule: 'add-node-input',
+      targetNodes: [...nodes],
+      userInput: parse('[Statement stmt]'),
+    });
+    ans.push({
+      rule: 'add-node-output',
+      targetNodes: [...nodes],
+      userInput: parse('[Statement stmt]'),
+    });
+  }
+
   return ans;
 }
 
@@ -237,6 +259,34 @@ function addToSubnode(node, path, newNodes) {
   }
 }
 
+// Updates a module by adding inputs/outputs to nodes
+// TODO-0917. update this.
+function addIOToSubnodes(node, targetNodes, inputs, outputs) {
+  // Debugging info
+  console.log("node is", node, "path is", path);
+
+  if (path.length <= 1) {
+    if (node[Label] === path[0]) return [
+      ... node.slice(0, Subs),
+      node[Subs].concat(newNodes),
+      ... node.slice(Subs+1),
+    ];
+    return node;
+  } else if (node[Label] === path[0]) {
+    return [
+      ... node.slice(0, Subs),
+      // Operate on each subnode.
+      node[Subs].map((sub) => {
+        if (sub[0] === 'node') return addToSubnode(sub, path.slice(1), newNodes);
+        return sub;
+      }),
+      ... node.slice(Subs+1),
+    ];
+  } else {
+    return node;
+  }
+}
+
 /******************************
   Itertools.
 ******************************/
@@ -280,3 +330,12 @@ function _arrangements_set_ans(list, count, prefix, out) {
     }
   }
 }
+
+function _last_elem (list) {
+  if (Array.isArray (list)) {
+    return list[list.length - 1] ?? null;
+  } else {
+    return null;
+  }
+}
+
