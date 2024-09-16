@@ -39,6 +39,8 @@ function tacticsMultiMatchAll() {
     else nodes.push(label);
   }
 
+  const nodePaths = nodes.map ((n) => n.path);
+
   const subnode = findSubnodeFromPorts(labels.map((x) => x.path));
 
   // Find matching axioms.
@@ -172,12 +174,12 @@ function tacticsMultiMatchAll() {
       // node-only
       ans.push({
         rule: 'add-node-input',
-        targetNodes: [...nodes],
+        targetNodes: nodePaths,
         userInput: parse('[Statement stmt]'),
       });
       ans.push({
         rule: 'add-node-output',
-        targetNodes: [...nodes],
+        targetNodes: nodePaths,
         userInput: parse('[Statement stmt]'),
       });
     }
@@ -185,7 +187,7 @@ function tacticsMultiMatchAll() {
     if (nodes.length === 1) {
       ans.push({
         rule: 'rename-node',
-        targetNodes: [...nodes],
+        targetNodes: nodePaths,
         userInput: parse('[Name str]'),
       });
     }
@@ -269,32 +271,32 @@ function addToSubnode(node, path, newNodes) {
   }
 }
 
-// Updates a module by adding inputs/outputs to nodes
-// TODO-0917. update this.
-function addIOToSubnodes(node, targetNodes, inputs, outputs) {
-  // Debugging info
-  console.log("node is", node, "path is", path);
+// Updates a module by adding inputs/outputs to nodes.
+function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
+  node = parseOne(str(node));    // clone
 
-  if (path.length <= 1) {
-    if (node[Label] === path[0]) return [
-      ... node.slice(0, Subs),
-      node[Subs].concat(newNodes),
-      ... node.slice(Subs+1),
-    ];
-    return node;
-  } else if (node[Label] === path[0]) {
-    return [
-      ... node.slice(0, Subs),
-      // Operate on each subnode.
-      node[Subs].map((sub) => {
-        if (sub[0] === 'node') return addToSubnode(sub, path.slice(1), newNodes);
-        return sub;
-      }),
-      ... node.slice(Subs+1),
-    ];
-  } else {
-    return node;
+  console.log('targetNodes =', str(targetNodes));
+
+  function walkUpdateNode(node, prefix) {
+    const nodeMatches = targetNodes.some((tn) => eq(tn, prefix));
+    if (nodeMatches) {
+      // Update inputs and outputs
+      console.log(node);
+      console.log(node[Ins]);
+      console.log(node[Outs]);
+      node[Ins].push(...inputs);
+      node[Outs].push(...outputs);
+      node[Label] = newLabel;
+    }
+    for (const sub of (node[Subs] || [])) {
+      if (sub[0] !== 'node') continue;
+      walkUpdateNode(sub, prefix.concat(sub[Label]));
+    }
   }
+
+  walkUpdateNode(node, [node[Label]]);
+
+  return node;
 }
 
 /******************************
