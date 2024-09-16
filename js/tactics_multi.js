@@ -168,17 +168,27 @@ function tacticsMultiMatchAll() {
 
   // add-node-input, add-node-output
   if (froms.length === 0 && tos.length === 0) {
-    // node-only
-    ans.push({
-      rule: 'add-node-input',
-      targetNodes: [...nodes],
-      userInput: parse('[Statement stmt]'),
-    });
-    ans.push({
-      rule: 'add-node-output',
-      targetNodes: [...nodes],
-      userInput: parse('[Statement stmt]'),
-    });
+    if (nodes.length > 0) {
+      // node-only
+      ans.push({
+        rule: 'add-node-input',
+        targetNodes: [...nodes],
+        userInput: parse('[Statement stmt]'),
+      });
+      ans.push({
+        rule: 'add-node-output',
+        targetNodes: [...nodes],
+        userInput: parse('[Statement stmt]'),
+      });
+    }
+
+    if (nodes.length === 1) {
+      ans.push({
+        rule: 'rename-node',
+        targetNodes: [...nodes],
+        userInput: parse('[Name str]'),
+      });
+    }
   }
 
   return ans;
