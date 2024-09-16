@@ -286,11 +286,19 @@ function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
       console.log(node[Outs]);
       node[Ins].push(...inputs);
       node[Outs].push(...outputs);
-      node[Label] = newLabel;
+      if (newLabel) {node[Label] = newLabel;}
     }
     for (const sub of (node[Subs] || [])) {
-      if (sub[0] !== 'node') continue;
-      walkUpdateNode(sub, prefix.concat(sub[Label]));
+      if (sub[0] === 'node') {
+        walkUpdateNode(sub, prefix.concat(sub[Label]));
+      } else {
+        // Link
+        for (const index of [Lfrom, Lto]) {
+          if (newLabel && eq (targetNodes[0], prefix.concat([sub[index]]))) {
+            sub[index] = newLabel;
+          }
+        }
+      }
     }
   }
 

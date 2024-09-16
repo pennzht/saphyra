@@ -87,8 +87,15 @@ function updateState() {
 
   for (const m of allMatches) {
     let inputButton;
+    let userInput = elem('span');
 
-    // TODO-0917. Use user input.
+    if (m.targetNodes) {
+      // Add user input.
+      userInput = elem('input', {
+        type: 'text',
+      });
+    }
+
     $('display').appendChild(
       elem('div', null, [
         inputButton = elem('input', {
@@ -99,6 +106,7 @@ function updateState() {
           'data-target-nodes': str(m.targetNodes ?? null),
         }),
         m.ins ? dispSexp([m.rule, ... m.ins, '=>', ... m.outs]) : dispSexp([m.rule]),
+        userInput,
       ])
     )
 
@@ -114,15 +122,17 @@ function updateState() {
         setCurrentRootNode(newRoot);
         updateState();
       } else {
+        const input = userInput.value;
+        
         // TODO-0917 use actual user input.
         // Special case: add node input, &c.
         const newRoot = applyIOToSubnodes(
           getCurrentRootNode(),
           m.targetNodes,
           m.rule,
-          [],
-          [parseOne('(and _A:P _B:P)')],    // testing purpose.
-          '#xyz',
+          m.rule === 'add-node-input' ? parse(input) : [],
+          m.rule === 'add-node-output' ? parse(input) : [],
+          m.rule === 'rename-node' ? '#' + userInput.value : null,
         )
         console.log(pprint(newRoot));
         setCurrentRootNode(newRoot);
