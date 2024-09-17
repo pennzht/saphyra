@@ -168,6 +168,52 @@ function tacticsMultiMatchAll() {
     ans.push(thisAns);
   }
 
+  // beta-reduction, either direction
+  if (froms.length + tos.length === 1) {
+    let downward, stmt, parentNode, port;
+    if (froms.length > 0) {
+      downward = true;
+      stmt = froms[0].sexp;
+      const path = froms[0].path;
+      parentNode = path.slice(0, path.length - 2);
+      port = path[path.length - 2];
+    } else {
+      downward = false;
+      stmt = tos[0].sexp;
+      const path = tos[0].path;
+      parentNode = path.slice(0, path.length - 2);
+      port = path[path.length - 2];
+    }
+
+    const reduced = lambdaFullReduce(stmt);
+
+    if (! eq (reduced, stmt)) {
+      const newNode = [
+        'node', '#'+Math.random(),
+        /*ins*/ [downward ? stmt : reduced],
+        /*outs*/ [downward ? reduced : stmt],
+        /*justification*/ ['beta'],
+        /*subs*/ [],
+        /*additional*/ [],
+      ];
+      const link = [
+        'link',
+        downward ? port : newNode[Label],
+        downward ? newNode[Label] : port,
+        stmt,
+      ];
+
+      ans.push (result = {
+        rule: 'beta',
+        ins: newNode[Ins],
+        outs: newNode[Outs],
+        subnode: parentNode,
+        addnodes: [newNode, link],
+      });
+      console.log('push result is', result);
+    }
+  }
+
   // add-node-input, add-node-output
   if (froms.length === 0 && tos.length === 0) {
     if (nodes.length > 0) {
