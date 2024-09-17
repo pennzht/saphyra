@@ -169,7 +169,40 @@ function tacticsMultiMatchAll() {
     ans.push(thisAns);
   }
 
-  // forall-intro TODO-0917
+  // forall-intro
+  if (tos.length === 1) {
+    // froms, tos : {path, sexp}
+    const m = simpleMatch(
+      ['forall', '_P'], tos[0].sexp
+    );
+    if (m.success) {
+      const p = m.map.get('_P');
+      const innerNode = [
+        'node', '#'+Math.random(),
+        froms.map((a) => a.sexp),
+        tos.map((a) => a.sexp),
+        ['forall-intro'],
+        // Subs: [join].
+        [[
+          'node', '#0',
+          froms.map((a) => a.sexp),
+          [[p, '_?P0']],
+          ['join'],
+          [],
+        ]],
+      ];
+      const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
+      const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
+      ans.push ({
+        rule: 'forall-intro',
+        ins: innerNode[Ins],
+        outs: innerNode[Outs],
+        subnode,
+        addnodes: [innerNode, ...linksIn, ...linksOut],
+        args: ['_?P0'],
+      });
+    }
+  }
 
   // exists-elim TODO-0917
 
