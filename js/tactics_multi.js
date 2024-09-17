@@ -72,7 +72,7 @@ function tacticsMultiMatchAll() {
 
       const match = simpleMatch(pattern, content);
       // Extend map by using generated statement names.
-      const matchMap = extendMatchMap(match.map, vars, [
+      const [matchMap, generatedSyms] = extendMatchMap(match.map, vars, [
         froms, tos, assumptions, conclusions,
       ]);
 
@@ -86,13 +86,13 @@ function tacticsMultiMatchAll() {
           /*suffix*/ '',
         ) [0];
 
-                console.log(
-                  'debugging', axiomName,
-                  'current root =', pprint(getCurrentRootNode()),
-                  'subnode =', str(subnode),
-                  'subnode content =', pprint(findSubnodeByPath(getCurrentRootNode(), subnode)),
-                  'newnodename =', newNodeName,
-                );
+        /*console.log(
+          'debugging', axiomName,
+          'current root =', pprint(getCurrentRootNode()),
+          'subnode =', str(subnode),
+          'subnode content =', pprint(findSubnodeByPath(getCurrentRootNode(), subnode)),
+          'newnodename =', newNodeName,
+        );*/
 
         const newNode = [
           'node', newNodeName, replaceAll(assumptions, matchMap),
@@ -123,6 +123,7 @@ function tacticsMultiMatchAll() {
             ... links,
           ],
           labels,
+          args: generatedSyms,
         };
         ans.push(thisAns);
 
@@ -247,17 +248,19 @@ function tacticsMultiMatchAll() {
 ******************************/
 
 function extendMatchMap(map, vars, avoids) {
-  const syms = gensyms (avoids, vars.length, '_P', ':P');
+  const syms = gensyms (avoids, vars.length, '_?P', '');
   syms.reverse();
+  const generatedSyms = [];
 
   for (const v of vars) {
     if (! map.has(v)) {
       const sym = syms.pop();
+      generatedSyms.push(sym);
       map.set(v, sym);
     }
   }
 
-  return map;
+  return [map, generatedSyms];
 }
 
 // Finds the "innermost" subnode from a list of paths.

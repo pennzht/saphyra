@@ -96,6 +96,15 @@ function updateState() {
       });
     }
 
+    let argsInput = elem('div');
+    const argsInputFields = [];
+    for (const argName of (m.args || [])) {
+      argsInput.appendChild(dispSexp(argName));
+      const newInput = elem('input', {type: 'text'});
+      argsInput.appendChild(newInput);
+      argsInputFields.push(newInput);
+    }
+
     $('display').appendChild(
       elem('div', null, [
         inputButton = elem('input', {
@@ -104,19 +113,36 @@ function updateState() {
           'data-subnode': str(m.subnode ?? null),
           'data-addnodes': str(m.addnodes ?? null),
           'data-target-nodes': str(m.targetNodes ?? null),
+          'data-args': str(m.args ?? null),
         }),
         m.ins ? dispSexp([m.rule, ... m.ins, '=>', ... m.outs]) : dispSexp([m.rule]),
         userInput,
+        argsInput,
+        elem('hr'),
       ])
     )
 
     inputButton.onclick = () => {
       if (m.ins) {
         // Compute new root.
+
+        // Replace all in m.addnodes
+        const replaceMap = new Map();
+        if (m.args) {
+          for (let i = 0; i < m.args.length; i++) {
+            const argName = m.args[i];
+            if (argsInputFields[i].value === '') continue;
+            const replaceWith = parseOne(argsInputFields[i].value);
+            replaceMap.set(argName, replaceWith);
+          }
+        }
+
+        const addnodesResolved = replaceAll(m.addnodes, replaceMap);
+
         const newRoot = addToSubnode(
           getCurrentRootNode(),
           m.subnode,
-          m.addnodes,
+          addnodesResolved,
         )
         console.log(pprint(newRoot));
         setCurrentRootNode(newRoot);
@@ -124,7 +150,6 @@ function updateState() {
       } else {
         const input = userInput.value;
         
-        // TODO-0917 use actual user input.
         // Special case: add node input, &c.
         const newRoot = applyIOToSubnodes(
           getCurrentRootNode(),
