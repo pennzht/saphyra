@@ -222,6 +222,12 @@ function dispStmt(obj) {
 function dispConclusion(conclusion) {
   if (conclusion[0] === '#good') {
     return elem('span', {style: 'color:#00ab32;'}, [text('\u2713')]);  // check mark.
+  } else if (conclusion[0].startsWith('#incom')) {
+    // Incomplete node
+    return elem('div', [], [
+      elem('span', {style: 'color:#ff9e00;'}, [text('\u2022')]),  // bullet.
+      elem('span', {}, [text(' Some subnodes have errors/are incomplete.')]),
+    ]);
   } else {
     return elem('sexp', [], [
       elem('span', {style: 'color:red;'}, [text('\u2717')]),  // cross.

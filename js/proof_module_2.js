@@ -10,10 +10,14 @@
     [link #from-node #to-node statement]
         indicates that a given statement is an output of #from-node and
         an input of #to-node.
+
+    To fix existing code: Justification can be an array or a simple string.
 **/
 
 [Label, Ins, Outs, Just, Subs, AdditionalInfo] = [1, 2, 3, 4, 5, 6];
 [Lfrom, Lto, Lstmt] = [1, 2, 3];
+
+// Additional info should be one of: #good, #err/..., #incom (at least one sub incomplete; otherwise good.)
 
 // Sync with axioms.js
 folAxioms = parse(folRules);   // Avoiding deepParse for now.
@@ -53,16 +57,18 @@ function verifyNode (node) {
             'node', label, ins, outs, justification, subs,
         ];
 
-        if (! isList(justification)) {
+        const justNormalized = isList(justification) ? justification : [justification];
+
+        /* if (! isList(justification)) {
             return nodeProper.concat(['#err/justification-not-list']);
-        }
+        } */
 
         if (! isList(subs)) {
             return nodeProper.concat(['#err/subs-not-list']);
         }
 
         if (! (isAtomic (label) && isList (ins) && isList (outs)
-               && isList(justification) && isList(subs))) {
+               /* && isList(justification) */ && isList(subs))) {
             return nodeProper.concat(['#err/structure-incorrect']);
         }
 
@@ -73,14 +79,27 @@ function verifyNode (node) {
         const subsVerified = subs.map(verifyNode);
         nodeProper[Subs] = subsVerified;
 
-        const [rule, ...args] = justification;
+        // Check if all subs are good.
+        const subsGood = ((subsVerified || [])
+                          .filter ((n) => n[0] === 'node')
+                          .every ((n) => n[AdditionalInfo].startsWith('#good')) );
+
+        // If all subs are good, then this could be good; otherwise incomplete.
+        const good = subsGood ? '#good' : '#incom';
+
+        if (node[Label] === '##test-me') {
+            console.log('Current node is', node, 'subsVerified is', subsVerified, 'subsGood is', subsGood);
+            console.log(pprint(node));
+        }
+
+        const [rule, ...args] = justNormalized;
 
         const folRule = folAxiomsMap.get(rule) || null;
         if (folRule !== null) {
             // Rule defined
             const match = simpleMatch (folRule.slice(1), [ins, outs]);
             if (match.success) {
-                return nodeProper.concat(['#good']);
+                return nodeProper.concat([good]);
             } else {
                 return nodeProper.concat(['#err/no-match']);
             }
@@ -106,7 +125,7 @@ function verifyNode (node) {
             const [_arrow, A, B] = out;
             const valid = _arrow === '->' && eq([B], subOuts) &&
                 setEquals(subIns, [...ins, A]);
-            return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+            return nodeProper.concat([valid ? good : '#err/derivation']);
         } else if (rule === 'forall-intro') {
             // Rule: from [...] |- [(P _var)] where _var not in ...
             //         to [...] |- [(forall P)]
@@ -131,7 +150,7 @@ function verifyNode (node) {
                 && ! getFreeVars(subIns).includes(outsMatch.map.get('_var'));
 
             const valid = validIns && validOuts;
-            return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+            return nodeProper.concat([valid ? good : '#err/derivation']);
         } else if (rule === 'exists-elim') {
             // Rule: from [(P _var), ...] |- [result] where _var not in ..., result
             //         to [(exists P), ...] |- [result]
@@ -159,7 +178,7 @@ function verifyNode (node) {
                   && ! getFreeVars(subOuts).includes(insMatch.map.get('_var'));
 
             const valid = validIns && validOuts && freeVar;
-            return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+            return nodeProper.concat([valid ? good : '#err/derivation']);
         } else if (rule === 'beta') {
             // Beta __equivalence__
             if (outs.length !== 1) {
@@ -179,7 +198,7 @@ function verifyNode (node) {
               matching.map.get('_rhs'),
             )
 
-            return nodeProper.concat([valid ? '#good' : '#err/beta']);
+            return nodeProper.concat([valid ? good : '#err/beta']);
 
             /* Old version: one-step expansion.
             // Beta expansion/contraction
@@ -207,7 +226,7 @@ function verifyNode (node) {
                 lambdaReplace(val('_body'), val('_invar'), val('_value')),
             );
 
-            return nodeProper.concat([valid ? '#good' : '#err/beta']);
+            return nodeProper.concat([valid ? good : '#err/beta']);
             */
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
@@ -316,7 +335,7 @@ function verifyNode (node) {
 
             // Success!
 
-            return nodeProper.concat(['#good']);
+            return nodeProper.concat([good]);
         } else {
             return nodeProper.concat(['#err/no-such-rule']);
         }
