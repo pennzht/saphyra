@@ -205,6 +205,39 @@ function tacticsMultiMatchAll() {
   }
 
   // exists-elim TODO-0917
+  if (froms.length >= 1) {
+    // froms, tos : {path, sexp}
+    const m = simpleMatch(
+      ['exists', '_P'], froms[0].sexp
+    );
+    if (m.success) {
+      const p = m.map.get('_P');
+      const innerNode = [
+        'node', '#'+Math.random(),
+        froms.map((a) => a.sexp),
+        tos.map((a) => a.sexp),
+        ['exists-elim'],
+        // Subs: [join].
+        [[
+          'node', '#0',
+          [[p, '_?P0']].concat(froms.slice(1).map((a) => a.sexp)),
+          tos.map((a) => a.sexp),
+          ['join'],
+          [],
+        ]],
+      ];
+      const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
+      const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
+      ans.push ({
+        rule: 'exists-elim',
+        ins: innerNode[Ins],
+        outs: innerNode[Outs],
+        subnode,
+        addnodes: [innerNode, ...linksIn, ...linksOut],
+        args: ['_?P0'],
+      });
+    }
+  }
 
   // beta-reduction, either direction
   if (froms.length + tos.length === 1) {

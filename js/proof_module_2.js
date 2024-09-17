@@ -149,7 +149,7 @@ function verifyNode (node) {
             const subIns = sub[Ins], subOuts = sub[Outs];
 
             const validOuts = setEquals(subOuts, outs);
-            const validIns = setEquals(sutIns.slice(1), ins.slice(1));
+            const validIns = setEquals(subIns.slice(1), ins.slice(1));
             const insMatch = simpleMatch(
                 [['_P', '_var'], ['exists', '_P']],
                 [subIns[0], ins[0]],
