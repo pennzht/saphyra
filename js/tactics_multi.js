@@ -2,16 +2,16 @@
 
 /*
     TODO: next step - following necessary tactics
-    impl-intro
+  √ impl-intro
     forall-intro, exists-elim
-    add-goal
+  √ add-goal
     (variable-level changes)
 
     TODO: stretch step - tactic ordering ("most relevant" tactics first)
 */
 
 /*
-    TODO: what should this function return?
+    what should this function return?
     answer: a list of "additions" (commands in the format "path -> block", where "block" is either a "node" or a "link")
 
     Sometimes this would add multiple blocks.
@@ -168,6 +168,10 @@ function tacticsMultiMatchAll() {
     };
     ans.push(thisAns);
   }
+
+  // forall-intro
+
+  // exists-elim
 
   // beta-reduction, either direction
   if (froms.length + tos.length === 1) {
