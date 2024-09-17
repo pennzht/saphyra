@@ -239,7 +239,7 @@ function tacticsMultiMatchAll() {
     }
   }
 
-  // beta-reduction, either direction
+  // beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
   if (froms.length + tos.length === 1) {
     let downward, stmt, parentNode, port;
     if (froms.length > 0) {
@@ -263,7 +263,7 @@ function tacticsMultiMatchAll() {
         'node', '#'+Math.random(),
         /*ins*/ [downward ? stmt : reduced],
         /*outs*/ [downward ? reduced : stmt],
-        /*justification*/ ['beta'],
+        /*justification*/ ['beta-equiv'],
         /*subs*/ [],
         /*additional*/ [],
       ];
@@ -275,7 +275,7 @@ function tacticsMultiMatchAll() {
       ];
 
       ans.push (result = {
-        rule: 'beta',
+        rule: 'beta-equiv',
         ins: newNode[Ins],
         outs: newNode[Outs],
         subnode: parentNode,

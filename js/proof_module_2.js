@@ -194,8 +194,8 @@ function verifyNode (node) {
             }
 
             const valid = lambdaEq(
-              matching.map.get('_lhs'),
-              matching.map.get('_rhs'),
+                lambdaFullReduce(matching.map.get('_lhs')),
+                lambdaFullReduce(matching.map.get('_rhs')),
             )
 
             return nodeProper.concat([valid ? good : '#err/beta']);
@@ -228,6 +228,20 @@ function verifyNode (node) {
 
             return nodeProper.concat([valid ? good : '#err/beta']);
             */
+        } else if (rule === 'beta-equiv') {
+            if (ins.length !== 1) {
+                return nodeProper.concat(['#err/incorrect-ins']);
+            }
+            if (outs.length !== 1) {
+                return nodeProper.concat(['#err/incorrect-outs']);
+            }
+
+            const valid = lambdaEq(
+                lambdaFullReduce(ins[0]),
+                lambdaFullReduce(outs[0]),
+            );
+
+            return nodeProper.concat([valid ? good : '#err/beta-equiv']);
         } else if (rule === 'join') {
             const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
             const links = subsVerified.filter((x) => x[0] === 'link');
