@@ -169,9 +169,9 @@ function tacticsMultiMatchAll() {
     ans.push(thisAns);
   }
 
-  // forall-intro
+  // forall-intro TODO-0917
 
-  // exists-elim
+  // exists-elim TODO-0917
 
   // beta-reduction, either direction
   if (froms.length + tos.length === 1) {

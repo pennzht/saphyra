@@ -132,6 +132,34 @@ function verifyNode (node) {
 
             const valid = validIns && validOuts;
             return nodeProper.concat([valid ? '#good' : '#err/derivation']);
+        } else if (rule === 'exists-elim') {
+            // Rule: from [(P _var), ...] |- [result] where _var not in ..., result
+            //         to [(exists P), ...] |- [result]
+            if (outs.length !== 1) {
+                return nodeProper.concat(['#err/too-long']);
+            }
+            const [out] = outs;
+            if (subsVerified.length !== 1) {
+                return nodeProper.concat(['#err/too-many-subs']);
+            }
+            const [sub] = subsVerified;  // Verify node.
+            if (sub[0] !== 'node') {
+                return nodeProper.concat(['#err/sub-not-node']);
+            }
+            const subIns = sub[Ins], subOuts = sub[Outs];
+
+            const validOuts = setEquals(subOuts, outs);
+            const validIns = setEquals(sutIns.slice(1), ins.slice(1));
+            const insMatch = simpleMatch(
+                [['_P', '_var'], ['exists', '_P']],
+                [subIns[0], ins[0]],
+            );
+            const freeVar = insMatch.success && isVar(insMatch.map.get('_var'))
+                  && ! getFreeVars(subIns.slice(1)).includes(insMatch.map.get('_var'))
+                  && ! getFreeVars(subOuts).includes(insMatch.map.get('_var'));
+
+            const valid = validIns && validOuts && freeVar;
+            return nodeProper.concat([valid ? '#good' : '#err/derivation']);
         } else if (rule === 'beta') {
             // Beta __equivalence__
             if (outs.length !== 1) {
