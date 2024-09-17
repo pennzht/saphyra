@@ -1,13 +1,14 @@
    133    351   2265 axioms.js
    278   1687   8734 data.js
+    50    140   1468 export_import.js
    271    974   7623 lambdas.js
    693   2768  21551 lisp.js
    246    828   7413 nodeviz.js
    315   1042  11042 proof_module_2.js
-   234    693   7067 run.js
+   281    832   8127 run.js
    111    367   2990 simple_typing.js
    782   2967  25229 tactics.js
-   231    715   6285 tactics_multi.js
+   361   1041   9469 tactics_multi.js
    111    322   2676 toposort.js
    159   2329  11531 tree_derivs.js
-  3564  15043 114406 total
+  3791  15648 120118 total
