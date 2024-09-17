@@ -87,8 +87,8 @@ function verifyNode (node) {
         // If all subs are good, then this could be good; otherwise incomplete.
         const good = subsGood ? '#good' : '#incom';
 
-        if (node[Label] === '##test-me') {
-            console.log('Current node is', node, 'subsVerified is', subsVerified, 'subsGood is', subsGood);
+        if ((subsVerified||[]).some((n) => n[0] === 'node' && n[AdditionalInfo].startsWith('#err'))) {
+            console.log('Current node is', node, 'subsVerified is', subsVerified);
             console.log(pprint(node));
         }
 
