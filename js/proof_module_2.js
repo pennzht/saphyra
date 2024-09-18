@@ -94,6 +94,16 @@ function verifyNode (node) {
 
         const [rule, ...args] = justNormalized;
 
+        // Check if all ins and outs are valid, well-typed statements.
+        const invalidStmts = [].concat(ins).concat(outs).filter(
+            (stmt) => getType(stmt) !== 'P'
+        );
+
+        if (invalidStmts.length > 0) {
+            // Statement type error.
+            return nodeProper.concat(['#err/stmt-type', invalidStmts])
+        }
+
         const folRule = folAxiomsMap.get(rule) || null;
         if (folRule !== null) {
             // Rule defined
