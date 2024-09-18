@@ -285,6 +285,32 @@ function tacticsMultiMatchAll() {
     }
   }
 
+  // replacing subobject (subformula)
+  if (froms.length + tos.length === 1) {
+    let downward, stmt, parentNode, port;
+    if (froms.length > 0) {
+      downward = true;
+      stmt = froms[0].sexp;
+      const path = froms[0].path;
+      parentNode = path.slice(0, path.length - 2);
+      port = path[path.length - 2];
+    } else {
+      downward = false;
+      stmt = tos[0].sexp;
+      const path = tos[0].path;
+      parentNode = path.slice(0, path.length - 2);
+      port = path[path.length - 2];
+    }
+
+    // TODO - add logic for replacing subs.
+    ans.push({
+      rule: 'replace-sub',
+      targetNodes: nodePaths,
+      stmt,
+      userInput: parse('[Statement stmt]'),
+    });
+  }
+
   // add-node-input, add-node-output
   if (froms.length === 0 && tos.length === 0) {
     if (nodes.length > 0) {
