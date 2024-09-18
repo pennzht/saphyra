@@ -152,7 +152,11 @@ function dispNode(node, pathPrefix = null) {
   }
 }
 
-function dispStmt(obj) {
+function dispStmt(obj, prefix=null) {
+  // prefix represents the relative position of a subexpression in the statement.
+
+  const pf = isList(prefix) ? prefix : [];
+
   if (! isList(obj)) {
     if (isVar(obj)) {
       let varBody = obj.slice(1), varType = '';
@@ -162,29 +166,33 @@ function dispStmt(obj) {
         varBody = obj.slice(1, colon), varType = obj.slice(colon + 1);
       }
 
-      return elem('span', {class: 'atom', 'data-sexp': str(obj)}, [
+      return elem('span', {class: 'atom', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         text(varBody),
         elem('sup', {class: 'type-notice'}, [text(varType)])
       ]);
     }
 
-    return dispSexp(obj);
+    const ans = dispSexp(obj);
+    ans.dataset.sexp = str(obj);
+    ans.dataset.relpos = str(pf);
+
+    return ans;
   } else {
     let match = simpleMatch(['_head', '_a', '_b'], obj);
     if (match.success) {
       const [head, a, b] = obj;
 
       if (isAtomic(head) && head !== ':') {
-        return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
-          dispStmt(a),
+        return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+          dispStmt(a, [...pf, 1]),
           text(head),
-          dispStmt(b),
+          dispStmt(b, [...pf, 2]),
         ])
       } else if (head === ':') {
-        return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
-          dispStmt(a),
+        return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+          dispStmt(a, [...pf, 1]),
           text('\u21a6'),
-          dispStmt(b),
+          dispStmt(b, [...pf, 2]),
         ])
       }
     }
@@ -193,10 +201,10 @@ function dispStmt(obj) {
     if (match.success) {
       const v = match.map.get('_v'), body = match.map.get('_body');
 
-      return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
+      return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         text('∀'),
-        dispStmt(v),
-        dispStmt(body),
+        dispStmt(v, [...pf, 1, 1]),
+        dispStmt(body, [...pf, 1, 2]),
       ])
     }
 
@@ -206,16 +214,24 @@ function dispStmt(obj) {
         body = match.map.get('_body'),
         arg = match.map.get('_arg');
 
-      return elem('div', {class: 'list', 'data-sexp': str(obj)}, [
-        dispStmt(body),
+      return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+        dispStmt(body, [...pf, 0, 2]),
         text('where'),
-        dispStmt(v),
+        dispStmt(v, [...pf, 0, 1]),
         text('='),
-        dispStmt(arg),
+        dispStmt(arg, [...pf, 1]),
       ]);
     }
 
-    return elem('div', {class: 'list', 'data-sexp': str(obj)}, obj.map(dispStmt));
+    // Default.
+    
+    const subobjs = [];
+    for (let i = 0; i < obj.length; i++) {
+      subobj = dispStmt(obj[i], [...pf, i]);
+      subobjs.push(subobj);
+    }
+
+    return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, subobjs);
   }
 }
 
