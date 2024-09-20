@@ -482,9 +482,13 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
     'newStmt', str(newStmt),
   )
 
-  // Find subnode
-
   // Add to subnode
+
+  // - Construct new nodes.
+  //   New nodes should be:
+  //   (0) beta expansion
+  //   (1) =-elim => exposes a new "=" goal.
+  //   (2) beta contraction
 
   // Return new root
   return root;
