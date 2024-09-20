@@ -124,8 +124,8 @@ function lambdaReplace (sexp, v, arg) {
                 getFreeVars(arg).concat(getAllVars(sexp)),
                 typeToString(getType(innerVar)),
             );
-            innerVar = newVar;
             innerExp = lambdaReplace(innerExp, innerVar, newVar);
+            innerVar = newVar;  // Order corrected!
         }
         return [':', innerVar, lambdaReplace(innerExp, v, arg)];
     } else if (isList(sexp)) {
@@ -180,8 +180,6 @@ function lambdaExtract (term) {
 
     return maps;
 }
-
-/// TODO - add lambdaFullReduce(term, stepLimit = 100)
 
 // Returns # of reductions made.
 function lambdaOneStepReduce(term) {

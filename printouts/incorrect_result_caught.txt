@@ -1,0 +1,4 @@
+[(: _m (: _n (+ _m _n))) _n]
+incorrect result: [: _v0:null [+ _n _n]]
+
+Fixed: order of a replacement.
