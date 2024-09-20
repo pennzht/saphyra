@@ -87,8 +87,14 @@ function updateState() {
 
   for (const m of allMatches) {
     let inputButton;
+    
+    // A text input for anything.
     let userInput = elem('span');
+
+    // A representation of the sexp itself, allowing user to choose a subelement.
     let subelemInput = elem('span');
+
+    // Feedback for subelem selection
     let subelemInputDisplay = elem('span');
 
     if (m.targetNodes) {
@@ -104,10 +110,23 @@ function updateState() {
       for (const subelem of subelemInput.getElementsByTagName('*')) {
         if (subelem.hasAttribute ('data-relpos')) {
           subelem.onclick = (e) => {
-            console.log ('relpos:', e.target.dataset.relpos);
+            const relpos = parseOne(e.target.dataset.relpos).map ((a) => parseInt(a));
+
+            // Finds subelement
+
+            if (relpos[relpos.length - 1] === 0) {
+              // Operator.
+              relpos.pop();
+            }
+
+            let sexp = m.stmt;
+            for (const index of relpos) sexp = sexp[index];
 
             subelemInputDisplay.innerHTML = '';
-            subelemInputDisplay.appendChild(dispSexp(parseOne(e.target.dataset.sexp)));
+            subelemInputDisplay.appendChild(dispSexp(sexp));
+            subelemInputDisplay.dataset.relpos = str(relpos);
+            subelemInputDisplay.dataset.sexp = str(sexp);
+            console.log ('relpos:', relpos);
             e.stopPropagation();
           }
         }
