@@ -86,14 +86,6 @@ function tacticsMultiMatchAll() {
           /*suffix*/ '',
         ) [0];
 
-        /*console.log(
-          'debugging', axiomName,
-          'current root =', pprint(getCurrentRootNode()),
-          'subnode =', str(subnode),
-          'subnode content =', pprint(findSubnodeByPath(getCurrentRootNode(), subnode)),
-          'newnodename =', newNodeName,
-        );*/
-
         const newNode = [
           'node', newNodeName, replaceAll(assumptions, matchMap),
           replaceAll(conclusions, matchMap),
