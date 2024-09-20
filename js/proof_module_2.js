@@ -90,6 +90,12 @@ function verifyNode (node) {
         if ((subsVerified||[]).some((n) => n[0] === 'node' && n[AdditionalInfo].startsWith('#err'))) {
             console.log('Current node is', node, 'subsVerified is', subsVerified);
             console.log(pprint(node));
+
+          for (const sv of subsVerified) {
+            if (sv[AdditionalInfo]?.startsWith('#err')) {
+              console.log(pprint(sv));
+            }
+          }
         }
 
         const [rule, ...args] = justNormalized;

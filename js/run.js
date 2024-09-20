@@ -201,6 +201,8 @@ function updateState() {
           replaceSub,
           newSub,
         );
+        setCurrentRootNode(newRoot);
+        updateState();
       } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
         

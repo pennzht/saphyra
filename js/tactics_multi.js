@@ -465,11 +465,11 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
   //     3. beta conversion
 
   // An abstraction as a lambda expr.
-  const abstractor = replaceByPath(
+  const abstractor = [':', newVar, replaceByPath(
     stmt,
     subIndex,
     newVar,
-  );
+  )];
 
   const newStmt = replaceByPath(
     stmt,
@@ -497,10 +497,38 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
     /*suffix*/ '',
   );
 
-  // TODO: consider polarity.
+  // TODO: consider polarity. For now, only bottom-up.
+
+  const n0 = ['node', lab0,
+              [newStmt],
+              [ [abstractor, newSub] ],
+              ['beta-equiv'],
+              [],
+             ];
+  const n1 = ['node', lab1,
+              [ ['=', newSub, oldSub], [abstractor, newSub] ],
+              [ [abstractor, oldSub] ],
+              ['=-elim'],
+              [],
+             ];
+  const n2 = ['node', lab2,
+              [ [abstractor, oldSub] ],
+              [stmt],
+              ['beta-equiv'],
+              [],
+             ];
+  const l1 = ['link', lab0, lab1, [abstractor, newSub] ];
+  const l2 = ['link', lab1, lab2, [abstractor, oldSub] ];
+  const l3 = ['link', lab2, childIndex, stmt];
+
+  const newRoot = addToSubnode(
+    root,
+    parentIndex,
+    [n0, n1, n2, l1, l2, l3],
+  );
 
   // Return new root
-  return root;
+  return newRoot;
 }
 
 /******************************
