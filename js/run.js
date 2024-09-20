@@ -89,7 +89,18 @@ function updateState() {
     let inputButton;
     let userInput = elem('span');
 
-    if (m.targetNodes) {
+    if (m.rule === 'replace-sub') {
+      userInput = dispStmt(m.stmt);
+
+      for (const subelem of userInput.getElementsByTagName('*')) {
+        if (subelem.hasAttribute ('data-relpos')) {
+          subelem.onclick = (e) => {
+            console.log ('relpos:', e.target.dataset.relpos);
+            e.stopPropagation();
+          }
+        }
+      }
+    } else if (m.targetNodes) {
       // Add user input.
       userInput = elem('input', {
         type: 'text',

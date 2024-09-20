@@ -185,13 +185,13 @@ function dispStmt(obj, prefix=null) {
       if (isAtomic(head) && head !== ':') {
         return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
           dispStmt(a, [...pf, 1]),
-          text(head),
+          dispStmt(head, [...pf, 0]),
           dispStmt(b, [...pf, 2]),
         ])
       } else if (head === ':') {
         return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
           dispStmt(a, [...pf, 1]),
-          text('\u21a6'),
+          dispStmt('\u21a6', [...pf, 0]),
           dispStmt(b, [...pf, 2]),
         ])
       }
