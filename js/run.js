@@ -186,7 +186,12 @@ function updateState() {
         console.log(pprint(newRoot));
         setCurrentRootNode(newRoot);
         updateState();
-      } else {
+      } else if (m.rule === 'replace-sub') {
+        const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
+        const replaceSubIndex = subelemInputDisplay.dataset.relpos;
+        const newSub = parseOne(userInput.value);
+        console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub);
+      } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
         
         // Special case: add node input, &c.
