@@ -89,6 +89,7 @@ function updateState() {
     let inputButton;
     let userInput = elem('span');
     let subelemInput = elem('span');
+    let subelemInputDisplay = elem('span');
 
     if (m.targetNodes) {
       // Add user input.
@@ -104,6 +105,9 @@ function updateState() {
         if (subelem.hasAttribute ('data-relpos')) {
           subelem.onclick = (e) => {
             console.log ('relpos:', e.target.dataset.relpos);
+
+            subelemInputDisplay.innerHTML = '';
+            subelemInputDisplay.appendChild(dispSexp(parseOne(e.target.dataset.sexp)));
             e.stopPropagation();
           }
         }
@@ -132,6 +136,7 @@ function updateState() {
         m.ins ? dispSexp([m.rule, ... m.ins, '=>', ... m.outs]) : dispSexp([m.rule]),
         userInput,
         subelemInput,
+        subelemInputDisplay,
         argsInput,
         elem('hr'),
       ])
