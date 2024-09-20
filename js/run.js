@@ -88,11 +88,19 @@ function updateState() {
   for (const m of allMatches) {
     let inputButton;
     let userInput = elem('span');
+    let subelemInput = elem('span');
+
+    if (m.targetNodes) {
+      // Add user input.
+      userInput = elem('input', {
+        type: 'text',
+      });
+    }
 
     if (m.rule === 'replace-sub') {
-      userInput = dispStmt(m.stmt);
+      subelemInput = dispStmt(m.stmt);
 
-      for (const subelem of userInput.getElementsByTagName('*')) {
+      for (const subelem of subelemInput.getElementsByTagName('*')) {
         if (subelem.hasAttribute ('data-relpos')) {
           subelem.onclick = (e) => {
             console.log ('relpos:', e.target.dataset.relpos);
@@ -100,11 +108,6 @@ function updateState() {
           }
         }
       }
-    } else if (m.targetNodes) {
-      // Add user input.
-      userInput = elem('input', {
-        type: 'text',
-      });
     }
 
     let argsInput = elem('div');
@@ -128,6 +131,7 @@ function updateState() {
         }),
         m.ins ? dispSexp([m.rule, ... m.ins, '=>', ... m.outs]) : dispSexp([m.rule]),
         userInput,
+        subelemInput,
         argsInput,
         elem('hr'),
       ])
