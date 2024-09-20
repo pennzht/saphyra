@@ -443,24 +443,51 @@ function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
   return node;
 }
 
-function applyReplaceSub (root, port, subIndex, oldSub, newSub) {
-  return root;
+function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
   // TODO0920 - geneerate nodes and return new root.
 
   // Construct new statement
+  const parentIndex = port.slice(0, port.length - 2);
+  const childIndex = port[port.length - 2];
+  const childPolarity = port[port.length - 1];
+  const subnode = findSubnodeByPath (
+    root,
+    parentIndex,
+  );
 
   // Construct lambda expressions
+  const type = typeToString(getType(oldSub));
+  const newVar = gensyms (stmt, 1, '_v', ':' + type)[0];
 
   // Construct new nodes:
   //     1. beta expansion
   //     2. equivalence based on equality
   //     3. beta conversion
 
+  // An abstraction as a lambda expr.
+  const abstractor = replaceByPath(
+    stmt,
+    subIndex,
+    newVar,
+  );
+
+  const newStmt = replaceByPath(
+    stmt,
+    subIndex,
+    newSub,
+  );
+
+  console.log (
+    'abstractor', str(abstractor),
+    'newStmt', str(newStmt),
+  )
+
   // Find subnode
 
   // Add to subnode
 
-  // Return root
+  // Return new root
+  return root;
 }
 
 /******************************

@@ -187,7 +187,7 @@ function updateState() {
         setCurrentRootNode(newRoot);
         updateState();
       } else if (m.rule === 'replace-sub') {
-        const replaceSubIndex = subelemInputDisplay.dataset.relpos;
+        const replaceSubIndex = parseOne(subelemInputDisplay.dataset.relpos);
         const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
         const newSub = parseOne(userInput.value);
         console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub, 'at port', m.targetPort);
@@ -196,6 +196,7 @@ function updateState() {
         const newRoot = applyReplaceSub (
           root,
           m.targetPort,
+          m.stmt,
           replaceSubIndex,
           replaceSub,
           newSub,
