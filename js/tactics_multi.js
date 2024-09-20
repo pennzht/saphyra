@@ -443,6 +443,11 @@ function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
   return node;
 }
 
+function applyReplaceSub (root, port, subIndex, oldSub, newSub) {
+  return root;
+  // TODO0920 - geneerate nodes and return new root.
+}
+
 /******************************
   Itertools.
 ******************************/

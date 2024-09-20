@@ -95,7 +95,7 @@ function updateState() {
     let subelemInput = elem('span');
 
     // Feedback for subelem selection
-    let subelemInputDisplay = elem('span');
+    let subelemInputDisplay = elem('span', [], [text('Specify a subexpression.')]);
 
     if (m.targetNodes) {
       // Add user input.
@@ -187,12 +187,19 @@ function updateState() {
         setCurrentRootNode(newRoot);
         updateState();
       } else if (m.rule === 'replace-sub') {
-        const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
         const replaceSubIndex = subelemInputDisplay.dataset.relpos;
+        const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
         const newSub = parseOne(userInput.value);
         console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub, 'at port', m.targetPort);
 
-        // TODO0920 - generate actual nodes.
+        const root = getCurrentRootNode();
+        const newRoot = applyReplaceSub (
+          root,
+          m.targetPort,
+          replaceSubIndex,
+          replaceSub,
+          newSub,
+        );
       } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
         
