@@ -190,7 +190,9 @@ function updateState() {
         const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
         const replaceSubIndex = subelemInputDisplay.dataset.relpos;
         const newSub = parseOne(userInput.value);
-        console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub);
+        console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub, 'at port', m.targetPort);
+
+        // TODO0920 - generate actual nodes.
       } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
         

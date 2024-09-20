@@ -196,7 +196,6 @@ function tacticsMultiMatchAll() {
     }
   }
 
-  // exists-elim TODO-0917
   if (froms.length >= 1) {
     // froms, tos : {path, sexp}
     const m = simpleMatch(
@@ -294,12 +293,12 @@ function tacticsMultiMatchAll() {
       port = path[path.length - 2];
     }
 
-    // TODO - add logic for replacing subs.
     ans.push({
       rule: 'replace-sub',
       targetNodes: nodePaths,
       stmt,
       userInput: parse('[Statement stmt]'),
+      targetPort: froms.concat(tos)[0].path,
     });
   }
 
