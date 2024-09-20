@@ -446,6 +446,21 @@ function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
 function applyReplaceSub (root, port, subIndex, oldSub, newSub) {
   return root;
   // TODO0920 - geneerate nodes and return new root.
+
+  // Construct new statement
+
+  // Construct lambda expressions
+
+  // Construct new nodes:
+  //     1. beta expansion
+  //     2. equivalence based on equality
+  //     3. beta conversion
+
+  // Find subnode
+
+  // Add to subnode
+
+  // Return root
 }
 
 /******************************
