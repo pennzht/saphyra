@@ -490,6 +490,15 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
   //   (1) =-elim => exposes a new "=" goal.
   //   (2) beta contraction
 
+  const [lab0, lab1, lab2] = gensyms (
+    /*avoids*/ subnode,
+    /*count*/ 3,
+    /*prefix*/ '#',
+    /*suffix*/ '',
+  );
+
+  // TODO: consider polarity.
+
   // Return new root
   return root;
 }
