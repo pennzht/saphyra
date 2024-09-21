@@ -98,7 +98,7 @@ function verifyNode (node) {
           }
         }
 
-        const [rule, ...args] = justNormalized;
+        const [rule, ...args] = justNormalized;  // ...args is not used as of now. For now, we'll store "folded" information here.
 
         // Check if all ins and outs are valid, well-typed statements.
         const invalidStmts = [].concat(ins).concat(outs).filter(

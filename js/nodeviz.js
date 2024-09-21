@@ -97,13 +97,26 @@ function dispNode(node, pathPrefix = null) {
 
     const prefix = (pathPrefix || []).concat(label);
 
+    const summaryElement = elem('summary', {}, [text('open/close')]);
+
     subsElement = elem('details',
       foldP ? {} : {open: 'true'},
-      [elem('summary', {}, [text('open/close')]),
+      [summaryElement,
        ... subsVerified.map((sub) => dispNode(sub, prefix))],
     );
 
     const selected = state.highlighted.has(str(prefix) + ' --fullnode--') ? ' selected' : '';
+
+    summaryElement.onclick = (e) => {
+      const newRoot = setNodeFolded (
+        getCurrentRootNode(),
+        prefix,
+        //        ! subsElement.open,  /*true or false*/
+      );
+      setCurrentRootNode(newRoot);
+      updateState();
+      e.stopPropagation();
+    };
 
     // Default case.
     return elem('node', {

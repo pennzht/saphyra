@@ -536,6 +536,32 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
   return newRoot;
 }
 
+function setNodeFolded(node, path) {
+  if (path.length <= 1) {
+    if (node[Label] === path[0]) {
+      const newNode = [...node];
+      const just = newNode[Just].filter ((a) => a != 'folded');
+      const previouslyFolded = newNode[Just].includes('folded');
+      if (!previouslyFolded) just.push('folded');
+      newNode[Just] = just;
+      return newNode;
+    }
+    return node;
+  } else if (node[Label] === path[0]) {
+    return [
+      ... node.slice(0, Subs),
+      // Operate on each subnode.
+      node[Subs].map((sub) => {
+        if (sub[0] === 'node') return setNodeFolded(sub, path.slice(1), open);
+        return sub;
+      }),
+      ... node.slice(Subs+1),
+    ];
+  } else {
+    return node;
+  }
+}
+
 /******************************
   Itertools.
 ******************************/
