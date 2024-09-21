@@ -59,7 +59,7 @@ function getAllVars(sexp) {
 function getFreeVars(sexp) {
     if (isLambda(sexp)) {
         const [_, varName, body] = sexp;
-        const ans = new Set(getAllVars(body));
+        const ans = new Set(getFreeVars(body));  // corrected!
         ans.delete(varName);
         return [...ans];
     } else if (isList(sexp)) {
