@@ -218,6 +218,16 @@ function updateState() {
         console.log(pprint(newRoot));
         setCurrentRootNode(newRoot);
         updateState();
+      } else if (m.rule === 'add-comment') {
+        const root = getCurrentRootNode();
+        const newRoot = addToSubnode(
+          root,
+          m.targetNodes[0],
+          [['comment', userInput.value]],
+        );
+        setCurrentRootNode(newRoot);
+        updateState();
+        console.log('add-comment run', pprint(newRoot));
       }
     }
   }

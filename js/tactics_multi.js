@@ -302,7 +302,7 @@ function tacticsMultiMatchAll() {
     });
   }
 
-  // add-node-input, add-node-output
+  // add-node-input, add-node-output, rename-node, add-comment
   if (froms.length === 0 && tos.length === 0) {
     if (nodes.length > 0) {
       // node-only
@@ -321,6 +321,11 @@ function tacticsMultiMatchAll() {
     if (nodes.length === 1) {
       ans.push({
         rule: 'rename-node',
+        targetNodes: nodePaths,
+        userInput: parse('[Name str]'),
+      });
+      ans.push({
+        rule: 'add-comment',
         targetNodes: nodePaths,
         userInput: parse('[Name str]'),
       });
