@@ -179,9 +179,17 @@ function dispStmt(obj, prefix=null) {
         varBody = obj.slice(1, colon), varType = obj.slice(colon + 1);
       }
 
-      return elem('span', {class: 'atom', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+      // Determines the style of the variable.
+      const subclass = (
+        varType === 'O' ? ' variable' :
+          varType === 'P' ? ' statement' :
+          varType === '<OP>' ? ' predicate' :
+          ''
+      );
+
+      return elem('span', {class: 'atom' + subclass, 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         text(varBody),
-        elem('sup', {class: 'type-notice'}, [text(varType)])
+        subclass === '' ? elem('sup', {class: 'type-notice'}, [text(varType)]) : elem('span'),
       ]);
     }
 

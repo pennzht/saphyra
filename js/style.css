@@ -124,7 +124,7 @@ div.stmt {
 
 /* Styles for expressions */
 .number { color: red; }
-.atom { color: blue; }
+.atom { color: #004a83; }
 .bool { color: green; }
 .null { color: gray; }
 
@@ -132,6 +132,20 @@ div.stmt {
 .frame { border: 1px solid gray; }
 .map { border: 1px solid orange; }
 .cons { border: 1px solid #77777777; }
+
+.atom.variable {
+    color: #0080a9;
+    font-style: italic;
+}
+
+.atom.statement {
+    color: #008b00;
+    font-style: bold;
+}
+
+.atom.predicate {
+    color: #ce00e1;
+}
 
 .list, .map, .frame, .cons {
     display: inline-block;
