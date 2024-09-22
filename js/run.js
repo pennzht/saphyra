@@ -247,7 +247,8 @@ function updateState() {
     }
   }
 
-  // Set local storage.
+    // Set local storage.
+    /*
   localStorage.setItem('state',
                        JSON.stringify({
                          tabs: [...state.tabs],
@@ -255,6 +256,7 @@ function updateState() {
                          highlighted: [...state.highlighted],
                        })
                       );
+    */
 
   // Update div.
   $('tab-display').innerHTML = '';
@@ -325,7 +327,8 @@ window.onload = (e) => {
   
   state.currentTab = 'empty';
   
-  // Recover state from state.
+    // Recover state from state.
+    /*
   if(window.localStorage && localStorage.getItem('state')) {
     // Recover state
     const recState = JSON.parse(localStorage.getItem('state'));
@@ -333,6 +336,7 @@ window.onload = (e) => {
     state.currentTab = recState.currentTab;
     state.highlighted = new Set(recState.highlighted);
   }
+    */
   
   updateState();
   
