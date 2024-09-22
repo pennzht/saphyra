@@ -26,27 +26,41 @@ function exportState(target /*file, server*/) {
             body: json,
         }).then ((response) => {
             if (response.ok) {
-                alert('Response ok');
+                $('server-result').innerText = `Uploaded successfully at ${new Date().toLocaleString()}`;
             } else {
-                alert('Response not ok ' + response.status);
+                $('server-result').innerText = `Uploaded unsuccessful (${response.status}) ${new Date().toLocaleString()}`;
             }
         });
     }
 }
 
 function importState(target /*file, server*/) {
-    const fileInput = elem('input', {
-        type: 'file',
-    });
-    fileInput.click();
+    if (target === 'file') {
 
-    fileInput.onchange = (e) => {
-        console.log('file', e.target.files[0]);
+        const fileInput = elem('input', {
+            type: 'file',
+        });
+        fileInput.click();
 
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e2) => {setEditorState(reader.result);};
-        reader.readAsText(file);
+        fileInput.onchange = (e) => {
+            console.log('file', e.target.files[0]);
+            
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e2) => {setEditorState(reader.result);};
+            reader.readAsText(file);
+        }
+    } else if (target === 'server') {
+        fetch ('http://0.0.0.0:8000/saphyra/printouts/saphyra_latest.json', {
+            method: 'GET',
+        }).then ((response) => {
+            if (response.ok) {
+                $('server-result').innerText = `Read successfully at ${new Date().toLocaleString()}`;
+                response.text().then ((data) => setEditorState(data));
+            } else {
+                $('server-result').innerText = `Read unsuccessful (${response.status}) ${new Date().toLocaleString()}`;
+            }
+        });
     }
 }
 
@@ -63,3 +77,4 @@ function setEditorState(result) {
     state.currentTab = data.currentTab;
     updateState();
 }
+
