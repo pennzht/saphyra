@@ -231,7 +231,6 @@ function tacticsMultiMatchAll() {
     }
   }
 
-  // TODO0922 - make this generate only one [join] node.
   // beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
   if (froms.length + tos.length === 1) {
     let downward, stmt, parentNode, port;
