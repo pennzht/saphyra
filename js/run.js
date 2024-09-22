@@ -247,7 +247,7 @@ function updateState() {
     }
   }
 
-  // Set localStorage.
+  // Set local storage.
   localStorage.setItem('state',
                        JSON.stringify({
                          tabs: [...state.tabs],
