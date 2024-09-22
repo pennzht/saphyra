@@ -79,6 +79,9 @@ function verifyNode (node) {
         const subsVerified = subs.map(verifyNode);
         nodeProper[Subs] = subsVerified;
 
+        // Subs verified, but only for nodes.
+        const subnodesVerified = subsVerified.filter((n) => n[0] === 'node');
+
         // Check if all subs are good.
         const subsGood = ((subsVerified || [])
                           .filter ((n) => n[0] === 'node')
@@ -130,10 +133,10 @@ function verifyNode (node) {
                 return nodeProper.concat(['#err/too-long']);
             }
             const [out] = outs;
-            if (subsVerified.length !== 1) {
+            if (subnodesVerified.length !== 1) {
                 return nodeProper.concat(['#err/too-many-subs']);
             }
-            const [sub] = subsVerified;  // Verify node.
+            const [sub] = subnodesVerified;  // Verify node.
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
@@ -149,10 +152,10 @@ function verifyNode (node) {
                 return nodeProper.concat(['#err/too-long']);
             }
             const [out] = outs;
-            if (subsVerified.length !== 1) {
+            if (subnodesVerified.length !== 1) {
                 return nodeProper.concat(['#err/too-many-subs']);
             }
-            const [sub] = subsVerified;  // Verify node.
+            const [sub] = subnodesVerified;  // Verify node.
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }
@@ -174,10 +177,10 @@ function verifyNode (node) {
                 return nodeProper.concat(['#err/too-long']);
             }
             const [out] = outs;
-            if (subsVerified.length !== 1) {
+            if (subnodesVerified.length !== 1) {
                 return nodeProper.concat(['#err/too-many-subs']);
             }
-            const [sub] = subsVerified;  // Verify node.
+            const [sub] = subnodesVerified;  // Verify node.
             if (sub[0] !== 'node') {
                 return nodeProper.concat(['#err/sub-not-node']);
             }

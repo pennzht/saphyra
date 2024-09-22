@@ -341,6 +341,47 @@ function tacticsMultiMatchAll() {
   // import-stmt: brings in a statement from an outer result
   if (froms.length > 0 && nodes.length === 1) {
     // TODO0922 - import-stmt
+
+    // Goes to 'subnode', and for every subnode of it,
+    //     sees if the node path is between from.path[:-2] and nodes[0].path
+    // And if yes, add this stmt as ^a, and add a link (in parent).
+
+    const node = parseOne(str(getCurrentRootNode()));
+
+    for (const from of froms) {
+      const path = from.path, stmt = from.sexp;
+      const targetNode = nodes[0].path;
+
+      const theoremParentPath = path.slice(0, path.length - 2);
+      const theoremIndex = path[path.length - 2];
+
+      for (let length = theoremParentPath.length;
+           length <= targetNode.length;
+           length++) {
+        const currentPath = targetNode.slice(0, length);
+        console.log('import-stmt, at', currentPath);
+
+        const n = findSubnodeByPath (node, currentPath);
+
+        // If not first: add input.
+        if (length > theoremParentPath.length) {
+          n[Ins].push(stmt);
+
+          // If also not last: add link
+          if (length < targetNode.length) {
+            n[Subs].push(['link', '^a', targetNode[length]/*next index*/, stmt]);
+          }
+        } else {
+          // Add special link for first.
+          n[Subs].push(['link', theoremIndex, targetNode[length]/*next index*/, stmt]);
+        }
+      }
+    }
+
+    ans.push({
+      rule: 'import-stmt',
+      newRoot: node,
+    });
   }
 
   // add-node-input, add-node-output, rename-node, add-comment

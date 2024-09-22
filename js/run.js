@@ -203,6 +203,10 @@ function updateState() {
         );
         setCurrentRootNode(newRoot);
         updateState();
+      } else if (m.rule === 'import-stmt') {
+        // Exact new root offered; replace with new root.
+        setCurrentRootNode(m.newRoot);
+        updateState();
       } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
         
