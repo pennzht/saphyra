@@ -95,7 +95,7 @@ function updateState() {
     let subelemInput = elem('span');
 
     // Feedback for subelem selection
-    let subelemInputDisplay = elem('span', [], [text('Specify a subexpression.')]);
+    let subelemInputDisplay = m.rule === 'replace-sub' ? elem('span', [], [text('Specify a subexpression.')]) : elem('span');
 
     if (m.targetNodes || m.rule === 'rename-space') {
       // Add user input.
