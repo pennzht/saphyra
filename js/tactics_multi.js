@@ -231,6 +231,7 @@ function tacticsMultiMatchAll() {
     }
   }
 
+  // TODO0922 - make this generate only one [join] node.
   // beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
   if (froms.length + tos.length === 1) {
     let downward, stmt, parentNode, port;
@@ -489,8 +490,6 @@ function applyIOToSubnodes(node, targetNodes, rule, inputs, outputs, newLabel) {
 }
 
 function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
-  // TODO0920 - geneerate nodes and return new root.
-
   // Construct new statement
   const parentIndex = port.slice(0, port.length - 2);
   const childIndex = port[port.length - 2];
@@ -522,11 +521,6 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
     newSub,
   );
 
-  console.log (
-    'abstractor', str(abstractor),
-    'newStmt', str(newStmt),
-  )
-
   // Add to subnode
 
   // - Construct new nodes.
@@ -535,41 +529,54 @@ function applyReplaceSub (root, port, stmt, subIndex, oldSub, newSub) {
   //   (1) =-elim => exposes a new "=" goal.
   //   (2) beta contraction
 
-  const [lab0, lab1, lab2] = gensyms (
+  const [lab0] = gensyms (
     /*avoids*/ subnode,
-    /*count*/ 3,
+    /*count*/ 1,
     /*prefix*/ '#',
     /*suffix*/ '',
   );
 
   // TODO: consider polarity. For now, only bottom-up.
 
-  const n0 = ['node', lab0,
+  const n0 = ['node', '#0',
               [newStmt],
               [ [abstractor, newSub] ],
               ['beta-equiv'],
               [],
              ];
-  const n1 = ['node', lab1,
+  const n1 = ['node', '#1',
               [ ['=', newSub, oldSub], [abstractor, newSub] ],
               [ [abstractor, oldSub] ],
               ['=-elim'],
               [],
              ];
-  const n2 = ['node', lab2,
+  const n2 = ['node', '#2',
               [ [abstractor, oldSub] ],
               [stmt],
               ['beta-equiv'],
               [],
              ];
-  const l1 = ['link', lab0, lab1, [abstractor, newSub] ];
-  const l2 = ['link', lab1, lab2, [abstractor, oldSub] ];
-  const l3 = ['link', lab2, childIndex, stmt];
+  const l1 = ['link', '#0', '#1', [abstractor, newSub] ];
+  const l2 = ['link', '#1', '#2', [abstractor, oldSub] ];
+  const l3 = ['link', '#2', '^c', stmt];
+
+  const l0a = ['link', '^a', '#0', newStmt];
+  const l0b = ['link', '^a', '#1', ['=', newSub, oldSub]];
+
+  const newNode = ['node', lab0,
+                   [newStmt, ['=', newSub, oldSub]],
+                   [stmt],
+                   ['join', 'folded'],
+                   [n0, n1, n2, l1, l2, l3, l0a, l0b],
+                  ];
 
   const newRoot = addToSubnode(
     root,
     parentIndex,
-    [n0, n1, n2, l1, l2, l3],
+    [
+      newNode,
+      ['link', lab0, childIndex, stmt],
+    ],
   );
 
   // Return new root
