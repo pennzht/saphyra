@@ -17,6 +17,11 @@ PRECEDENCE = new Map([
     ['exists', 20],
 ]);
 
+function get_associativity (operator) {
+    if (['^', 'forall', 'exists', ':', '->'].includes(operator)) return 'R';
+    return 'L';
+}
+
 function infix_parse (string) {
     // TODO0923
 }
