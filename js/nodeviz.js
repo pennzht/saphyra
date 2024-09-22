@@ -199,6 +199,8 @@ function dispStmt(obj, prefix=null) {
 
     return ans;
   } else {
+    // Special formatting for 'forall', 'exists', ':', redux
+
     let match = simpleMatch(['_head', '_a', '_b'], obj);
     if (match.success) {
       const [head, a, b] = obj;
@@ -224,6 +226,17 @@ function dispStmt(obj, prefix=null) {
 
       return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         text('∀'),
+        dispStmt(v, [...pf, 1, 1]),
+        dispStmt(body, [...pf, 1, 2]),
+      ])
+    }
+
+    match = simpleMatch(['exists', [':', '_v', '_body']], obj);
+    if (match.success) {
+      const v = match.map.get('_v'), body = match.map.get('_body');
+
+      return elem('div', {class: 'list', 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+        text('∃'),
         dispStmt(v, [...pf, 1, 1]),
         dispStmt(body, [...pf, 1, 2]),
       ])

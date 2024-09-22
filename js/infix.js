@@ -1,5 +1,6 @@
 /**
     Infix notation.
+    ref: simple_typing.js, nodeviz.js::"Special formatting"
 **/
 
 PRECEDENCE = new Map([
