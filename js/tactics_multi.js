@@ -325,6 +325,10 @@ function tacticsMultiMatchAll() {
         userInput: parse('[Name str]'),
       });
       ans.push({
+        rule: 'rename-space',
+        userInput: parse('[Name str]'),
+      });
+      ans.push({
         rule: 'add-comment',
         targetNodes: nodePaths,
         userInput: parse('[Name str]'),

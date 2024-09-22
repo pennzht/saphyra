@@ -97,7 +97,7 @@ function updateState() {
     // Feedback for subelem selection
     let subelemInputDisplay = elem('span', [], [text('Specify a subexpression.')]);
 
-    if (m.targetNodes) {
+    if (m.targetNodes || m.rule === 'rename-space') {
       // Add user input.
       userInput = elem('input', {
         type: 'text',
@@ -218,6 +218,17 @@ function updateState() {
         console.log(pprint(newRoot));
         setCurrentRootNode(newRoot);
         updateState();
+      } else if (m.rule === 'rename-space') {
+        const currentTabName = state.currentTab;
+        const newTabName = userInput.value;
+        if (state.tabs.has (newTabName) || newTabName === currentTabName || newTabName.length < 1) {
+          console.log('no change');
+        } else {
+          state.currentTab = newTabName;
+          state.tabs.set(newTabName, state.tabs.get(currentTabName));
+          state.tabs.delete(currentTabName);
+          updateState();
+        }
       } else if (m.rule === 'add-comment') {
         const root = getCurrentRootNode();
         const newRoot = addToSubnode(
