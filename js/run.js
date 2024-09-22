@@ -344,10 +344,16 @@ window.onload = (e) => {
   
   // Add Exporting/importing.
   $('export-editor-button').onclick = (e) => {
-    exportState();
+    exportState('file');
   }
   $('import-editor-button').onclick = (e) => {
-    importState(/*state*/);
+    importState('file');
+  }
+  $('export-server-button').onclick = (e) => {
+    exportState('server');
+  }
+  $('import-server-button').onclick = (e) => {
+    importState('server');
   }
 }
 

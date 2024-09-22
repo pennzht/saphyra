@@ -1,4 +1,4 @@
-function exportState() {
+function exportState(target /*file, server*/) {
     const tabs = [...state.tabs].map ((pair) => {
         const [name, [activeStep, ...steps]] = pair;
         const stepsTranslated = steps.map((s) => str(s));
@@ -11,15 +11,30 @@ function exportState() {
         tabs,
     }, null, 2);
 
-    // Add element and download.
-    const a = elem('a', {
-        href: 'data:text/plain;base64,' + window.btoa(json),
-        download: 'saphyra_export.json',
-    });
-    a.click();
+    // JSON is a string representing the current state.
+
+    if (target === 'file') {
+        // Add element and download.
+        const a = elem('a', {
+            href: 'data:text/plain;base64,' + window.btoa(json),
+            download: 'saphyra_export.json',
+        });
+        a.click();
+    } else if (target === 'server') {
+        fetch ('http://0.0.0.0:8000/saphyra-upload/', {
+            method: 'POST',
+            body: json,
+        }).then ((response) => {
+            if (response.ok) {
+                alert('Response ok');
+            } else {
+                alert('Response not ok ' + response.status);
+            }
+        });
+    }
 }
 
-function importState(state) {
+function importState(target /*file, server*/) {
     const fileInput = elem('input', {
         type: 'file',
     });
