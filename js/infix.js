@@ -4,6 +4,7 @@
 **/
 
 PRECEDENCE = new Map([
+    ['()', 9999999999999999],
     ['S', 100],
     ['^', 90],
     ['*', 80],
@@ -27,6 +28,9 @@ function infix_parse (string) {
 }
 
 function infix_format (expr) {
-    // TODO0923
+    return _infix_format_p (expr, /*parent*/ '()');
 }
 
+function _infix_format_p (expr, parent) {
+    // TODO0923
+}
