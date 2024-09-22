@@ -338,6 +338,11 @@ function tacticsMultiMatchAll() {
     });
   }
 
+  // import-stmt: brings in a statement from an outer result
+  if (froms.length > 0 && nodes.length === 1) {
+    // TODO0922 - import-stmt
+  }
+
   // add-node-input, add-node-output, rename-node, add-comment
   if (froms.length === 0 && tos.length === 0) {
     if (nodes.length > 0) {
