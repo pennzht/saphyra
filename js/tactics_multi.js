@@ -196,6 +196,7 @@ function tacticsMultiMatchAll() {
     }
   }
 
+  // exists-elim
   if (froms.length >= 1) {
     // froms, tos : {path, sexp}
     const m = simpleMatch(
@@ -299,6 +300,41 @@ function tacticsMultiMatchAll() {
       stmt,
       userInput: parse('[Statement stmt]'),
       targetPort: froms.concat(tos)[0].path,
+    });
+  }
+
+  // add-join
+  if (froms.length > 0 || tos.length > 0) {
+    const newNodeName = gensyms(
+      /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
+      /*count*/ 1,
+      /*prefix*/ '#',
+      /*suffix*/ '',
+    ) [0];
+
+    const newNode = [
+      'node', newNodeName,
+      /*ins*/ froms.map ((a) => a.sexp),
+      /*outs*/ tos.map ((a) => a.sexp),
+      ['join'], [] /*subs*/,
+    ];
+
+    const getNodeName = (path) => {
+      if (['in', 'out'].includes(path[path.length - 1])) {
+        return path[path.length - 2];
+      } else return path[path.length - 1];
+    };
+    const fromLinks = froms.map ((a) => ['link', getNodeName(a.path), newNodeName, a.sexp]);
+    const toLinks = tos.map ((a) => ['link', newNodeName, getNodeName(a.path), a.sexp]);
+
+    const addnodes = [newNode, ...fromLinks, ...toLinks];
+
+    ans.push ({
+      rule: 'add-join',
+      ins: froms.map((a) => a.sexp),
+      outs: tos.map((a) => a.sexp),
+      subnode,
+      addnodes,
     });
   }
 
