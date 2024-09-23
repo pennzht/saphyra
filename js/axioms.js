@@ -97,7 +97,14 @@ folRules = `
 (^-O [_a:O     ] [] [(= (^ _a:O O) (S O))])
 
 (^-S [_a:O _b:O] [] [(= (^ _a:O (S _b:O)) (* _a:O (^ _a:O _b:O)))])
+`;
 
+/*
+    The following temporary axioms are removed.
+    They were used for an outdated `tauto` tactic.
+*/
+
+_removedAxioms = `
 (and-negate-1
   [_A:P _B:P]
   [(-> _A:P false)]
@@ -128,6 +135,3 @@ folRules = `
   [_A:P (-> _B:P false)]
   [(-> (-> _A:P _B:P) false)])
 `;
-
-/// The last few lines are temporary axioms to make tautology tactics easier.
-/// They will be replaced by actual proofs.
