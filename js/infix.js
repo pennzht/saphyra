@@ -69,10 +69,40 @@ function _infixParse (obj) {
   if (obj.length <= 0) return [];
 
   // What's the lowest operator?
-  const preces = obj.map((a) => PRECE.get(a) || 1e99);
-  const assocs = obj.map(getAssociativity);
 
-  // TODO0923 - find loosest operator
+  let minPrec = 1e99;
+  let minPrecIndices = [];
+  let assoc = 'L';
+
+  for (let i = 0; i < obj.length; i++) {
+    const sub = obj[i];
+    const prec = PRECE.get(sub);
+    if (!prec) continue;
+
+    if (prec < minPrec) {
+      minPrecIndices = [i];
+      minPrec = prec;
+      assoc = getAssociativity(sub);
+    } else if (prec <= minPrec) {
+      minPrecIndices.push(i);
+    }
+  }
+
+  // TODO0923 - split at loosest operator.
+  if (minPrecIndices.length === 0) {
+    // No operator found.
+    return obj.map(_infixParse);
+  } else {
+    const splitAt = assoc === 'R' ? minPrecIndices[0] : minPrecIndices.pop();
+
+    if (splitAt === 0) {
+      // Unary
+      return [obj[0], _infixParse(obj.slice(1))];
+    } else {
+      // Binary
+      return [obj[splitAt], _infixParse(obj.slice(0, splitAt)), _infixParse(obj.slice(splitAt + 1/*, end*/))];
+    }
+  }
 }
 
 function infixFormat (expr) {
