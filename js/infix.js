@@ -24,7 +24,20 @@ PRECE = new Map([
 function _normalizeSymbol (symbol) {
   if (isList(symbol)) return symbol;
   const found = {'=>': ':', '\u21a6': ':', '∀': 'forall', '∃': 'exists'}[symbol];
-  return found ? found : symbol;
+  if (found) return found;
+
+  if (symbol.startsWith('_') && ! symbol.includes(':')) {
+    // Heuristically determine type.
+
+    const vpart = symbol.slice(1);
+    if (vpart.match(/^[A-Za-z][A-Za-z]/)) {
+      return symbol + ':<OP>';    // Word, word => predicate
+    } else if (vpart.match(/^[A-Z]/)) {
+      return symbol + ':P';       // A, B => proposition
+    } else {
+      return symbol + ':O';       // a, b => object
+    }
+  } else return symbol;
 }
 
 function getAssociativity (operator) {
