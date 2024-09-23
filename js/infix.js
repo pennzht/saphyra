@@ -21,9 +21,8 @@ PRECE = new Map([
   ['exists', 20],       // exists [var] => [term], forall [lambda]
 ]);
 
-// Fn application is '@', and always requires parens (except when var)
-
 function _normalizeSymbol (symbol) {
+  if (isList(symbol)) return symbol;
   const found = {'=>': ':', '\u21a6': ':', '∀': 'forall', '∃': 'exists'}[symbol];
   return found ? found : symbol;
 }
@@ -34,20 +33,53 @@ function getAssociativity (operator) {
 }
 
 function infixParse (string) {
-  // TODO0923
   const rawParse = parse(string);
+  const processed = _infixProcess(rawParse);
+  return _infixParse(processed);
+}
+
+function _infixProcess (obj) {
+  if (! isList(obj)) return obj;
 
   // Normalize each symbol, recursively.
+  obj = obj.map (_normalizeSymbol);
 
   // Parse each subobject
+  obj = obj.map (_infixProcess);
 
-  // Compose result object
+  return obj;
+}
+
+function _infixParse (obj) {
+  // Parse each subobject, then build sexp.
+  if (! isList(obj)) return obj;
+
+  // Is this a fn-app (@)?
+  if (obj[1] === '@') {
+    // An application
+    return [obj[0], ... obj.slice(2)].map(_infixParse);
+  }
+
+  // Single length
+  if (obj.length === 1) {
+    return _infixParse(obj[0]);
+  }
+
+  // Empty list
+  if (obj.length <= 0) return [];
+
+  // What's the lowest operator?
+  const preces = obj.map((a) => PRECE.get(a) || 1e99);
+  const assocs = obj.map(getAssociativity);
+
+  // TODO0923 - find loosest operator
 }
 
 function infixFormat (expr) {
   return _infixFormatP (expr, /*parent*/ '()', /*prefix*/ null, /*whichsub*/ null);
 }
 
+/** Converted from `dispSexp`. **/
 function _infixFormatP (obj, parent, prefix, whichSub /*L, R, null*/) {
   // prefix represents the relative position of a subexpression in the statement.
 
