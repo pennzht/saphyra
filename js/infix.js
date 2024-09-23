@@ -23,7 +23,7 @@ PRECE = new Map([
 // Fn application is '@', and always requires parens (except when var)
 
 function _normalizeSymbol (symbol) {
-  const found = {'=>': ':', '∀': 'forall', '∃': 'exists'}[symbol];
+  const found = {'=>': ':', '\u21a6': ':', '∀': 'forall', '∃': 'exists'}[symbol];
   return found ? found : symbol;
 }
 
@@ -69,13 +69,13 @@ function _infixFormatP (obj, parent, prefix) {
           ''
       );
 
-      return elem('span', {class: 'atom' + subclass, 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+      return elem('span', {class: 'atom infix' + subclass, 'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         text(varBody),
         subclass === '' ? elem('sup', {class: 'type-notice'}, [text(varType)]) : elem('span'),
       ]);
     }
 
-    const ans = elem('span', {class: 'atom nonvar'}, [text(obj)]);
+    const ans = elem('span', {class: 'atom infix nonvar'}, [text(obj)]);
     ans.dataset.sexp = str(obj);
     ans.dataset.relpos = str(pf);
 
@@ -90,48 +90,58 @@ function _infixFormatP (obj, parent, prefix) {
       if (isAtomic(head) && head !== ':') {
         return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
           _infixFormatP(a, head, [...pf, 1]),
+          text(' '),
           _infixFormatP(head, head, [...pf, 0]),
+          text(' '),
           _infixFormatP(b, head, [...pf, 2]),
         ])
       } else if (head === ':') {
         return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
           _infixFormatP(a, head, [...pf, 1]),
-          _infixFormatP('\u21a6', head, [...pf, 0]),
+          _infixFormatP(' \u21a6 ', head, [...pf, 0]),
           _infixFormatP(b, head, [...pf, 2]),
         ])
       }
     }
 
-    match = simpleMatch(['forall', [':', '_v', '_body']], obj);
+    match = simpleMatch(['forall', '_lambda'], obj);
     if (match.success) {
-      const v = match.map.get('_v'), body = match.map.get('_body');
+      const lam = match.map.get('_lambda');
 
       return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
-        text('∀'),
-        _infixFormatP(v, 'forall', [...pf, 1, 1]),
-        _infixFormatP(body, 'forall', [...pf, 1, 2]),
+        text('∀ '),
+        _infixFormatP(lam, 'forall', [...pf, 1]),
       ])
     }
 
-    match = simpleMatch(['exists', [':', '_v', '_body']], obj);
+    match = simpleMatch(['exists', '_lambda'], obj);
     if (match.success) {
-      const v = match.map.get('_v'), body = match.map.get('_body');
+      const lam = match.map.get('_lambda');
 
       return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
-        text('∃'),
-        _infixFormatP(v, 'exists', [...pf, 1, 1]),
-        _infixFormatP(body, 'exists', [...pf, 1, 2]),
+        text('∃ '),
+        _infixFormatP(lam, 'forall', [...pf, 1]),
       ])
     }
 
     // Default: function application
     
-    const subobjs = [];
+    const subobjs = [text('(')];
     for (let i = 0; i < obj.length; i++) {
       subobj = _infixFormatP(obj[i], '@', [...pf, i]);
+
+      if (i > 0) {
+        if (i === 1) {
+          subobjs.push(text(' @ '));
+        } else {
+          subobjs.push(text(' '));
+        }
+      }
+
       subobjs.push(subobj);
     }
+    subobjs.push(text(')'));
 
-    return elem('sexp', {'data-sexp': str(obj), 'data-relpos': str(pf)}, subobjs);
+    return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, subobjs);
   }
 }

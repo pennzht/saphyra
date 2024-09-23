@@ -155,8 +155,7 @@ div.stmt {
     display: inline-block;
 }
 
-/* removed .atom */
-.number, .bool, .null, .list, .map, .index, .frame {
+.number, .atom, .bool, .null, .list, .map, .index, .frame {
     margin: 0.2em;
 }
 
@@ -182,7 +181,8 @@ summary:hover {
 
 /* Sync with style.css */
 
-infix {
+.atom.infix {
     display: inline;
+    margin: 0;
 }
 
