@@ -105,7 +105,7 @@ function updateState() {
     }
 
     if (m.rule === 'replace-sub') {
-      subelemInput = dispStmt(m.stmt);
+      subelemInput = infixFormat(m.stmt, /*wrap*/true);
 
       for (const subelem of subelemInput.getElementsByTagName('*')) {
         if (subelem.hasAttribute ('data-relpos')) {
@@ -123,7 +123,7 @@ function updateState() {
             for (const index of relpos) sexp = sexp[index];
 
             subelemInputDisplay.innerHTML = '';
-            subelemInputDisplay.appendChild(dispSexp(sexp));
+            subelemInputDisplay.appendChild(infixFormat(sexp, true));
             subelemInputDisplay.dataset.relpos = str(relpos);
             subelemInputDisplay.dataset.sexp = str(sexp);
             console.log ('relpos:', relpos);
@@ -152,7 +152,7 @@ function updateState() {
           'data-target-nodes': str(m.targetNodes ?? null),
           'data-args': str(m.args ?? null),
         }),
-        m.ins ? dispSexp([m.rule, ... m.ins, '=>', ... m.outs]) : dispSexp([m.rule]),
+        m.ins ? elem('div', {}, [text(m.rule), ... m.ins.map((a) => infixFormat(a, true)), text('→'), ... m.outs.map((a) => infixFormat(a, true))]) : text(m.rule),
         userInput,
         subelemInput,
         subelemInputDisplay,
