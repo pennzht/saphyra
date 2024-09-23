@@ -91,6 +91,9 @@ function updateState() {
     // A text input for anything.
     let userInput = elem('span');
 
+    // A feedback for user input.
+    let userInputFeedback = elem('span');
+
     // A representation of the sexp itself, allowing user to choose a subelement.
     let subelemInput = elem('span');
 
@@ -106,6 +109,12 @@ function updateState() {
 
     if (m.rule === 'replace-sub') {
       subelemInput = infixFormat(m.stmt, /*wrap*/true);
+
+      userInput.oninput = (e) => {
+        const data = infixParse(userInput.value);
+        userInputFeedback.innerHTML = '';
+        userInputFeedback.appendChild(infixFormat(data, true));
+      }
 
       for (const subelem of subelemInput.getElementsByTagName('*')) {
         if (subelem.hasAttribute ('data-relpos')) {
@@ -156,6 +165,7 @@ function updateState() {
         userInput,
         subelemInput,
         subelemInputDisplay,
+        userInputFeedback,
         argsInput,
         elem('hr'),
       ])
