@@ -181,7 +181,7 @@ function updateState() {
           for (let i = 0; i < m.args.length; i++) {
             const argName = m.args[i];
             if (argsInputFields[i].value === '') continue;
-            const replaceWith = parseOne(argsInputFields[i].value);
+            const replaceWith = infixParse(argsInputFields[i].value);
             replaceMap.set(argName, replaceWith);
           }
         }
@@ -199,7 +199,7 @@ function updateState() {
       } else if (m.rule === 'replace-sub') {
         const replaceSubIndex = parseOne(subelemInputDisplay.dataset.relpos);
         const replaceSub = parseOne(subelemInputDisplay.dataset.sexp);
-        const newSub = parseOne(userInput.value);
+        const newSub = infixParse(userInput.value);
         console.log ('Replacing', replaceSub, 'at', replaceSubIndex, 'with', newSub, 'at port', m.targetPort);
 
         const root = getCurrentRootNode();
@@ -225,8 +225,8 @@ function updateState() {
           getCurrentRootNode(),
           m.targetNodes,
           m.rule,
-          m.rule === 'add-node-input' ? parse(input) : [],
-          m.rule === 'add-node-output' ? parse(input) : [],
+          m.rule === 'add-node-input' ? [infixParse(input)] : [],
+          m.rule === 'add-node-output' ? [infixParse(input)] : [],
           m.rule === 'rename-node' ? '#' + userInput.value : null,
         )
         console.log(pprint(newRoot));
@@ -354,7 +354,7 @@ window.onload = (e) => {
   
   const pprinted = pprint(sampleCode);
   console.log(pprinted);
-  console.log(eq( parseOne(pprinted), sampleCode ));
+  console.log(eq(parseOne(pprinted), sampleCode ));
   
   // Add Exporting/importing.
   $('export-editor-button').onclick = (e) => {
