@@ -118,8 +118,11 @@ function _infixParse (obj) {
   }
 }
 
-function infixFormat (expr) {
-  return _infixFormatP (expr, /*parent*/ '()', /*prefix*/ null, /*whichsub*/ null);
+function infixFormat (expr, wrap=false) {
+  const inner = _infixFormatP (expr, /*parent*/ '()', /*prefix*/ null, /*whichsub*/ null);
+  if (wrap) {
+    return elem('div', {'style': 'display:inline-block; border:1px solid #77777777; padding: 0.25em; margin: 0.25em;'}, [inner]);
+  } else return inner;
 }
 
 /** Converted from `dispSexp`. **/

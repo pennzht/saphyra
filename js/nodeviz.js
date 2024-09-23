@@ -124,9 +124,9 @@ function dispNode(node, pathPrefix = null) {
     }, [
       elem('span', {class: `active${selected}`, 'data-fulltrace': str(prefix)}, [text('node ' + label)]),
       dispConclusion(conclusion),
-      elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(infixFormat)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map((a) => infixFormat(a, true))),
       text('→'),
-      elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(infixFormat)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map((a) => infixFormat(a, true))),
       dispSexp(justification),
       elem('hr', {class: 'node-separator'}),
       subsElement,
