@@ -124,9 +124,9 @@ function dispNode(node, pathPrefix = null) {
     }, [
       elem('span', {class: `active${selected}`, 'data-fulltrace': str(prefix)}, [text('node ' + label)]),
       dispConclusion(conclusion),
-      elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(dispStmt)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'in'}, ins.map(infixFormat)),
       text('→'),
-      elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(dispStmt)),
+      elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map(infixFormat)),
       dispSexp(justification),
       elem('hr', {class: 'node-separator'}),
       subsElement,
@@ -134,7 +134,7 @@ function dispNode(node, pathPrefix = null) {
   } else if (head === 'link') {
     const [_, a, b, stmt] = node;
     return elem('div', [], [
-      text('link '), dispStmt(stmt), text('('), text(a), text(' → '), text(b), text(')'),
+      text('link '), infixFormat(stmt), text('('), text(a), text(' → '), text(b), text(')'),
     ]);
   } else if (isErr(head)) {
     return dispSexp(node);
@@ -152,7 +152,7 @@ function dispNode(node, pathPrefix = null) {
         'data-sexp': str(content),
       },
      [
-      dispStmt(content),
+      infixFormat(content),
       text(justification.length > 0 ? str(justification[0]) : ''),
       text(comment === 'given' ? '[given]' : comment === 'unproven' ? '[unproven]' : ''),
     ]);
@@ -293,7 +293,7 @@ function dispConclusionError(conclusion) {
       ... conclusion.slice(1).map((item) => elem('div', [], [
         dispSexp(item[0]),
         text(':'),
-        ... item[1].map(dispStmt),
+        ... item[1].map(infixFormat),
       ])),
     ]);
   } else {

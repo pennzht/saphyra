@@ -47,7 +47,7 @@ function infixFormat (expr) {
   return _infixFormatP (expr, /*parent*/ '()', /*prefix*/ null);
 }
 
-function _infixFormatP (expr, parent, prefix) {
+function _infixFormatP (obj, parent, prefix) {
   // prefix represents the relative position of a subexpression in the statement.
 
   const pf = isList(prefix) ? prefix : [];
@@ -75,7 +75,7 @@ function _infixFormatP (expr, parent, prefix) {
       ]);
     }
 
-    const ans = elem('span', {class: 'atom nonvar'}, [text(expr)]);
+    const ans = elem('span', {class: 'atom nonvar'}, [text(obj)]);
     ans.dataset.sexp = str(obj);
     ans.dataset.relpos = str(pf);
 

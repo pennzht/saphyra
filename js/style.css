@@ -155,7 +155,8 @@ div.stmt {
     display: inline-block;
 }
 
-.number, .atom, .bool, .null, .list, .map, .index, .frame {
+/* removed .atom */
+.number, .bool, .null, .list, .map, .index, .frame {
     margin: 0.2em;
 }
 
