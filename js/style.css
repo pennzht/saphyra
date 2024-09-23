@@ -147,6 +147,10 @@ div.stmt {
     color: #ce00e1;
 }
 
+.atom.nonvar {
+    color: #004a83;
+}
+
 .list, .map, .frame, .cons {
     display: inline-block;
 }
@@ -176,3 +180,8 @@ summary:hover {
 } */
 
 /* Sync with style.css */
+
+infix {
+    display: inline;
+}
+
