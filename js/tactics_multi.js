@@ -22,6 +22,8 @@
 function tacticsMultiMatchAll() {
   const ans = [];
 
+  if (state.highlighted.size === 0) { return ans; }    // don't suggest when nothing is highlighted.
+
   // in each pathAndSexp, path is something like [#root #1 ^a in].
   // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
   const labels = [...state.highlighted].map(parse).map((pair) => {
