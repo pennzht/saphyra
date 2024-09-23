@@ -64,10 +64,6 @@ div.stmt {
     display: inline-block;
 }
 
-.active.unproven {
-    background-color: #ffa797;  /* reddish */
-}
-
 /*
 .shade {
     background-color: #00a1c73f;
@@ -98,15 +94,20 @@ div.stmt {
 
 /* A clickable node/port to connect nodes on. */
 .active {
-    background-color: #00a1c73f;
+    /*background-color: */ border-left: 0.5em solid #00a1c73f;
     padding: 0.25em;
-    border-radius: 0.25em;
+    /* border-radius: 0.25em; */
     margin: 0.125em;
     cursor: pointer;
 }
 
 .active.selected {
-    background-color: #ffea3aff;
+    /*background-color: */ border-left: 0.5em solid #ffea3aff;
+    background-color: #ffea3a7f;
+}
+
+.active.unproven {
+    /*background-color: */ border-left: 0.5em solid #ffa797ff;  /* reddish */
 }
 
 .stmt-group {
