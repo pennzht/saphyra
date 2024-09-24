@@ -1,7 +1,5 @@
 /**
     A custom compressor for JSON.
-
-    TODO - implement.
 **/
 
 function jsonCompress (obj) {
@@ -275,6 +273,8 @@ function testDecompress () {
   const data2 = [[3, 4, 5], [3, 4, 5], [3, {'asdfghjkl;': [3, 4, 5]}, [3, 4, 5], 'a'], 'asdfghjkl;'];
   console.log((jsonCompress(data2)));
   console.log(jsonDecompress(jsonCompress(data2)));
+
+  console.log(jsonDecompress(jsonCompress(['String with spaces in it.', '😂'])));
 }
 
-testDecompress();
+// testDecompress();

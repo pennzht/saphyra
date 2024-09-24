@@ -1,11 +1,17 @@
+// Old format for exporting and importing. Kept for reference.
+
 function exportState(target /*file, server*/) {
-    const tabs = [...state.tabs];
+    const tabs = [...state.tabs].map ((pair) => {
+        const [name, [activeStep, ...steps]] = pair;
+        const stepsTranslated = steps.map((s) => str(s));
+        return [name, [activeStep, ...stepsTranslated]];
+    });
     const highlighted = [...state.highlighted];
-    const json = jsonCompress({
+    const json = JSON.stringify({
         currentTab: state.currentTab,
         highlighted,
         tabs,
-    });
+    }, null, 2);
 
     // JSON is a string representing the current state.
 
@@ -62,23 +68,13 @@ function importState(target /*file, server*/) {
 
 function setEditorState(result) {
     console.log('Finished reading', result);
+    const data = JSON.parse(result);
 
-    // Compatible: can import JSON or custom compression.
-
-    let data;
-    if (result[0] === '{}'[0]) {
-        // JSON
-        data = JSON.parse(result);
-        state.tabs = new Map(data.tabs.map ((pair) => {
-            const [name, [activeStep, ...stepsTranslated]] = pair;
-            const steps = stepsTranslated.map((s) => parseOne(s));
-            return [name, [activeStep, ...steps]];
-        }));
-    } else {
-        data = jsonDecompress(result);
-        state.tabs = new Map(data.tabs);
-    }
-
+    state.tabs = new Map(data.tabs.map ((pair) => {
+        const [name, [activeStep, ...stepsTranslated]] = pair;
+        const steps = stepsTranslated.map((s) => parseOne(s));
+        return [name, [activeStep, ...steps]];
+    }));
     state.highlighted = new Set(data.highlighted);
     state.currentTab = data.currentTab;
     updateState();
