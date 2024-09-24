@@ -25,7 +25,7 @@ function jsonCompress (obj) {
         }
       }
       if (allAscii) return '&' + obj;
-      else return '$' + Buffer.from(obj).toString('base64');
+      else return '$' + btoa (Array.from(new TextEncoder().encode(obj), (b) => String.fromCodePoint(b)) . join(''));
     }
     throw new Error ('Unrecognized literal type');
   }
@@ -160,7 +160,7 @@ function jsonDecompress (string) {
       return body;
     } else if (head === '$') {
       // Base64
-      return Buffer.from(body, 'base64').toString();
+      return new TextDecoder().decode(Uint8Array.from(atob(body), (m) => m.codePointAt(0)));
     } else if (head === '#') {
       if (atom === '#t') return true;
       if (atom === '#f') return false;
