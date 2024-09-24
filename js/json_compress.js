@@ -5,7 +5,132 @@
 **/
 
 function jsonCompress (obj) {
-  // return string
+  function isLiteral (obj) {
+    return (
+      obj === true || obj === false || obj === null ||
+        typeof obj === 'number' || typeof obj === 'string'
+    );
+  }
+
+  function makeLiteral (obj) {
+    if (obj === true) return '#t';
+    if (obj === false) return '#f';
+    if (obj === null) return '#n';
+    if (typeof obj === 'number') return '#' + obj.toString();
+    if (typeof obj === 'string') {
+      // Test if all-ascii
+      let allAscii = true;
+      for (let i = 0; i < obj.length; i++) {
+        let cc = obj.charCodeAt(i);
+        if (cc <= 0x20 || cc >= 0x7f) {
+          allAscii = false; break;
+        }
+      }
+      if (allAscii) return '&' + obj;
+      else return '$' + Buffer.from(obj).toString('base64');
+    }
+    throw new Error ('Unrecognized literal type');
+  }
+
+  const table = new Map();
+  const trie = {};    // Finds a symbol based on value.
+  const latest = {label: 0};
+
+  function _base64bijective (num) {
+    if (num === 0) return '';
+    const rem = (num - 1) % 64 + 1;
+    const quo = (num - rem) / 64;
+    return _base64bijective (quo) + 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'[rem-1];
+  }
+
+  function _gensym () {
+    const ans = '@' + _base64bijective(latest.label); latest.label++; return ans;
+  }
+
+  function _peeksym () {
+    const ans = '@' + _base64bijective(latest.label); return ans;
+  }
+
+  function encode (obj) {
+    if (isLiteral(obj)) {
+      const lit = makeLiteral(obj);
+      if (trie[lit]) {
+        return trie[lit];
+      } else {
+        const sym = _peeksym();
+
+        if (sym.length < lit.length) {
+          _gensym();
+          trie[lit] = sym;
+          table.set(sym, lit);
+          return sym;
+        } else {
+          trie[lit] = lit;
+          table.set(lit, lit);
+          return lit;
+        }
+      }
+    } else if (Array.isArray(obj)) {
+      const def = ['!a', ... obj.map(encode)];
+      let ptr = trie;
+
+      for (const atom of def) {
+        if (! (ptr[atom])) {
+          ptr[atom] = {};
+        }
+        ptr = ptr[atom];
+      }
+
+      if (ptr['!e']) {
+        // Already defined
+        return ptr['!e'];
+      } else {
+        ptr['!e'] = _gensym();
+        table.set(ptr['!e'], def);
+        return ptr['!e'];
+      }
+    } else {
+      // Object
+      const def = ['!o'];
+      let ptr = trie;
+
+      for (const k of Object.keys(obj)) {
+        def.push(encode(k));
+        def.push(encode(obj[k]));
+      }
+
+      for (const atom of def) {
+        if (! (ptr[atom])) {
+          ptr[atom] = {};
+        }
+        ptr = ptr[atom];
+      }
+
+      if (ptr['!e']) {
+        // Already defined
+        return ptr['!e'];
+      } else {
+        ptr['!e'] = _gensym();
+        table.set(ptr['!e'], def);
+        return ptr['!e'];
+      }
+    }
+  }
+
+  const root = encode (obj);
+
+  // Root obtained. Now, compose all symbols.
+  const ans = [];
+  for (const [sym, ref] of table.entries()) {
+    if (sym[0] !== '@') continue;
+
+    const row = Array.isArray(ref) ? [sym, ...ref] : [sym, ref];
+    row.push('!e');
+    if (sym === root) row.push('!y');
+    ans.push(row.join(' '));
+  }
+  ans.push('');
+  return ans.join('\n');
 }
 
 function jsonDecompress (string) {
@@ -103,6 +228,7 @@ function jsonDecompress (string) {
         currentkey = null;
       } else {
         currentkey = getValue (atom);
+        if (typeof currentkey !== 'string') throw new Error ('Non-string encountered in key');
         state = S.await_value;
       }
     } else if (state === S.await_value) {
@@ -139,10 +265,16 @@ function testDecompress () {
     @a #3.1415926 !e
     @b !a @a @a @a !e
     @c !a @b @b @a #t !e
-    @d !o &key @c &else @a !e !y
+    @d !o &value @c &else @a !e !y
   `;
 
-  console.log(jsonDecompress(data));
+  const datadec = jsonDecompress(data);
+  console.log(datadec);
+  console.log(jsonDecompress(jsonCompress(datadec)));
+
+  const data2 = [[3, 4, 5], [3, 4, 5], [3, {'asdfghjkl;': [3, 4, 5]}, [3, 4, 5], 'a'], 'asdfghjkl;'];
+  console.log((jsonCompress(data2)));
+  console.log(jsonDecompress(jsonCompress(data2)));
 }
 
 testDecompress();
