@@ -73,7 +73,11 @@ function clearTransientState() {
 function updateState() {
   // Prints state for debugging.
   console.log('Current state is', state);
+
+  // Find all matches for tactics.
   const allMatches = tacticsMultiMatchAll();
+  // Sort by priority.
+  allMatches.sort ((a, b) => rulePriority(a) - rulePriority(b));
 
   $('display').innerHTML = '';
 

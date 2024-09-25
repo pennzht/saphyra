@@ -171,19 +171,44 @@ function tacticsMultiMatchAll() {
     );
     if (m.success) {
       const p = m.map.get('_P');
+
+      const joinNode = [
+        'node', '#0',
+        froms.map((a) => a.sexp),
+        [[p, '_?P0']],
+        ['join'],
+        [],
+      ];
+      
+      const lamMatch = simpleMatch([':', '_v', '_body'], p);
+      if (lamMatch.success) {
+        const v = lamMatch.map.get('_v');
+        const [n, typ] = nameAndTypeString(v);
+        // If not in assumptions ...
+        const avoids = getFreeVars (froms.map ((a) => a.sexp));
+
+        let v2 = v;
+        if (avoids.includes (v)) {
+          // Generate new var.
+          v2 = gensyms (avoids, 1, n, ':'+typ)[0];
+        } // otherwise, v2 = v.
+
+        // Replaces out with actual variable.
+        joinNode[Outs][0] = [p, v2];
+
+        // Adds beta-replaced, then link.
+        const beta = lambdaFullReduce([p, v2]);
+        joinNode[Subs].push(['node', '#b', [beta], [[p, v2]], ['beta-equiv'], []]);
+        joinNode[Subs].push(['link', '#b', '^c', [p, v2]]);
+      }
+
       const innerNode = [
         'node', '#'+Math.random(),
         froms.map((a) => a.sexp),
         tos.map((a) => a.sexp),
         ['forall-intro'],
         // Subs: [join].
-        [[
-          'node', '#0',
-          froms.map((a) => a.sexp),
-          [[p, '_?P0']],
-          ['join'],
-          [],
-        ]],
+        [joinNode],
       ];
       const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
       const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
@@ -206,19 +231,44 @@ function tacticsMultiMatchAll() {
     );
     if (m.success) {
       const p = m.map.get('_P');
+
+      const joinNode = [
+        'node', '#0',
+        [[p, '_?P0']].concat(froms.slice(1).map((a) => a.sexp)),
+        tos.map((a) => a.sexp),
+        ['join'],
+        [],
+      ];
+      
+      const lamMatch = simpleMatch([':', '_v', '_body'], p);
+      if (lamMatch.success) {
+        const v = lamMatch.map.get('_v');
+        const [n, typ] = nameAndTypeString(v);
+        // If not in assumptions ...
+        const avoids = getFreeVars (froms.map ((a) => a.sexp));
+
+        let v2 = v;
+        if (avoids.includes (v)) {
+          // Generate new var.
+          v2 = gensyms (avoids, 1, n, ':'+typ)[0];
+        } // otherwise, v2 = v.
+
+        // Replaces out with actual variable.
+        joinNode[Ins][0] = [p, v2];
+
+        // Adds beta-replaced, then link.
+        const beta = lambdaFullReduce([p, v2]);
+        joinNode[Subs].push(['node', '#b', [[p, v2]], [beta], ['beta-equiv'], []]);
+        joinNode[Subs].push(['link', '^a', '#b', [p, v2]]);
+      }
+
       const innerNode = [
         'node', '#'+Math.random(),
         froms.map((a) => a.sexp),
         tos.map((a) => a.sexp),
         ['exists-elim'],
         // Subs: [join].
-        [[
-          'node', '#0',
-          [[p, '_?P0']].concat(froms.slice(1).map((a) => a.sexp)),
-          tos.map((a) => a.sexp),
-          ['join'],
-          [],
-        ]],
+        [joinNode],
       ];
       const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
       const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
@@ -654,6 +704,28 @@ function setNodeFolded(node, path) {
   } else {
     return node;
   }
+}
+
+function rulePriority (tac) {
+  // Smaller is more important.
+  const categoryPriority = new Map([
+    ['replace-sub', 30],
+    ['beta-equiv', 40],
+    ['exists-elim', 50],
+    ['forall-intro', 100],
+    ['impl-intro', 100],
+    ['import-stmt', 110],
+    ['add-join', 120],
+    ['add-node-input', 120],
+    ['add-node-output', 120],
+    ['rename-node', 150],
+    ['rename-space', 150],
+    ['add-comment', 200],
+  ]).get(tac.rule) || 130;
+
+  const argPriority = (tac.args || []).length;
+
+  return categoryPriority + argPriority;
 }
 
 /******************************
