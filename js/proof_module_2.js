@@ -57,6 +57,7 @@ function verifyNode (node) {
       'node', label, ins, outs, justification, subs,
     ];
 
+    // TODO - remove this normalization. All tactics have been updated.
     const justNormalized = isList(justification) ? justification : [justification];
 
     /* if (! isList(justification)) {
