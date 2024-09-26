@@ -772,6 +772,22 @@ function findMatchingPaths (root, target) {
   return ans;
 }
 
+// Normalizes an existing node, replacing string Justifications with lists.
+
+function normalizeNode (node) {
+  const parts = [...node];
+
+  if (parts[0] !== 'node') return node;
+
+  if (! Array.isArray(parts[Just])) {
+    parts[Just] = [parts[Just]];
+  }
+
+  parts[Subs] = parts[Subs].map (normalizeNode);
+
+  return parts;
+}
+
 /******************************
   Itertools.
 ******************************/
