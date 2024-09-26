@@ -743,10 +743,12 @@ function findMatchingPaths (root, target) {
   // Finds matching paths; no recursion needed.
 
   let node = root;
-  const parent = target.path.slice(0, target.length - 2);
+  const parent = target.path.slice(0, target.path.length - 2);
 
   // For each node from (root) to (parent) inclusive,
   //     find those that do not depend on (target).
+
+  const ans = ['ans-follows', parent];
 
   for (let i = 1; i <= parent.length; i++) {
     const prefix = parent.slice(0, i);
@@ -754,12 +756,19 @@ function findMatchingPaths (root, target) {
     const subNodes = subs.filter((a) => a[0] === 'node');
     const subLinks = subs.filter((a) => a[0] === 'link');
 
+    const nodeList = subNodes.map((a) => a[Label]);
+    nodeList.push('^a', '^c');
+    const linkList = subLinks.map((a) => [a[Lfrom], a[Lto]]);
+
+    tpResult = toposort (nodeList, linkList);
+    ans.push (tpResult.success, tpResult.order);
+
     // TODO0926
 
     // update node
   }
 
-  return parse('a b c [d e [f]]');
+  return ans;
 }
 
 /******************************
