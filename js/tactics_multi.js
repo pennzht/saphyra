@@ -470,6 +470,16 @@ function tacticsMultiMatchAll() {
     }
   }
 
+  // detect-accessible-stmts
+  if (tos.length === 1) {
+    const [target /* path, sexp */] = tos;
+    const matchingPaths = findMatchingPaths(getCurrentRootNode(), target);
+    ans.push({
+      rule: 'detect-accessible-stmts',
+      matchingPaths,
+    })
+  }
+
   return ans;
 }
 
@@ -726,6 +736,12 @@ function rulePriority (tac) {
   const argPriority = (tac.args || []).length;
 
   return categoryPriority + argPriority;
+}
+
+function findMatchingPaths (root, target) {
+  // Finds matching paths; no recursion needed.
+
+  // TODO0926
 }
 
 /******************************
