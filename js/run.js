@@ -90,6 +90,16 @@ function updateState() {
   */
 
   for (const m of allMatches) {
+    if (m.rule === 'detect-accessible-stmts') {
+      $('display').appendChild(
+        elem('div', null, [
+          text(m.rule),
+          dispSexp(m.matchingPaths),
+        ]),
+      );
+      continue;
+    }
+
     let inputButton;
     
     // A text input for anything.

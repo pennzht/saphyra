@@ -720,6 +720,7 @@ function rulePriority (tac) {
   // Smaller is more important.
   const categoryPriority = new Map([
     ['replace-sub', 30],
+    ['detect-accessible-stmts', 35],
     ['beta-equiv', 40],
     ['exists-elim', 50],
     ['forall-intro', 100],
@@ -741,7 +742,24 @@ function rulePriority (tac) {
 function findMatchingPaths (root, target) {
   // Finds matching paths; no recursion needed.
 
-  // TODO0926
+  let node = root;
+  const parent = target.path.slice(0, target.length - 2);
+
+  // For each node from (root) to (parent) inclusive,
+  //     find those that do not depend on (target).
+
+  for (let i = 1; i <= parent.length; i++) {
+    const prefix = parent.slice(0, i);
+    const subs = node[Subs] || [];
+    const subNodes = subs.filter((a) => a[0] === 'node');
+    const subLinks = subs.filter((a) => a[0] === 'link');
+
+    // TODO0926
+
+    // update node
+  }
+
+  return parse('a b c [d e [f]]');
 }
 
 /******************************
