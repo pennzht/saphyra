@@ -91,7 +91,8 @@ function tacticsMultiMatchAll() {
         const newNode = [
           'node', newNodeName, replaceAll(assumptions, matchMap),
           replaceAll(conclusions, matchMap),
-          axiomName, [] /*subs*/,
+          // Fixed: Justification should be a list.
+          [axiomName], [] /*subs*/,
         ];
 
         const links = [];
