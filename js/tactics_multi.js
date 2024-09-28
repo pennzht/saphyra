@@ -767,6 +767,8 @@ function findMatchingPaths (root, target) {
       const order = tpResult.order;
       // A helper map from elems to stmts.
       stmts = new Map(subNodes.map ((a) => [a[Label], a[Outs]]));
+      stmts.set('^a', node[Ins]);
+      stmts.set('^c', node[Outs]);
       // Find predecessors.
       const pred = new Map();
       for (const [fr, to] of linkList) {
@@ -783,7 +785,8 @@ function findMatchingPaths (root, target) {
         }
         // if not descendant, push.
         if (! isDescendant.get(elem)) {
-          ans.push ([[...prefix, elem], stmts.get(elem)]);
+          const stmtsAtNode = stmts.get(elem) || [];
+          for (const s of stmtsAtNode) ans.push ([[...prefix, elem], s]);
         }
       }
     }
