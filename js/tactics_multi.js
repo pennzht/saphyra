@@ -393,8 +393,6 @@ function tacticsMultiMatchAll() {
 
   // import-stmt: brings in a statement from an outer result
   if (froms.length > 0 && nodes.length === 1) {
-    // TODO0922 - import-stmt
-
     // Goes to 'subnode', and for every subnode of it,
     //     sees if the node path is between from.path[:-2] and nodes[0].path
     // And if yes, add this stmt as ^a, and add a link (in parent).
@@ -751,6 +749,8 @@ function findMatchingPaths (root, target) {
 
   const ans = ['ans-follows', parent];
 
+  const accessibles = [];  // {path, sexp}
+
   for (let i = 1; i <= parent.length; i++) {
     const prefix = parent.slice(0, i);
     const subs = node[Subs] || [];
@@ -762,11 +762,37 @@ function findMatchingPaths (root, target) {
     const linkList = subLinks.map((a) => [a[Lfrom], a[Lto]]);
 
     tpResult = toposort (nodeList, linkList);
-    ans.push (tpResult.success, tpResult.order);
 
-    // TODO0926
+    if (tpResult.success) {
+      const order = tpResult.order;
+      // A helper map from elems to stmts.
+      stmts = new Map(subNodes.map ((a) => [a[Label], a[Outs]]));
+      // Find predecessors.
+      const pred = new Map();
+      for (const [fr, to] of linkList) {
+        if (! pred.has(to)) { pred.set(to, []); }
+        pred.get(to).push(fr);
+      }
+      // Go in order, find out which ones depend on parent[i].
+      const isDescendant = new Map();
+      for (const elem of order) {
+        if (elem === parent[i]) {
+          isDescendant.set(elem, true);
+        } else {
+          isDescendant.set(elem, (pred.get(elem) || []).some((a) => isDescendant.get(a)));
+        }
+        // if not descendant, push.
+        if (! isDescendant.get(elem)) {
+          ans.push ([[...prefix, elem], stmts.get(elem)]);
+        }
+      }
+    }
+
+    // TODO0929
 
     // update node
+    const [child] = subs.filter ((a) => a[Label] === parent[i]);
+    node = child;
   }
 
   return ans;
