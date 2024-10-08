@@ -111,18 +111,6 @@ function updateState() {
       });
     }
 
-    if (m.rule === 'detect-accessible-stmts') {
-      $('display').appendChild(
-        elem('div', null, [
-          text(m.rule),
-          infixFormat(m.goal, true),
-          ... m.usable.map((a) => infixFormat(a, true)),
-          userInput,
-        ]),
-      );
-      continue;
-    }
-
     if (m.rule === 'replace-sub') {
       subelemInput = infixFormat(m.stmt, /*wrap*/true);
 
@@ -188,7 +176,9 @@ function updateState() {
     )
 
     inputButton.onclick = () => {
-      if (m.ins) {
+      if (m.rule === 'detect-accessible-stmts') {
+        console.log(m, userInput.value);
+      } else if (m.ins) {
         // Compute new root.
 
         // Replace all in m.addnodes
