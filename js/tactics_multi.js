@@ -470,6 +470,8 @@ function tacticsMultiMatchAll() {
   }
 
   // detect-accessible-stmts
+  // TODO1008 - explicitly select which ones to follow.
+  // Also usable: top-level axioms, (theorems).
   if (tos.length === 1) {
     const [target /* path, sexp */] = tos;
     const matchingPaths = findMatchingPaths(getCurrentRootNode(), target);
