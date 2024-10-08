@@ -474,10 +474,10 @@ function tacticsMultiMatchAll() {
   // Also usable: top-level axioms, (theorems).
   if (tos.length === 1) {
     const [target /* path, sexp */] = tos;
-    const matchingPaths = findMatchingPaths(getCurrentRootNode(), target);
     ans.push({
       rule: 'detect-accessible-stmts',
-      matchingPaths,
+      goal: tos[0].sexp,
+      usable: froms.map((a) => a.sexp),
     })
   }
 
@@ -740,6 +740,7 @@ function rulePriority (tac) {
   return categoryPriority + argPriority;
 }
 
+// Used in `detect-accessible-stmts`; no longer used as of now.
 function findMatchingPaths (root, target) {
   // Finds matching paths; no recursion needed.
 

@@ -94,7 +94,8 @@ function updateState() {
       $('display').appendChild(
         elem('div', null, [
           text(m.rule),
-          dispSexp(m.matchingPaths),
+          infixFormat(m.goal, true),
+          ... m.usable.map((a) => infixFormat(a, true)),
         ]),
       );
       continue;
