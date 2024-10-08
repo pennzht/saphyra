@@ -470,10 +470,13 @@ function tacticsMultiMatchAll() {
   }
 
   // detect-accessible-stmts
-  // TODO1008 - explicitly select which ones to follow.
   // Also usable: top-level axioms, (theorems).
   if (tos.length === 1) {
     const [target /* path, sexp */] = tos;
+
+    // TODO1008 - add numbering for `froms`
+    // TODO1008 - add simple tactic for applying `rep`, &c.
+
     ans.push({
       rule: 'detect-accessible-stmts',
       goal: tos[0].sexp,

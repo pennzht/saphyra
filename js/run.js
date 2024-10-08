@@ -90,17 +90,6 @@ function updateState() {
   */
 
   for (const m of allMatches) {
-    if (m.rule === 'detect-accessible-stmts') {
-      $('display').appendChild(
-        elem('div', null, [
-          text(m.rule),
-          infixFormat(m.goal, true),
-          ... m.usable.map((a) => infixFormat(a, true)),
-        ]),
-      );
-      continue;
-    }
-
     let inputButton;
     
     // A text input for anything.
@@ -115,11 +104,23 @@ function updateState() {
     // Feedback for subelem selection
     let subelemInputDisplay = m.rule === 'replace-sub' ? elem('span', [], [text('Specify a subexpression.')]) : elem('span');
 
-    if (m.targetNodes || m.rule === 'rename-space') {
+    if (m.targetNodes || m.rule === 'rename-space' || m.rule === 'detect-accessible-stmts') {
       // Add user input.
       userInput = elem('input', {
         type: 'text',
       });
+    }
+
+    if (m.rule === 'detect-accessible-stmts') {
+      $('display').appendChild(
+        elem('div', null, [
+          text(m.rule),
+          infixFormat(m.goal, true),
+          ... m.usable.map((a) => infixFormat(a, true)),
+          userInput,
+        ]),
+      );
+      continue;
     }
 
     if (m.rule === 'replace-sub') {
