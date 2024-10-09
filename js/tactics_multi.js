@@ -474,8 +474,11 @@ function tacticsMultiMatchAll() {
   if (tos.length === 1) {
     const [target /* path, sexp */] = tos;
 
-    // TODO1008 - add numbering for `froms`
-    // TODO1008 - add simple tactic for applying `rep`, &c.
+    console.log('detect-accessible-stmts', froms.map((a) => a.path));
+
+    // TODO1009 - Disambiguate stmts with second-from-last fragment.
+
+    // TODO1009 - "Repeated application" tactics.
 
     ans.push({
       rule: 'detect-accessible-stmts',
