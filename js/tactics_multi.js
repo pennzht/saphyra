@@ -59,7 +59,7 @@ function tacticsMultiMatchAll() {
     }
 
     // Finds all ways to pair pattern and statement.
-    console.log('=== Matches for ===', axiomName);
+    // console.log('=== Matches for ===', axiomName);
 
     const fromsMatch = tmFindMatches(assumptions, froms);
     const tosMatch = tmFindMatches(conclusions, tos);
@@ -79,7 +79,7 @@ function tacticsMultiMatchAll() {
       ]);
 
       if (match.success) {
-        console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
+        // console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
 
         const newNodeName = gensyms(
           /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
@@ -129,7 +129,7 @@ function tacticsMultiMatchAll() {
 
   // Special cases
 
-  // impl-intro
+  // TACTIC impl-intro
   if (tos.length === 1 && tos[0].sexp[0] === '->') {
     const newSym = '#' + Math.random();
 
@@ -164,7 +164,7 @@ function tacticsMultiMatchAll() {
     ans.push(thisAns);
   }
 
-  // forall-intro
+  // TACTIC forall-intro
   if (tos.length === 1) {
     // froms, tos : {path, sexp}
     const m = simpleMatch(
@@ -224,7 +224,7 @@ function tacticsMultiMatchAll() {
     }
   }
 
-  // exists-elim
+  // TACTIC exists-elim
   if (froms.length >= 1) {
     // froms, tos : {path, sexp}
     const m = simpleMatch(
@@ -284,7 +284,7 @@ function tacticsMultiMatchAll() {
     }
   }
 
-  // beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
+  // TACTIC beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
   if (froms.length + tos.length === 1) {
     let downward, stmt, parentNode, port;
     if (froms.length > 0) {
