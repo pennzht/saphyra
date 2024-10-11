@@ -92,7 +92,11 @@ function tacticAxiom (root, hls, opts = null) {
 }
 
 function tacticImplIntro (root, hls, opts = null) {
-  const [froms, to, nodes, subnode] = parseHls(root, hls);
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (! (tos.length === 1 && tos[0].sexp[0] === '->')) {
+    return {fail: true, reason: 'arg diff'};
+  }
 
   const newSym = '#' + Math.random();
 
@@ -107,7 +111,7 @@ function tacticImplIntro (root, hls, opts = null) {
     // Subs: [join].
     [[
       'node', '#0',
-      froms.map((a) => a.sexp).concat([a]),
+      froms.map((f) => f.sexp).concat([a]),
       [b],
       ['join'],
       [],
@@ -119,11 +123,12 @@ function tacticImplIntro (root, hls, opts = null) {
 
   return {
     success: true,
-    rule: 'impl-intro',
-    ins: [],
-    outs: [tos[0].sexp],
-    subnode,
-    addnodes: [implIntroNode, ...linksIn, ...linksOut],
+    actions: [
+      {type: 'add-to-node', subnode, added: [implIntroNode, ...linksIn, ...linksOut]}
+    ],
+    newHls: froms.map((f) => f.sexp).concat([a]).map((stmt) =>
+      [[...subnode, newSym, '#0', '^a', 'out'], stmt])
+      .concat([[...subnode, newSym, '#0', '^c', 'in'], b]),
   };
 }
 
@@ -170,15 +175,8 @@ function tacticAddComment (root, hls, opts = null) {
 function parseHls (root, hls) {
   // in each pathAndSexp, path is something like [#root #1 ^a in].
   // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
-  const labels = hls.map(parse).map((pair) => {
-    return ({
-      path: pair[0],
-      sexp: pair[1],
-    });
-  });
-
   const froms = [], tos = [], nodes = [];
-  for (const label of labels) {
+  for (const label of hls) {
     const tail = _last_elem(label.path);
     if (tail === 'out') froms.push(label);
     else if (tail === 'in') tos.push(label);
@@ -187,7 +185,7 @@ function parseHls (root, hls) {
 
   const nodePaths = nodes.map ((n) => n.path);
 
-  const subnode = findSubnodeFromPorts(labels.map((x) => x.path));
+  const subnode = findSubnodeFromPorts(hls.map((x) => x.path));
 
   return [froms, tos, nodePaths, subnode];
 }

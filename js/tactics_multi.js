@@ -20,6 +20,14 @@
 */
 
 function tacticsMultiMatchAll() {
+  const root = getCurrentRootNode();
+  const hls = [...state.highlighted].map(parse).map((pair) => {
+    return ({
+      path: pair[0],
+      sexp: pair[1],
+    });
+  });
+
   const ans = [];
 
   if (state.highlighted.size === 0) { return ans; }    // don't suggest when nothing is highlighted.
@@ -130,6 +138,11 @@ function tacticsMultiMatchAll() {
   // Special cases
 
   // TACTIC impl-intro
+  {
+    const res = tacticImplIntro (root, hls);
+    console.log(res);
+  }
+
   if (tos.length === 1 && tos[0].sexp[0] === '->') {
     const newSym = '#' + Math.random();
 
