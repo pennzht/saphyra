@@ -332,7 +332,19 @@ function updateState() {
   }
 }
 
-window.onload = (e) => {
+window.onload = async (e) => {
+  globalArr = [];
+
+  console.log('r1');
+
+  loopFunctions ((x) => x, 1000000, globalArr);
+
+  console.log('r2');
+
+  loopFunctions ((x) => x ** 3, 1000000, globalArr);
+
+  console.log('r3');
+
   state.tabs.set('incomplete', tabInit(parseOne(tryProve1)));
   state.tabs.set('simple', tabInit(parseOne(tryProve2)));
   state.tabs.set('plus_zero', tabInit(parseOne(sampleTreeDeriv7Complete)));
@@ -410,4 +422,13 @@ function execute(code) {
 }
 
 console.log('New version as of Sep.');
+
+async function loopFunctions (fn, upto, list) {
+  for (let i = 0; i < upto; i++) {
+    list.push(fn(i));
+    await blink();
+  }
+}
+
+async function blink () {}
 
