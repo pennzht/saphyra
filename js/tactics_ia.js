@@ -8,7 +8,7 @@ function tacticAxiom (root, hls, opts = null) {
   // opts: {axiom}
   // returns: {fail, reason}
   // returns: {success, newRoot, newHls}
-  // returns: {which, [{newRoot, newHls}]}
+  // returns: {listen, [{newRoot, newHls}]}
 
   const [froms, to, nodes, subnode] = parseHls(root, hls);
 
@@ -136,12 +136,18 @@ function tacticForallIntro (root, hls, opts = null) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   if (tos.length === 1) {
-    // froms, tos : {path, sexp}
     const m = simpleMatch(
       ['forall', '_P'], tos[0].sexp
     );
 
     if (m.success) {
+      if (! opts.varname) {
+        return {
+          listen: true,
+          args: {varname: 'string'},
+        };
+      }
+
       const p = m.map.get('_P');
 
       const joinNode = [
