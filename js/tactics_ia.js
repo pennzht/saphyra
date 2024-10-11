@@ -133,7 +133,72 @@ function tacticImplIntro (root, hls, opts = null) {
 }
 
 function tacticForallIntro (root, hls, opts = null) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
+  if (tos.length === 1) {
+    // froms, tos : {path, sexp}
+    const m = simpleMatch(
+      ['forall', '_P'], tos[0].sexp
+    );
+
+    if (m.success) {
+      const p = m.map.get('_P');
+
+      const joinNode = [
+        'node', '#0',
+        froms.map((a) => a.sexp),
+        [[p, '_?P0']],
+        ['join'],
+        [],
+      ];
+      
+      const lamMatch = simpleMatch([':', '_v', '_body'], p);
+      if (lamMatch.success) {
+        const v = lamMatch.map.get('_v');
+        const [n, typ] = nameAndTypeString(v);
+        // If not in assumptions ...
+        const avoids = getFreeVars (froms.map ((a) => a.sexp));
+
+        let v2 = v;
+        if (avoids.includes (v)) {
+          // Generate new var.
+          v2 = gensyms (avoids, 1, n, ':'+typ)[0];
+        } // otherwise, v2 = v.
+
+        // Replaces out with actual variable.
+        joinNode[Outs][0] = [p, v2];
+
+        // Adds beta-replaced, then link.
+        const beta = lambdaFullReduce([p, v2]);
+        joinNode[Subs].push(['node', '#b', [beta], [[p, v2]], ['beta-equiv'], []]);
+        joinNode[Subs].push(['link', '#b', '^c', [p, v2]]);
+      }
+
+      const innerNode = [
+        'node', '#'+Math.random(),
+        froms.map((a) => a.sexp),
+        tos.map((a) => a.sexp),
+        ['forall-intro'],
+        // Subs: [join].
+        [joinNode],
+      ];
+      const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
+      const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
+
+      return {
+        success: true,
+        actions: [
+          {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
+        ],
+        newHls: 0 /* TODO - add new highlights*/,
+        requestArgs: [['_?P0', 'text']],
+      };
+    } else {
+      return {fail: true, reason: 'not forall'};
+    }
+  } else {
+    return {fail: true, reason: 'arg diff'};
+  }
 }
 
 function tacticExistsElim (root, hls, opts = null) {
