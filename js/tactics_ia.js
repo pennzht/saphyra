@@ -394,7 +394,7 @@ function tacticAddJoin (root, hls, opts = {}) {
   return {
     success: true,
     actions: [{type: 'add-to-node', subnode, added: addnodes}],
-    newHls: 
+    newHls: 0  /* TODO - add newHls */
   };
 }
 
