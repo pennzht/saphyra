@@ -4,7 +4,7 @@ A tactic is basically a function with a partial input, which is progressively fe
 root, hls (=== highlights), opts (=== options)
  */
 
-function tacticAxiom (root, hls, opts = null) {
+function tacticAxiom (root, hls, opts = {}) {
   // opts: {axiom}
   // returns: {fail, reason}
   // returns: {success, newRoot, newHls}
@@ -91,7 +91,7 @@ function tacticAxiom (root, hls, opts = null) {
   }
 }
 
-function tacticImplIntro (root, hls, opts = null) {
+function tacticImplIntro (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   if (! (tos.length === 1 && tos[0].sexp[0] === '->')) {
@@ -132,7 +132,7 @@ function tacticImplIntro (root, hls, opts = null) {
   };
 }
 
-function tacticForallIntro (root, hls, opts = null) {
+function tacticForallIntro (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   if (tos.length !== 1) {
@@ -198,44 +198,112 @@ function tacticForallIntro (root, hls, opts = null) {
       {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
     ],
     newHls: 0 /* TODO - add new highlights*/,
-    requestArgs: [['_?P0', 'text']],
+    requestArgs: {varName: 'text'},
   };
 }
 
-function tacticExistsElim (root, hls, opts = null) {
+function tacticExistsElim (root, hls, opts = {}) {
 
 }
 
-function tacticBeta (root, hls, opts = null) {
-
+function tacticBeta (root, hls, opts = {}) {
+  // need: froms + tos = 1
 }
 
-function tacticReplaceSub (root, hls, opts = null) {
-
+function tacticReplaceSub (root, hls, opts = {}) {
+  // TODO - do this later.
 }
 
-function tacticAddJoin (root, hls, opts = null) {
-
+function tacticAddJoin (root, hls, opts = {}) {
+  // need: (froms, tos) != (0, 0)
 }
 
-function tacticImportStmt (root, hls, opts = null) {
-
+function tacticImportStmt (root, hls, opts = {}) {
+  // need: froms > 0, nodes > 0
 }
 
-function tacticAddNodeInput (root, hls, opts = null) {
+function tacticAddNodeInput (root, hls, opts = {}) {
+  if (froms.length > 0) {
+    return {fail: true, reason: 'too many inputs'};
+  }
+  if (tos.length > 0) {
+    return {fail: true, reason: 'too many outputs'};
+  }
+  if (nodes.length === 0) {
+    return {fail: true, reason: 'node count = 0'};
+  }
 
+  if (! opts.stmt) {
+    return {
+      listen: true,
+      requestArgs: {stmt: 'stmt'},
+    };
+  }
+
+  return {
+    success: true,
+    actions: nodes.map ((node) => 
+      {type: 'add-to-node', subnode: node, newInputs: [opts.stmt]}
+    ),
+  };
 }
 
-function tacticAddNodeOutput (root, hls, opts = null) {
+function tacticAddNodeOutput (root, hls, opts = {}) {
+  if (froms.length > 0) {
+    return {fail: true, reason: 'too many inputs'};
+  }
+  if (tos.length > 0) {
+    return {fail: true, reason: 'too many outputs'};
+  }
+  if (nodes.length === 0) {
+    return {fail: true, reason: 'node count = 0'};
+  }
 
+  if (! opts.stmt) {
+    return {
+      listen: true,
+      requestArgs: {stmt: 'stmt'},
+    };
+  }
+
+  return {
+    success: true,
+    actions: nodes.map ((node) => 
+      {type: 'add-to-node', subnode: node, newOutputs: [opts.stmt]}
+    ),
+  };
 }
 
-function tacticRenameNode (root, hls, opts = null) {
+function tacticRenameNode (root, hls, opts = {}) {
+  const [froms, to, nodes, subnode] = parseHls(root, hls);
 
+  if (froms.length > 0) {
+    return {fail: true, reason: 'too many inputs'};
+  }
+  if (tos.length > 0) {
+    return {fail: true, reason: 'too many outputs'};
+  }
+  if (nodes.length !== 1) {
+    return {fail: true, reason: 'node count != 1'};
+  }
+
+  if (! opts.newName) {
+    return {
+      listen: true,
+      requestArgs: {newName: 'text'},
+    };
+  }
+
+  return {
+    success: true,
+    actions: [
+      {type: 'change-node-name', subnode: nodes[0], newName: opts.newName},
+    ],
+  };
 }
 
-function tacticAddComment (root, hls, opts = null) {
-
+function tacticAddComment (root, hls, opts = {}) {
+  return {fail: true, reason: 'not yet implemented'};
 }
 
 function parseHls (root, hls) {
