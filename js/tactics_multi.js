@@ -33,21 +33,13 @@ function tacticsMultiMatchAll() {
   if (state.highlighted.size === 0) { return ans; }    // don't suggest when nothing is highlighted.
 
   // Default case: apply axioms
-
   // Special cases
-
   // TACTIC impl-intro
-
   // TACTIC forall-intro
-
   // TACTIC exists-elim
-
   // TACTIC beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
-
   // TACTIC replace-sub replacing subobject (subformula)
-
   // TACTIC add-join
-
   // TACTIC import-stmt: brings in a statement from an outer result
 
   // detect-accessible-stmts
@@ -58,7 +50,6 @@ function tacticsMultiMatchAll() {
     console.log('detect-accessible-stmts', froms.map((a) => a.path));
 
     // TODO1009 - Disambiguate stmts with second-from-last fragment.
-
     // TODO1009 - "Repeated application" tactics.
 
     ans.push({
@@ -459,3 +450,25 @@ function _last_elem (list) {
   }
 }
 
+/** used in tactics_ia.js */
+function parseHls (root, hls) {
+  // in each pathAndSexp, path is something like [#root #1 ^a in].
+  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
+
+  // in each pathAndSexp, path is something like [#root #1 ^a in].
+  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
+  // hls is in format [{path, sexp} ...]
+  const froms = [], tos = [], nodes = [];
+  for (const label of hls) {
+    const tail = _last_elem(label.path);
+    if (tail === 'out') froms.push(label);
+    else if (tail === 'in') tos.push(label);
+    else nodes.push(label);
+  }
+
+  const nodePaths = nodes.map ((n) => n.path);
+
+  const subnode = findSubnodeFromPorts(hls.map((x) => x.path));
+
+  return [froms, tos, nodePaths, subnode];
+}

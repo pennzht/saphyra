@@ -363,8 +363,10 @@ function tacticReplaceSub (root, hls, opts = {}) {
 function tacticAddJoin (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
-  // need: (froms, tos) != (0, 0)
-  if (froms.length > 0 || tos.length > 0) {
+  if (froms.length === 0 && tos.length === 0) {
+    return {fail: true, reason: 'too few froms/tos'};
+  }
+
     const newNodeName = gensyms(
       /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
       /*count*/ 1,
@@ -389,14 +391,11 @@ function tacticAddJoin (root, hls, opts = {}) {
 
     const addnodes = [newNode, ...fromLinks, ...toLinks];
 
-    ans.push ({
-      rule: 'add-join',
-      ins: froms.map((a) => a.sexp),
-      outs: tos.map((a) => a.sexp),
-      subnode,
-      addnodes,
-    });
-  }
+  return {
+    success: true,
+    actions: [{type: 'add-to-node', subnode, added: addnodes}],
+    newHls: 
+  };
 }
 
 function tacticImportStmt (root, hls, opts = {}) {
@@ -531,24 +530,11 @@ function tacticAddComment (root, hls, opts = {}) {
   return {fail: true, reason: 'not yet implemented'};
 }
 
-function parseHls (root, hls) {
-  // in each pathAndSexp, path is something like [#root #1 ^a in].
-  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
-
-  // in each pathAndSexp, path is something like [#root #1 ^a in].
-  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
-  // hls is in format [{path, sexp} ...]
-  const froms = [], tos = [], nodes = [];
-  for (const label of hls) {
-    const tail = _last_elem(label.path);
-    if (tail === 'out') froms.push(label);
-    else if (tail === 'in') tos.push(label);
-    else nodes.push(label);
+function tacticScript (root, hls, opts = {}) {
+  if (! opts.script) {
+    return {listen: true, requestArgs: {script: 'text'}};
   }
 
-  const nodePaths = nodes.map ((n) => n.path);
-
-  const subnode = findSubnodeFromPorts(hls.map((x) => x.path));
-
-  return [froms, tos, nodePaths, subnode];
+  // TODO - complete this.
 }
+
