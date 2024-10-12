@@ -86,7 +86,7 @@ function tacticAxiom (root, hls, opts = {}) {
           newNode,
           ... links,
         ],
-        labels,
+        hls,
         args: generatedSyms,
       };
       ans.push(thisAns);
@@ -200,7 +200,7 @@ function tacticForallIntro (root, hls, opts = {}) {
     actions: [
       {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
     ],
-    newHls: [], /* TODO - add new highlights*/,
+    newHls: [], /* TODO - add new highlights*/
     requestArgs: {varName: 'text'},
   };
 }
@@ -208,7 +208,68 @@ function tacticForallIntro (root, hls, opts = {}) {
 function tacticExistsElim (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
+  if (froms.length < 1) {
+    return {fail: true, reason: 'too few froms'};
+  }
 
+  const m = simpleMatch(
+    ['exists', '_P'], froms[0].sexp
+  );
+
+  if (! m.success) {
+    return {fail: true, reason: 'not an exists stmt'};
+  }
+
+  const p = m.map.get('_P');
+
+  const joinNode = [
+    'node', '#0',
+    [[p, '_?P0']].concat(froms.slice(1).map((a) => a.sexp)),
+    tos.map((a) => a.sexp),
+    ['join'],
+    [],
+  ];
+  
+  const lamMatch = simpleMatch([':', '_v', '_body'], p);
+  if (lamMatch.success) {
+    const v = lamMatch.map.get('_v');
+    const [n, typ] = nameAndTypeString(v);
+    // If not in assumptions ...
+    const avoids = getFreeVars (froms.map ((a) => a.sexp));
+
+    let v2 = v;
+    if (avoids.includes (v)) {
+      // Generate new var.
+      v2 = gensyms (avoids, 1, n, ':'+typ)[0];
+    } // otherwise, v2 = v.
+
+    // Replaces out with actual variable.
+    joinNode[Ins][0] = [p, v2];
+
+    // Adds beta-replaced, then link.
+    const beta = lambdaFullReduce([p, v2]);
+    joinNode[Subs].push(['node', '#b', [[p, v2]], [beta], ['beta-equiv'], []]);
+    joinNode[Subs].push(['link', '^a', '#b', [p, v2]]);
+  }
+
+  const innerNode = [
+    'node', '#'+Math.random(),
+    froms.map((a) => a.sexp),
+    tos.map((a) => a.sexp),
+    ['exists-elim'],
+    // Subs: [join].
+    [joinNode],
+  ];
+  const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
+  const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
+  ans.push ({
+    rule: 'exists-elim',
+    ins: innerNode[Ins],
+    outs: innerNode[Outs],
+    subnode,
+    addnodes: [innerNode, ...linksIn, ...linksOut],
+    args: ['_?P0'],
+  });
 }
 
 function tacticBetaEquiv (root, hls, opts = {}) {
@@ -398,6 +459,10 @@ function tacticAddComment (root, hls, opts = {}) {
 function parseHls (root, hls) {
   // in each pathAndSexp, path is something like [#root #1 ^a in].
   // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
+
+  // in each pathAndSexp, path is something like [#root #1 ^a in].
+  // they should satisfy a condition that they are all subpaths of some full path, which is where we'll add new blocks.
+  // hls is in format [{path, sexp} ...]
   const froms = [], tos = [], nodes = [];
   for (const label of hls) {
     const tail = _last_elem(label.path);
