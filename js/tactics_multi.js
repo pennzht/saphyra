@@ -202,78 +202,10 @@ function tacticsMultiMatchAll() {
   }
 
   // TACTIC beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
-  if (froms.length + tos.length === 1) {
-    let downward, stmt, parentNode, port;
-    if (froms.length > 0) {
-      downward = true;
-      stmt = froms[0].sexp;
-      const path = froms[0].path;
-      parentNode = path.slice(0, path.length - 2);
-      port = path[path.length - 2];
-    } else {
-      downward = false;
-      stmt = tos[0].sexp;
-      const path = tos[0].path;
-      parentNode = path.slice(0, path.length - 2);
-      port = path[path.length - 2];
-    }
 
-    const reduced = lambdaFullReduce(stmt);
+  // TACTIC replace-sub replacing subobject (subformula)
 
-    if (! eq (reduced, stmt)) {
-      const newNode = [
-        'node', '#'+Math.random(),
-        /*ins*/ [downward ? stmt : reduced],
-        /*outs*/ [downward ? reduced : stmt],
-        /*justification*/ ['beta-equiv'],
-        /*subs*/ [],
-        /*additional*/ [],
-      ];
-      const link = [
-        'link',
-        downward ? port : newNode[Label],
-        downward ? newNode[Label] : port,
-        stmt,
-      ];
-
-      ans.push (result = {
-        rule: 'beta-equiv',
-        ins: newNode[Ins],
-        outs: newNode[Outs],
-        subnode: parentNode,
-        addnodes: [newNode, link],
-      });
-      console.log('push result is', result);
-    }
-  }
-
-  // replacing subobject (subformula)
-  if (froms.length + tos.length === 1) {
-    let downward, stmt, parentNode, port;
-    if (froms.length > 0) {
-      downward = true;
-      stmt = froms[0].sexp;
-      const path = froms[0].path;
-      parentNode = path.slice(0, path.length - 2);
-      port = path[path.length - 2];
-    } else {
-      downward = false;
-      stmt = tos[0].sexp;
-      const path = tos[0].path;
-      parentNode = path.slice(0, path.length - 2);
-      port = path[path.length - 2];
-    }
-
-    ans.push({
-      rule: 'replace-sub',
-      targetNodes: nodePaths,
-      stmt,
-      userInput: parse('[Statement stmt]'),
-      targetPort: froms.concat(tos)[0].path,
-    });
-  }
-
-  // add-join
+  // TACTIC add-join
   if (froms.length > 0 || tos.length > 0) {
     const newNodeName = gensyms(
       /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
@@ -350,40 +282,6 @@ function tacticsMultiMatchAll() {
       rule: 'import-stmt',
       newRoot: node,
     });
-  }
-
-  // add-node-input, add-node-output, rename-node, add-comment
-  if (froms.length === 0 && tos.length === 0) {
-    if (nodes.length > 0) {
-      // node-only
-      ans.push({
-        rule: 'add-node-input',
-        targetNodes: nodePaths,
-        userInput: parse('[Statement stmt]'),
-      });
-      ans.push({
-        rule: 'add-node-output',
-        targetNodes: nodePaths,
-        userInput: parse('[Statement stmt]'),
-      });
-    }
-
-    if (nodes.length === 1) {
-      ans.push({
-        rule: 'rename-node',
-        targetNodes: nodePaths,
-        userInput: parse('[Name str]'),
-      });
-      ans.push({
-        rule: 'rename-space',
-        userInput: parse('[Name str]'),
-      });
-      ans.push({
-        rule: 'add-comment',
-        targetNodes: nodePaths,
-        userInput: parse('[Name str]'),
-      });
-    }
   }
 
   // detect-accessible-stmts

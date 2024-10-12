@@ -2,15 +2,18 @@
 A tactic is basically a function with a partial input, which is progressively fed with more info.
 
 root, hls (=== highlights), opts (=== options)
- */
+*/
+
+// Tactics not included here: rename-space
+
+// returns: {fail, reason}
+// returns: {success, actions: [{type, subnode, added/...}], newHls: [[path, stmt]]}
+// returns: {listen, requestArgs: {key: type as string}}
 
 function tacticAxiom (root, hls, opts = {}) {
   // opts: {axiom}
-  // returns: {fail, reason}
-  // returns: {success, newRoot, newHls}
-  // returns: {listen, [{newRoot, newHls}]}
 
-  const [froms, to, nodes, subnode] = parseHls(root, hls);
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   const [vars, assumptions, conclusions] = folAxiomsMap.get(opts.axiom);
   
@@ -197,28 +200,114 @@ function tacticForallIntro (root, hls, opts = {}) {
     actions: [
       {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
     ],
-    newHls: 0 /* TODO - add new highlights*/,
+    newHls: [], /* TODO - add new highlights*/,
     requestArgs: {varName: 'text'},
   };
 }
 
 function tacticExistsElim (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
 
 }
 
-function tacticBeta (root, hls, opts = {}) {
+function tacticBetaEquiv (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
   // need: froms + tos = 1
+  if (froms.length + tos.length !== 1) {
+    return {fail: true, reason: 'arg diff'};
+  }
+
+  let downward, stmt, parentNode, port;
+  if (froms.length > 0) {
+    downward = true;
+    stmt = froms[0].sexp;
+    const path = froms[0].path;
+    parentNode = path.slice(0, path.length - 2);
+    port = path[path.length - 2];
+  } else {
+    downward = false;
+    stmt = tos[0].sexp;
+    const path = tos[0].path;
+    parentNode = path.slice(0, path.length - 2);
+    port = path[path.length - 2];
+  }
+
+  const reduced = lambdaFullReduce(stmt);
+
+  if (eq (reduced, stmt)) {
+    return {fail: true, reason: 'no operation'};
+  }
+
+  const newNode = [
+    'node', '#'+Math.random(),
+    /*ins*/ [downward ? stmt : reduced],
+    /*outs*/ [downward ? reduced : stmt],
+    /*justification*/ ['beta-equiv'],
+    /*subs*/ [],
+    /*additional*/ [],
+  ];
+  const link = [
+    'link',
+    downward ? port : newNode[Label],
+    downward ? newNode[Label] : port,
+    stmt,
+  ];
+  
+  return {
+    success: true,
+    actions: [
+      {type: 'add-to-node', subnode, added: [newNode, link]}
+    ],
+    newHls: [
+      [...subnode, newNode[Label], downward ? 'out' : 'in'],
+      stmt,
+    ],
+  };
 }
 
 function tacticReplaceSub (root, hls, opts = {}) {
-  // TODO - do this later.
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (froms.length + tos.length !== 1) {
+    return {fail: true, reason: 'arg diff'};
+  }
+
+  let downward, stmt, parentNode, port;
+  if (froms.length > 0) {
+    downward = true;
+    stmt = froms[0].sexp;
+    const path = froms[0].path;
+    parentNode = path.slice(0, path.length - 2);
+    port = path[path.length - 2];
+  } else {
+    downward = false;
+    stmt = tos[0].sexp;
+    const path = tos[0].path;
+    parentNode = path.slice(0, path.length - 2);
+    port = path[path.length - 2];
+  }
+
+  return {
+    success: true,
+    rule: 'replace-sub',
+    targetNodes: nodePaths,
+    stmt,
+    userInput: parse('[Statement stmt]'),
+    targetPort: froms.concat(tos)[0].path,
+  };
 }
 
 function tacticAddJoin (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
   // need: (froms, tos) != (0, 0)
 }
 
 function tacticImportStmt (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
   // need: froms > 0, nodes > 0
 }
 
@@ -243,7 +332,7 @@ function tacticAddNodeInput (root, hls, opts = {}) {
   return {
     success: true,
     actions: nodes.map ((node) => 
-      {type: 'add-to-node', subnode: node, newInputs: [opts.stmt]}
+      ({type: 'add-to-node', subnode: node, newInputs: [opts.stmt]})
     ),
   };
 }
@@ -269,13 +358,13 @@ function tacticAddNodeOutput (root, hls, opts = {}) {
   return {
     success: true,
     actions: nodes.map ((node) => 
-      {type: 'add-to-node', subnode: node, newOutputs: [opts.stmt]}
+      ({type: 'add-to-node', subnode: node, newOutputs: [opts.stmt]})
     ),
   };
 }
 
 function tacticRenameNode (root, hls, opts = {}) {
-  const [froms, to, nodes, subnode] = parseHls(root, hls);
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   if (froms.length > 0) {
     return {fail: true, reason: 'too many inputs'};
