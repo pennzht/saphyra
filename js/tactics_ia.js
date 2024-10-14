@@ -535,6 +535,10 @@ function tacticScript (root, hls, opts = {}) {
     return {listen: true, requestArgs: {script: 'text'}};
   }
 
+  const script = parse (opts.script);
+
+  
+
   // TODO - complete this.
 }
 
