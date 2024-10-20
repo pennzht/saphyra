@@ -1,8 +1,8 @@
-// First-order logic + Peano arithmetic.
-// The below complex rules are not included here, but tested individually.
+// Higher-order logic + Peano arithmetic.
+// The below complex rules are not included here, but checked individually.
 //     impl-intro, forall-intro, exists-elim, beta-reduction
 
-folRules = `
+allRules = `
 (and-intro
   [_A:P _B:P]
   [_A:P _B:P] [(and _A:P _B:P)])

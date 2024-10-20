@@ -20,9 +20,9 @@
 // Additional info should be one of: #good, #err/..., #incom (at least one sub incomplete; otherwise good.)
 
 // Sync with axioms.js
-folAxioms = parse(folRules);   // Avoiding deepParse for now.
+allAxioms = parse(allRules);   // Avoiding deepParse for now.
 
-folAxiomsMap = new Map(folAxioms.map (
+allAxiomsMap = new Map(allAxioms.map (
   (line) => [line[0], line.slice(1)],  // name => [vars, ins, outs]
 ));
 
@@ -108,10 +108,10 @@ function verifyNode (node) {
       return nodeProper.concat(['#err/stmt-type', invalidStmts])
     }
 
-    const folRule = folAxiomsMap.get(rule) || null;
-    if (folRule !== null) {
+    const ruleContent = allAxiomsMap.get(rule) || null;
+    if (ruleContent !== null) {
       // Rule defined
-      const match = simpleMatch (folRule.slice(1), [ins, outs]);
+      const match = simpleMatch (ruleContent.slice(1), [ins, outs]);
       if (match.success) {
         return nodeProper.concat([good]);
       } else {

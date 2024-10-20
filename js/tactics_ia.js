@@ -51,7 +51,7 @@ function tacticAxiom (root, hls, opts = {}) {
 
   if (! opts.axiom) return {fail: true, reason: 'no axiom specified'};
 
-  const [vars, assumptions, conclusions] = folAxiomsMap.get(opts.axiom);
+  const [vars, assumptions, conclusions] = allAxiomsMap.get(opts.axiom);
   
   /*
     Find all ways to match
@@ -384,6 +384,16 @@ function tacticReplaceSub (root, hls, opts = {}) {
   const stmt = target.sexp;
   const targetNode = target.path.slice (0, target.path.length - 2);
 
+  // Name available targets. Equational only.
+  const namedTargets = new Map();  // targetName => [axiom axiom-name ∀-vars lhs rhs] or [path [...path] ∀-vars lhs rhs]
+  if ('List named targets') {
+    for (const [axiomName, [vars, ins, outs]] of allAxiomsMap.entries()) {
+      console.log (axiomName, vars, str(ins), str(outs));
+      if (! (ins.length === 0 && outs.length === 1 && outs[0][0] === '=')) continue;
+      namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2]]);
+    }
+  }
+
   return {
     success: true,
     rule: 'replace-sub',
@@ -392,7 +402,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
     fromNodes: froms.map((a) => a.path),
     stmt,
     userInput: parse('[Statement stmt]'),
-    folAxiomsMap: [... folAxiomsMap].map((a) => a[0]),
+    namedTargets: [... namedTargets],
   };
 }
 

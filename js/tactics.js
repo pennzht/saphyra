@@ -111,7 +111,7 @@ function getMatchedRulesByPort(module, space, port, io, stmt) {
 
   // Get FOL rules possible matches.
 
-  for (const [ruleName, [vars, ins, outs]] of folAxiomsMap.entries()) {
+  for (const [ruleName, [vars, ins, outs]] of allAxiomsMap.entries()) {
     const targets = io === 'in' ? outs : ins;
 
     for (const pattern of targets) {
@@ -257,7 +257,7 @@ function applyMatchedRule(code, matchedRule, additionalArgs) {
 
   const [replacementList] = args;
 
-  const rule = folAxiomsMap.get(ruleName);
+  const rule = allAxiomsMap.get(ruleName);
   [ruleVars, ruleIns, ruleOuts] = rule;
 
   const replacementMap = new Map(replacementList);
