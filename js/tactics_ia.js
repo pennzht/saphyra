@@ -388,9 +388,31 @@ function tacticReplaceSub (root, hls, opts = {}) {
   const namedTargets = new Map();  // targetName => [axiom axiom-name ∀-vars lhs rhs] or [path [...path] ∀-vars lhs rhs]
   if ('List named targets') {
     for (const [axiomName, [vars, ins, outs]] of allAxiomsMap.entries()) {
-      console.log (axiomName, vars, str(ins), str(outs));
       if (! (ins.length === 0 && outs.length === 1 && outs[0][0] === '=')) continue;
       namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2]]);
+    }
+
+    // Give a name to each listed input.
+
+    for (const condition of froms) {
+      // Skip non-equalities. TODO1020 - include forall's
+      if (condition.sexp[0] !== '=') continue;
+
+      const [_eq, lhs, rhs] = condition.sexp;
+
+      let ruleName = condition.path.at(-2);
+      // Gensym in namedTargets.
+      if (namedTargets.has(ruleName)) {
+        // Create new name
+        ruleName = gensyms (
+          /*avoid*/ [...namedTargets.keys()],
+          /*count*/ 1,
+          /*prefix*/ ruleName + '_',  /*suffix = ''*/
+        );
+      }
+
+      // Add to named targets
+      namedTargets.set(ruleName, ['path', condition.path, [], lhs, rhs]);
     }
   }
 
