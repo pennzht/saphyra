@@ -101,7 +101,6 @@ function _infixParse (obj) {
     }
   }
 
-  // TODO0923 - split at loosest operator.
   if (minPrecIndices.length === 0) {
     // No operator found.
     return obj.map(_infixParse);

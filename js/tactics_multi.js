@@ -343,8 +343,6 @@ function findMatchingPaths (root, target) {
       }
     }
 
-    // TODO0929
-
     // update node
     const [child] = subs.filter ((a) => a[Label] === parent[i]);
     node = child;
