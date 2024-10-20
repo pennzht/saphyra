@@ -92,14 +92,8 @@ function verifyNode (node) {
     const good = subsGood ? '#good' : '#incom';
 
     if ((subsVerified||[]).some((n) => n[0] === 'node' && n[AdditionalInfo].startsWith('#err'))) {
-      console.log('Current node is', node, 'subsVerified is', subsVerified);
-      console.log(pprint(node));
-
-      for (const sv of subsVerified) {
-        if (sv[AdditionalInfo]?.startsWith('#err')) {
-          console.log(pprint(sv));
-        }
-      }
+      // console.log('Current node is', node, 'subsVerified is', subsVerified);
+      // console.log(pprint(node));
     }
 
     const [rule, ...args] = justNormalized;  // ...args is not used as of now. For now, we'll store "folded" information here.

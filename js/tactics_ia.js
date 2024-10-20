@@ -26,10 +26,30 @@ tacticRules = {
   'script': tacticScript,
 };
 
+function runTacticRules () {
+  const root = getCurrentRootNode();
+  const hls = [...state.highlighted].map(parse).map((pair) => {
+    return ({
+      path: pair[0],
+      sexp: pair[1],
+    });
+  });
+
+  for (const key of Object.keys(tacticRules)) {
+    const fn = tacticRules[key];
+    const ans = fn (root, hls);
+    console.log ('Run result', key);
+    console.log (JSON.stringify (ans, null, 2));
+    console.log ('================================================================');
+  }
+}
+
 function tacticAxiom (root, hls, opts = {}) {
   // opts: {axiom}
 
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (! opts.axiom) return {fail: true, reason: 'no axiom specified'};
 
   const [vars, assumptions, conclusions] = folAxiomsMap.get(opts.axiom);
   
@@ -463,6 +483,8 @@ function tacticImportStmt (root, hls, opts = {}) {
 }
 
 function tacticAddNodeInput (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
   if (froms.length > 0) {
     return {fail: true, reason: 'too many inputs'};
   }
@@ -489,6 +511,8 @@ function tacticAddNodeInput (root, hls, opts = {}) {
 }
 
 function tacticAddNodeOutput (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
   if (froms.length > 0) {
     return {fail: true, reason: 'too many inputs'};
   }

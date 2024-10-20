@@ -734,7 +734,7 @@ function getBooleanValue(
   }
 }
 
-if ('Debug') {
+if (! 'Debug') {
   const evaluation = evaluateSingleStmtWithValue(
     parseOne(`(-> (and _A _B) _C)`),
     new Map([[`_A`, +1], [`_B`, -1], [`_C`, -1]]),

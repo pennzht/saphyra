@@ -39,8 +39,6 @@ function importState(target /*file, server*/) {
     fileInput.click();
     
     fileInput.onchange = (e) => {
-      console.log('file', e.target.files[0]);
-      
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.onload = (e2) => {setEditorState(reader.result);};
@@ -61,8 +59,6 @@ function importState(target /*file, server*/) {
 }
 
 function setEditorState(result) {
-  console.log('Finished reading', result);
-  
   // Compatible: can import JSON or custom compression.
   
   let data;

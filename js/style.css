@@ -141,7 +141,7 @@ div.stmt {
 
 .atom.statement {
     color: #008b00;
-    font-style: bold;
+    font-weight: bold;
 }
 
 .atom.predicate {
