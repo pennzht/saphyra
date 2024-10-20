@@ -367,39 +367,32 @@ function tacticBetaEquiv (root, hls, opts = {}) {
 function tacticReplaceSub (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
-  if (froms.length + tos.length !== 1) {
+  if (tos.length !== 1) {
     return {fail: true, reason: 'arg diff'};
   }
 
-  // TODO1020 find accessible stmts at each level
+  // <skip> find accessible stmts at each level
   //     - add to toposort: list descendants of a special node
   //     - see also: findMatchingPaths in tactics_multi.js
+  //     - use only chosen "in" stmts + axioms
+  // For now: only consider upwards-reasoning (start from goal)
   // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
   // TODO1020 opts.direction: -> / <-
   // TODO1020 opts.occurrence-index: 0, 1, 2, 3, ...
 
-  let downward, stmt, parentNode, port;
-  if (froms.length > 0) {
-    downward = true;
-    stmt = froms[0].sexp;
-    const path = froms[0].path;
-    parentNode = path.slice(0, path.length - 2);
-    port = path[path.length - 2];
-  } else {
-    downward = false;
-    stmt = tos[0].sexp;
-    const path = tos[0].path;
-    parentNode = path.slice(0, path.length - 2);
-    port = path[path.length - 2];
-  }
+  const target = tos[0];
+  const stmt = target.sexp;
+  const targetNode = target.path.slice (0, target.path.length - 2);
 
   return {
     success: true,
     rule: 'replace-sub',
-    targetNodes: nodes,
+    target,
+    targetNode,
+    fromNodes: froms.map((a) => a.path),
     stmt,
     userInput: parse('[Statement stmt]'),
-    targetPort: froms.concat(tos)[0].path,
+    folAxiomsMap: [... folAxiomsMap].map((a) => a[0]),
   };
 }
 
