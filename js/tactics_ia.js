@@ -470,6 +470,8 @@ function tacticReplaceSub (root, hls, opts = {}) {
     namedTargets: [... namedTargets],
     matchingResults,
   };
+
+  // TODO1020 - add actions (in run.js) to replace with extracted lambda and params, automatically apply to ∀... statements
 }
 
 function tacticAddJoin (root, hls, opts = {}) {
