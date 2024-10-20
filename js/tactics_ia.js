@@ -10,6 +10,22 @@ root, hls (=== highlights), opts (=== options)
 // returns: {success, actions: [{type, subnode, added/...}], newHls: [[path, stmt]]}
 // returns: {listen, requestArgs: {key: type as string}}
 
+tacticRules = {
+  'axiom': tacticAxiom,
+  'impl-intro': tacticImplIntro,
+  'forall-intro': tacticForallIntro,
+  'exists-elim': tacticExistsElim,
+  'beta-equiv': tacticBetaEquiv,
+  'replace-sub': tacticReplaceSub,
+  'add-join': tacticAddJoin,
+  'import-stmt': tacticImportStmt,
+  'add-node-input': tacticAddNodeInput,
+  'add-node-output': tacticAddNodeOutput,
+  'rename-node': tacticRenameNode,
+  'add-comment': tacticAddComment,
+  'script': tacticScript,
+};
+
 function tacticAxiom (root, hls, opts = {}) {
   // opts: {axiom}
 
