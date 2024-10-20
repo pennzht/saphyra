@@ -390,6 +390,10 @@ function tacticReplaceSub (root, hls, opts = {}) {
   if ('List named targets') {
     for (const [axiomName, [vars, ins, outs]] of allAxiomsMap.entries()) {
       if (! (ins.length === 0 && outs.length === 1 && outs[0][0] === '=')) continue;
+
+      // Skips trivial axiom (for now).
+      if (axiomName === '=-intro') continue;
+
       namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2]]);
     }
 
