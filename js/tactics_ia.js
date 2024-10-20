@@ -397,9 +397,20 @@ function tacticReplaceSub (root, hls, opts = {}) {
 
     for (const condition of froms) {
       // Skip non-equalities. TODO1020 - include forall's
-      if (condition.sexp[0] !== '=') continue;
+      // Checks if `condition` is a universal equality; skips if it isn't one.
+      const vars = [];
+      let body = condition.sexp;
+      while (body[0] === 'forall') {
+        const match = simpleMatch (['forall', [':', '_var', '_body']], body);
+        if (! match.success) break;
 
-      const [_eq, lhs, rhs] = condition.sexp;
+        vars.push (match.map.get('_var'));
+        body = match.map.get('_body');
+      }
+
+      if (body[0] !== '=') continue;
+
+      const [_eq, lhs, rhs] = body;
 
       let ruleName = condition.path.at(-2);
       // Gensym in namedTargets.
@@ -413,7 +424,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
       }
 
       // Add to named targets
-      namedTargets.set(ruleName, ['path', condition.path, [], lhs, rhs]);
+      namedTargets.set(ruleName, ['path', condition.path, vars, lhs, rhs]);
     }
   }
 
