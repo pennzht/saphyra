@@ -428,6 +428,8 @@ function tacticReplaceSub (root, hls, opts = {}) {
     }
   }
 
+  // TODO1020 - print matching parts in current statement.
+
   return {
     success: true,
     rule: 'replace-sub',
