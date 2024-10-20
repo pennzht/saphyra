@@ -372,6 +372,8 @@ function tacticReplaceSub (root, hls, opts = {}) {
   }
 
   // TODO1020 find accessible stmts at each level
+  //     - add to toposort: list descendants of a special node
+  //     - see also: findMatchingPaths in tactics_multi.js
   // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
   // TODO1020 opts.direction: -> / <-
   // TODO1020 opts.occurrence-index: 0, 1, 2, 3, ...
