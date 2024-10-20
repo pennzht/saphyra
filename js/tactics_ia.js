@@ -371,6 +371,11 @@ function tacticReplaceSub (root, hls, opts = {}) {
     return {fail: true, reason: 'arg diff'};
   }
 
+  // TODO1020 find accessible stmts at each level
+  // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
+  // TODO1020 opts.direction: -> / <-
+  // TODO1020 opts.occurrence-index: 0, 1, 2, 3, ...
+
   let downward, stmt, parentNode, port;
   if (froms.length > 0) {
     downward = true;
