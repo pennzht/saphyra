@@ -389,7 +389,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
   return {
     success: true,
     rule: 'replace-sub',
-    targetNodes: nodePaths,
+    targetNodes: nodes,
     stmt,
     userInput: parse('[Statement stmt]'),
     targetPort: froms.concat(tos)[0].path,
