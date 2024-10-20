@@ -35,7 +35,7 @@ function runTacticRules () {
     });
   });
 
-  for (const key of Object.keys(tacticRules)) {
+  for (const key of /*Object.keys(tacticRules)*/ ['replace-sub']) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
     console.log ('Run result', key);
