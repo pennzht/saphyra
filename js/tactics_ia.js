@@ -432,8 +432,14 @@ function tacticReplaceSub (root, hls, opts = {}) {
     for (const startSide of [lhs, rhs]) {
       // Try matching startSide with substring.
       for (const [indices, subsexp] of sexpWalk(stmt)) {
-        console.log ('try matching', str(indices), str(subsexp), 'with', ruleName, ruleType);
-        // TODO1020 - filter only matching parts.
+        // console.log ('try matching', str(indices), str(subsexp), 'with', ruleName, ruleType);
+
+        const m = simpleMatch (startSide, subsexp, vars);
+        if (m.success) {
+          console.log ('found match', ruleName, str(indices), str(subsexp), str([...m.map]));
+        }
+
+        // TODO1020 - add matching parts to suggestions.
       }
     }
   }
