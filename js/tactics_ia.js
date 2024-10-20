@@ -377,6 +377,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
   //     - use only chosen "in" stmts + axioms
   // For now: only consider upwards-reasoning (start from goal)
   // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
+  // TODO1020 opts.vars: Map([varname, varreplace])
   // TODO1020 opts.direction: -> / <-
   // TODO1020 opts.occurrence-index: 0, 1, 2, 3, ...
 
