@@ -30,35 +30,6 @@ function tacticsMultiMatchAll() {
 
   const ans = [];
 
-  if (state.highlighted.size === 0) { return ans; }    // don't suggest when nothing is highlighted.
-
-  // Default case: apply axioms
-  // Special cases
-  // TACTIC impl-intro
-  // TACTIC forall-intro
-  // TACTIC exists-elim
-  // TACTIC beta-reduction, either direction. Using "beta-equiv" as rule name to avoid conflict with "beta".
-  // TACTIC replace-sub replacing subobject (subformula)
-  // TACTIC add-join
-  // TACTIC import-stmt: brings in a statement from an outer result
-
-  // detect-accessible-stmts
-  // Also usable: top-level axioms, (theorems).
-  if (tos.length === 1) {
-    const [target /* path, sexp */] = tos;
-
-    console.log('detect-accessible-stmts', froms.map((a) => a.path));
-
-    // TODO1009 - Disambiguate stmts with second-from-last fragment.
-    // TODO1009 - "Repeated application" tactics.
-
-    ans.push({
-      rule: 'detect-accessible-stmts',
-      goal: tos[0].sexp,
-      usable: froms.map((a) => a.sexp),
-    })
-  }
-
   return ans;
 }
 
