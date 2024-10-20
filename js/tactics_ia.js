@@ -432,8 +432,11 @@ function tacticReplaceSub (root, hls, opts = {}) {
     }
   }
 
+  // A list of matching results.
+  const matchingResults = [];
+
   for (const [ruleName, [ruleType, axiomNameOrPath, vars, lhs, rhs]] of namedTargets.entries()) {
-    for (const startSide of [lhs, rhs]) {
+    for (const [startSide, direction] of [[lhs, '->'], [rhs, '<-']]) {
       // Try matching startSide with substring.
       for (const [indices, subsexp] of sexpWalk(stmt)) {
         // console.log ('try matching', str(indices), str(subsexp), 'with', ruleName, ruleType);
@@ -441,6 +444,14 @@ function tacticReplaceSub (root, hls, opts = {}) {
         const m = simpleMatch (startSide, subsexp, vars);
         if (m.success) {
           console.log ('found match', ruleName, str(indices), str(subsexp), str([...m.map]));
+          matchingResults.push ({
+            ruleName,
+            vars, lhs, rhs,
+            direction,
+            indices,
+            subsexp,
+            map: [...m.map],
+          });
         }
 
         // TODO1020 - add matching parts to suggestions.
@@ -457,6 +468,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
     stmt,
     userInput: parse('[Statement stmt]'),
     namedTargets: [... namedTargets],
+    matchingResults,
   };
 }
 
