@@ -684,6 +684,25 @@ function setEquals(A, B) {
   return eq(describe(A), describe(B));
 }
 
+function _sexpWalk(sexp, prefix, pushTo) {
+  pushTo.push([[...prefix], sexp]);
+
+  if (isList (sexp)) {
+    for (let i = 0; i < sexp.length; i++) {
+      prefix.push(i);
+      _sexpWalk(sexp[i], prefix, pushTo);
+      prefix.pop();
+    }
+  } else {    }
+}
+
+function sexpWalk(sexp) {
+  const pushTo = [];
+  const prefix = [];
+  _sexpWalk (sexp, prefix, pushTo);
+  return pushTo;
+}
+
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
 if (false) {
   console.log (

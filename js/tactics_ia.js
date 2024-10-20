@@ -428,7 +428,15 @@ function tacticReplaceSub (root, hls, opts = {}) {
     }
   }
 
-  // TODO1020 - print matching parts in current statement.
+  for (const [ruleName, [ruleType, axiomNameOrPath, vars, lhs, rhs]] of namedTargets.entries()) {
+    for (const startSide of [lhs, rhs]) {
+      // Try matching startSide with substring.
+      for (const [indices, subsexp] of sexpWalk(stmt)) {
+        console.log ('try matching', str(indices), str(subsexp), 'with', ruleName, ruleType);
+        // TODO1020 - filter only matching parts.
+      }
+    }
+  }
 
   return {
     success: true,
