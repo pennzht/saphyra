@@ -237,7 +237,7 @@ function tacticForallIntro (root, hls, opts = {}) {
       {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
     ],
     newHls: [], /* TODO - add new highlights*/
-    requestArgs: {varName: 'text'},
+    requestArgs: {varName: 'string'},
   };
 }
 
@@ -637,7 +637,7 @@ function tacticRenameNode (root, hls, opts = {}) {
   if (! opts.newName) {
     return {
       listen: true,
-      requestArgs: {newName: 'text'},
+      requestArgs: {newName: 'string'},
     };
   }
 
@@ -655,7 +655,7 @@ function tacticAddComment (root, hls, opts = {}) {
 
 function tacticScript (root, hls, opts = {}) {
   if (! opts.script) {
-    return {listen: true, requestArgs: {script: 'text'}};
+    return {listen: true, requestArgs: {script: 'sexp'}};
   }
 
   const script = parse (opts.script);
