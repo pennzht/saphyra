@@ -377,9 +377,10 @@ function tacticReplaceSub (root, hls, opts = {}) {
   //     - use only chosen "in" stmts + axioms
   // For now: only consider upwards-reasoning (start from goal)
   // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
-  // TODO1020 opts.vars: Map([varname, varreplace])
   // TODO1020 opts.direction: -> / <-
-  // TODO1020 opts.occurrence-index: 0, 1, 2, 3, ...
+  // TODO1020 opts.vars: Map([varname, varreplace])
+  // TODO1020 opts.occurrenceIndex: 0, 1, 2, 3, ... ("replace the Nth index of ... with these vars")
+  // TODO1020 - add resolution nodes
 
   const target = tos[0];
   const stmt = target.sexp;
@@ -460,15 +461,19 @@ function tacticReplaceSub (root, hls, opts = {}) {
   }
 
   return {
-    success: true,
+    listen: true,
     rule: 'replace-sub',
-    target,
     targetNode,
-    fromNodes: froms.map((a) => a.path),
     stmt,
-    userInput: parse('[Statement stmt]'),
+    fromNodes: froms.map((a) => a.path),
     namedTargets: [... namedTargets],
     matchingResults,
+    requestArgs: {
+      rule: ['oneof', ... namedTargets.keys()],
+      direction: ['oneof', '->', '<-'],
+      vars: 'sexp',
+      occurrenceIndex: 'int',
+    },
   };
 
   // TODO1020 - add actions (in run.js) to replace with extracted lambda and params, automatically apply to ∀... statements
