@@ -35,13 +35,18 @@ function runTacticRules () {
     });
   });
 
+  const matchingRules = [];
+
   for (const key of /*Object.keys(tacticRules)*/ ['replace-sub']) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
+    matchingRules.push(ans);
     console.log ('Run result', key);
     console.log (JSON.stringify (ans, null, 2));
     console.log ('================================================================');
   }
+
+  return matchingRules;
 }
 
 function tacticAxiom (root, hls, opts = {}) {
@@ -469,14 +474,12 @@ function tacticReplaceSub (root, hls, opts = {}) {
     namedTargets: [... namedTargets],
     matchingResults,
     requestArgs: {
-      rule: ['oneof', ... namedTargets.keys()],
+      axiomOrTheorem: ['oneof', ... namedTargets.keys()],
       direction: ['oneof', '->', '<-'],
       vars: 'sexp',
       occurrenceIndex: 'int',
     },
   };
-
-  // TODO1020 - add actions (in run.js) to replace with extracted lambda and params, automatically apply to ∀... statements
 }
 
 function tacticAddJoin (root, hls, opts = {}) {

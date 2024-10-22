@@ -76,14 +76,42 @@ function updateState() {
 
   // TODO1022 - find ways to display this into RHS window.
   // TODO1022 - add interactivity for actions.
-  runTacticRules ();
+  const matchingRules = runTacticRules ();
+
+  $('display').innerHTML = '';
+
+  for (const mr of matchingRules) {
+    if (mr.fail) continue;
+    const inputChildren = [];
+    const selectedArgs = {};
+    for (const arg of Object.keys(mr.requestArgs)) {
+      const selection = elem('div');
+      const argType = mr.requestArgs[arg];
+      if (argType[0] === 'oneof') {
+        // Radio group
+        const options = argType.slice(1);
+        for (const opt of options) {
+          const radioButton = elem('input', {type: 'radio', id: 'mr-' + mr.rule + ':' + arg + ':' + opt, name: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, value: opt, 'data-type': 'oneof'});
+          const radioLabel = elem('label', {'for': radioButton.getAttribute('id')}, [text(opt)]);
+          selection.appendChild(radioButton);
+          selection.appendChild(radioLabel);
+        }
+      } else {
+        // Input box
+        const inputField = elem('input', {type: 'text', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
+        const inputLabel = elem('label', {'for': inputField.getAttribute('id')}, [text(arg + ' ')]);
+        selection.appendChild(inputLabel);
+        selection.appendChild(inputField);
+      }
+      inputChildren.push(selection);
+    }
+    $('display').appendChild(elem('div', {}, inputChildren));
+  }
 
   // Find all matches for tactics.
   const allMatches = tacticsMultiMatchAll();
   // Sort by priority.
   allMatches.sort ((a, b) => rulePriority(a) - rulePriority(b));
-
-  $('display').innerHTML = '';
 
   // Append each rule, with a button for application.
 
