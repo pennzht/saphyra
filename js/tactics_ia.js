@@ -621,6 +621,43 @@ function tacticAddNodeOutput (root, hls, opts = {}) {
   };
 }
 
+function tacticAddNodeHelper (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (froms.length > 0) {
+    return {fail: true, reason: 'too many inputs'};
+  }
+  if (tos.length > 0) {
+    return {fail: true, reason: 'too many outputs'};
+  }
+  if (nodes.length === 0) {
+    return {fail: true, reason: 'node count = 0'};
+  }
+
+  if (! opts.stmt) {
+    return {
+      listen: true,
+      requestArgs: {stmt: 'stmt'},
+    };
+  }
+
+  const newNodeName = gensyms(
+    /*avoid*/ findSubnodeByPath(root, nodes[0]),
+    /*count*/ 1,
+    /*prefix*/ '#helper',
+    /*suffix*/ '',
+  ) [0];
+
+  const idBlock = ['node', newNodeName, [stmt], [stmt], ['id'], []];
+
+  return {
+    success: true,
+    actions: nodes.map ((node) => 
+      ({type: 'add-to-node', subnode: node, added: [idBlock]})
+    ),
+  };
+}
+
 function tacticRenameNode (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 

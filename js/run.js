@@ -74,6 +74,8 @@ function updateState() {
   // Prints state for debugging.
   console.log('Current state is', state);
 
+  // TODO1022 - find ways to display this into RHS window.
+  // TODO1022 - add interactivity for actions.
   runTacticRules ();
 
   // Find all matches for tactics.
