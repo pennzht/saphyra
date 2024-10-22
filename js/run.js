@@ -82,8 +82,7 @@ function updateState() {
 
   for (const mr of matchingRules) {
     if (mr.fail) continue;
-    const inputChildren = [];
-    const selectedArgs = {};
+    const ruleElement = elem('div');
     for (const arg of Object.keys(mr.requestArgs)) {
       const selection = elem('div');
       const argType = mr.requestArgs[arg];
@@ -103,9 +102,28 @@ function updateState() {
         selection.appendChild(inputLabel);
         selection.appendChild(inputField);
       }
-      inputChildren.push(selection);
+      ruleElement.appendChild(selection);
     }
-    $('display').appendChild(elem('div', {}, inputChildren));
+
+    const submitButton = elem('input', {type: 'button', value: 'Apply'});
+    submitButton.onclick = () => {
+      const inputs = ruleElement.querySelectorAll('input');
+      const selectedArgs = {};
+      for (const input of inputs) {
+        if (input.getAttribute('type') === 'button') continue;
+        if (input.dataset.type == 'oneof') {
+          if (input.checked) selectedArgs[input.dataset.group] = input.getAttribute('value');
+        } else {
+          selectedArgs[input.dataset.group] = input.value;
+        }
+      }
+      console.log(JSON.stringify(selectedArgs, null, 2));
+    };
+
+    ruleElement.appendChild(submitButton);
+    ruleElement.appendChild(elem('hr'));
+
+    $('display').appendChild(ruleElement);
   }
 
   // Find all matches for tactics.
