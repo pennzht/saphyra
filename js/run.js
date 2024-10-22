@@ -108,7 +108,7 @@ function updateState() {
     const submitButton = elem('input', {type: 'button', value: 'Apply'});
     submitButton.onclick = () => {
       const inputs = ruleElement.querySelectorAll('input');
-      const selectedArgs = {};
+      const selectedArgs = {rule: mr.rule};
       for (const input of inputs) {
         if (input.getAttribute('type') === 'button') continue;
         if (input.dataset.type == 'oneof') {
@@ -118,6 +118,13 @@ function updateState() {
         }
       }
       console.log(JSON.stringify(selectedArgs, null, 2));
+
+      tacticApplyRule (getCurrentRootNode(), [...state.highlighted].map(parse).map((pair) => {
+        return ({
+          path: pair[0],
+          sexp: pair[1],
+        });
+      }), selectedArgs);
     };
 
     ruleElement.appendChild(submitButton);

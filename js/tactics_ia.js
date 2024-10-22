@@ -49,6 +49,12 @@ function runTacticRules () {
   return matchingRules;
 }
 
+function tacticApplyRule (root, hls, opts = {}) {
+  const rule = opts.rule;
+  const ruleFn = tacticRules[rule];
+  return ruleFn (root, hls, opts);
+}
+
 function tacticAxiom (root, hls, opts = {}) {
   // opts: {axiom}
 
