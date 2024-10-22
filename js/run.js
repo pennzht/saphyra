@@ -124,6 +124,8 @@ function updateState() {
     ruleElement.appendChild(elem('hr'));
 
     $('display').appendChild(ruleElement);
+
+    // TODO1022 - apply change
   }
 
   // Find all matches for tactics.
