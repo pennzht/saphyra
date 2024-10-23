@@ -539,7 +539,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
 
         // TODO1020 - generate all intermediate nodes (=-sym and all).
 
-        // TODO1020 - automate import for all functions.
+        // TODO1020 - automate import for all statements from outside.
 
         return 0;
       }
