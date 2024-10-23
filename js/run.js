@@ -74,7 +74,6 @@ function updateState() {
   // Prints state for debugging.
   console.log('Current state is', state);
 
-  // TODO1022 - find ways to display this into RHS window.
   // TODO1022 - add interactivity for actions.
   const matchingRules = runTacticRules ();
 
@@ -119,12 +118,13 @@ function updateState() {
       }
       console.log(JSON.stringify(selectedArgs, null, 2));
 
-      tacticApplyRule (getCurrentRootNode(), [...state.highlighted].map(parse).map((pair) => {
+      const applicationResult = tacticApplyRule (getCurrentRootNode(), [...state.highlighted].map(parse).map((pair) => {
         return ({
           path: pair[0],
           sexp: pair[1],
         });
       }), selectedArgs);
+      console.log('new result is', JSON.stringify(applicationResult, null, 2));
     };
 
     ruleElement.appendChild(submitButton);

@@ -471,7 +471,9 @@ function tacticReplaceSub (root, hls, opts = {}) {
     }
   }
 
-  return {
+  const readyToApply = opts.axiomOrTheorem && opts.direction;
+
+  if (! readyToApply) return {
     listen: true,
     rule: 'replace-sub',
     targetNode,
@@ -486,6 +488,37 @@ function tacticReplaceSub (root, hls, opts = {}) {
       occurrenceIndex: 'int',
     },
   };
+
+  // readyToApply
+  {
+    console.log ('opts are', opts);
+
+    opts.vars = opts.vars || [];  // Empty var application
+    opts.occurrenceIndex = opts.occurrenceIndex || 0;  // Apply to first if unspecified.
+    
+    // Find which theorem it is.
+    const [_type, axiomNameOrPath, freeVarsList, lhs, rhs] = namedTargets.get(opts.axiomOrTheorem);
+    const fromSexp = opts.direction == '->' ? lhs : rhs;
+    const toSexp = opts.direction == '->' ? rhs : lhs;
+
+    const freeVars = new Set(freeVarsList);
+    // use replaceAll(sexp, map)
+    const fromSexpRepl = replaceAll(fromSexp, new Map(opts.vars));
+    const toSexpRepl = replaceAll(toSexp, new Map(opts.vars));
+
+    for (const [a, b] of opts.vars.entries()) freeVars.delete(a);
+    const replaceableVars = [... freeVars];
+
+    // Walk the tree for matchings
+    for (const [indices, subsexp] of sexpWalk(stmt)) {
+      const m = simpleMatch(fromSexpRepl, subsexp, replaceableVars);
+      if (m.success) {
+        console.log ('found match', indices, m);
+
+        // TODO1020 - generate new stmt, as well as all intermediate nodes (=-sym and all).
+      }
+    }
+  }
 }
 
 function tacticAddJoin (root, hls, opts = {}) {
