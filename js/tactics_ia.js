@@ -530,9 +530,16 @@ function tacticReplaceSub (root, hls, opts = {}) {
 
         console.log (`replacing ${str(fromSexpFinal)} with ${str(toSexpFinal)} at ${indices} with maps ${str([...matchingMap])}`);
 
-        // TODO1020 - generate lambda hole
+        const [lambdaHoleVar] = gensyms(stmt, 1, '_lh', ':O');  // TODO - use actual type (not necessarily O)
 
-        // TODO1020 - generate new stmt, as well as all intermediate nodes (=-sym and all).
+        const lambdaHole = replaceByPath(stmt, indices, lambdaHoleVar);
+        const newStmt = replaceByPath(stmt, indices, toSexpFinal);
+
+        console.log (`lambdaHole = ${str(lambdaHole)}; newStmt = ${str(newStmt)}.`);
+
+        // TODO1020 - generate all intermediate nodes (=-sym and all).
+
+        // TODO1020 - automate import for all functions.
 
         return 0;
       }
