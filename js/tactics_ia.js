@@ -387,11 +387,10 @@ function tacticReplaceSub (root, hls, opts = {}) {
   //     - see also: findMatchingPaths in tactics_multi.js
   //     - use only chosen "in" stmts + axioms
   // For now: only consider upwards-reasoning (start from goal)
-  // TODO1020 opts.rule: [axiom axiom-name] or [path [...path]]
-  // TODO1020 opts.direction: -> / <-
-  // TODO1020 opts.vars: Map([varname, varreplace])
-  // TODO1020 opts.occurrenceIndex: 0, 1, 2, 3, ... ("replace the Nth index of ... with these vars")
-  // TODO1020 - add resolution nodes
+  // opts.rule: [axiom axiom-name] or [path [...path]]
+  // opts.direction: -> / <-
+  // opts.vars: Map([varname, varreplace])
+  // opts.occurrenceIndex: 0, 1, 2, 3, ... ("replace the Nth index of ... with these vars")
 
   const target = tos[0];
   const stmt = target.sexp;
@@ -412,7 +411,6 @@ function tacticReplaceSub (root, hls, opts = {}) {
     // Give a name to each listed input.
 
     for (const condition of froms) {
-      // Skip non-equalities. TODO1020 - include forall's
       // Checks if `condition` is a universal equality; skips if it isn't one.
       const vars = [];
       let body = condition.sexp;
