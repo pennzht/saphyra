@@ -535,14 +535,29 @@ function tacticReplaceSub (root, hls, opts = {}) {
 
         console.log (`lambdaHole = ${str(lambdaHole)}; newStmt = ${str(newStmt)}.`);
 
+        const inName = gensyms(findSubnodeByPath (root, targetNode), 1, '#')[0];
+        const intermediateNode = ['node', inName, [newStmt], [stmt], ['join'], []];
+        const isub = intermediateNode[Subs];
+
+        let subnodeCount = 0;
+
+        // ...
+        // TODO - coding like this is too painful. You need to modularize it even thinner.
+        // For example, “apply value X onto ∀...” should be an individual tactic.
+        // Beta-reduce should be an individual tactic.
+        // And this huge tactic should be a composition of individual tactics.
+        // YOU NEED TO REFACTOR!!! Don't dismiss your refactoring needs!!!
+
         // TODO1020 - generate all intermediate nodes (=-sym and all).
 
         // TODO1020 - automate import for all statements from outside.
 
+        // TODO1020 - treat axioms / assumptions / external theorems differently.
+
         return 0;
       }
     }
-  }
+  } // closes readyToApply
 }
 
 function tacticAddJoin (root, hls, opts = {}) {
