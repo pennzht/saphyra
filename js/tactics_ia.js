@@ -494,7 +494,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
     console.log ('opts are', opts);
 
     opts.vars = opts.vars || [];  // Empty var application
-    opts.occurrenceIndex = opts.occurrenceIndex || 0;  // Apply to first if unspecified.
+    opts.occurrenceIndex = parseInt(opts.occurrenceIndex || '0', 10);  // Apply to first if unspecified.
     
     // Find which theorem it is.
     const [_type, axiomNameOrPath, freeVarsList, lhs, rhs] = namedTargets.get(opts.axiomOrTheorem);
@@ -510,12 +510,31 @@ function tacticReplaceSub (root, hls, opts = {}) {
     const replaceableVars = [... freeVars];
 
     // Walk the tree for matchings
+    
+    let matchingIndex = 0;
+
     for (const [indices, subsexp] of sexpWalk(stmt)) {
       const m = simpleMatch(fromSexpRepl, subsexp, replaceableVars);
       if (m.success) {
-        console.log ('found match', indices, m);
+
+        // Only use the [occurrenceIndex]th index.
+        if (matchingIndex !== opts.occurrenceIndex) {
+          matchingIndex ++; continue;
+        }
+
+        const matchingMap = m.map;
+        for (const [a, b] of opts.vars) {m.set(a, b);}
+
+        const fromSexpFinal = replaceAll(fromSexp, matchingMap);
+        const toSexpFinal = replaceAll(toSexp, matchingMap);
+
+        console.log (`replacing ${str(fromSexpFinal)} with ${str(toSexpFinal)} at ${indices} with maps ${str([...matchingMap])}`);
+
+        // TODO1020 - generate lambda hole
 
         // TODO1020 - generate new stmt, as well as all intermediate nodes (=-sym and all).
+
+        return 0;
       }
     }
   }
