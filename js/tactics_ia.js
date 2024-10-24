@@ -6,6 +6,7 @@ root, hls (=== highlights), opts (=== options)
 
 // Tactics not included here: rename-space
 
+// Each tactic returns a "match object" with a newRoot and a newHls (new highlights)
 // returns: {fail, reason}
 // returns: {success, actions: [{type, subnode, added/...}], newHls: [[path, stmt]]}
 // returns: {listen, requestArgs: {key: type as string}}
@@ -169,7 +170,7 @@ function tacticAxiom (root, hls, opts = {}) {
             newNode,
             ... links,
           ],
-          // new highlights: ?
+          newRoot: addToSubnode (root, subnode, [newNode, ...links]),
         };
 
         if (generatedSyms.length <= 0) {
@@ -196,6 +197,19 @@ function tacticAxiom (root, hls, opts = {}) {
   } else {
     return {fail: true, reason: 'No matches found'};
   }
+}
+
+function tacticAxiomCommit (matchObject, extraArgs) {
+  // extraArgs is an object with keys being args.
+
+  const rplcment = new Map();
+  for (const a of Object.keys(extraArgs)) rplcment.set(a, extraArgs[a]);
+
+  matchObject.ins = replaceAll (matchObject.ins, rplcment);
+  matchObject.outs = replaceAll (matchObject.outs, rplcment);
+  matchObject.addnodes = replaceAll (matchObject.addnodes, rplcment);
+
+  return matchObject;
 }
 
 function tacticImplIntro (root, hls, opts = {}) {

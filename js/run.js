@@ -128,9 +128,17 @@ function updateState() {
     const submitButton = elem('input', {type: 'button', value: 'Apply'});
     submitButton.onclick = () => {
       const inputs = ruleElement.querySelectorAll('input');
-      const selectedArgs = {rule: mr.rule};
+      const selectedArgs = mr.rule === 'axiom' ? mr : {rule: mr.rule};
+      const axiomReplacements = {};
+
       for (const input of inputs) {
         if (input.getAttribute('type') === 'button') continue;
+
+        if (mr.rule === 'axiom') {
+          axiomReplacements[input.dataset.group] = infixParse(input.value);
+          continue;
+        }
+
         if (input.dataset.type == 'oneof') {
           if (input.checked) selectedArgs[input.dataset.group] = input.getAttribute('value');
         } else if (input.dataset.type == 'stmt') {
@@ -139,7 +147,9 @@ function updateState() {
           selectedArgs[input.dataset.group] = input.value;
         }
       }
-      console.log(JSON.stringify(selectedArgs, null, 2));
+      console.log(JSON.stringify(selectedArgs, axiomReplacements, null, 2));
+
+      // TODO1020 - continue here
 
       const applicationResult = tacticApplyRule (getCurrentRootNode(), [...state.highlighted].map(parse).map((pair) => {
         return ({
