@@ -123,6 +123,24 @@ function tacticAxiom (root, hls, opts = {}) {
           }
         }
 
+        // Compute new highlights.
+        const highlightInputs = new Set(newNode[Ins].map(str));
+        const highlightOutputs = new Set(newNode[Outs].map(str));
+
+        for (const f of froms) highlightInputs.delete(str(f.sexp));
+        for (const t of tos) highlightInputs.delete(str(t.sexp));
+
+        const newHls = [
+          ... [...highlightInputs].map((sexp) => ({
+            path: [...subnode, newNodeName, 'in'],
+            sexp,
+          })),
+          ... [...highlightOutputs].map((sexp) => ({
+            path: [...subnode, newNodeName, 'out'],
+            sexp,
+          })),
+        ];
+
         const thisAns = {
           map: matchMap,
           extraArgs: generatedSyms,
@@ -132,6 +150,7 @@ function tacticAxiom (root, hls, opts = {}) {
           outs: newNode[Outs],
 
           subnode,
+          newHls,
           addnodes: [
             newNode,
             ... links,
