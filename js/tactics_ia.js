@@ -590,11 +590,17 @@ function tacticAddJoin (root, hls, opts = {}) {
 
   const newNodes = [newNode, ...fromLinks, ...toLinks];
 
+  const newNodePath = subnode.concat([newNodeName]);
+
+  const newHls = [];
+  for (const inStmt of newNode[Ins]) newHls.push({path: newNodePath.concat(['^a', 'out']), sexp: inStmt});
+  for (const outStmt of newNode[Outs]) newHls.push({path: newNodePath.concat(['^c', 'in']), sexp: outStmt});
+
   return {
     success: true,
     actions: [{type: 'add-to-node', subnode, added: newNodes}],
     newRoot: addToSubnode(root, subnode, newNodes),
-    newHls: [],  /* TODO - add newHls */
+    newHls,
   };
 }
 
