@@ -703,7 +703,7 @@ function tacticAddNodeOutput (root, hls, opts = {}) {
       ({type: 'add-to-node', subnode: node, newOutputs: [opts.stmt]})
     ),
     newRoot: applyIOToSubnodes(root, nodes, /*rule*/null, [], [opts.stmt], /*newLabel*/null),
-    newHls: nodes.map((node) => ({path: node, sexp: opts.stmt})),
+    newHls: nodes.map((node) => ({path: node.concat(['out']), sexp: opts.stmt})),
   };
 }
 

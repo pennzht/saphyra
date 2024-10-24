@@ -112,6 +112,8 @@ function updateState() {
         if (input.getAttribute('type') === 'button') continue;
         if (input.dataset.type == 'oneof') {
           if (input.checked) selectedArgs[input.dataset.group] = input.getAttribute('value');
+        } else if (input.dataset.type == 'stmt') {
+          selectedArgs[input.dataset.group] = infixParse(input.value);
         } else {
           selectedArgs[input.dataset.group] = input.value;
         }
@@ -124,15 +126,18 @@ function updateState() {
           sexp: pair[1],
         });
       }), selectedArgs);
-      console.log('new result is', JSON.stringify(applicationResult, null, 2));
+
+      if (applicationResult.success) {
+        setCurrentRootNode(applicationResult.newRoot);
+        state.highlighted = new Set(applicationResult.newHls.map ((hl) => str([hl.path, hl.sexp])));
+        updateState();
+      }
     };
 
     ruleElement.appendChild(submitButton);
     ruleElement.appendChild(elem('hr'));
 
     $('display').appendChild(ruleElement);
-
-    // TODO1022 - apply change
   }
 
   // Find all matches for tactics.
