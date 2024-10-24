@@ -66,84 +66,91 @@ function tacticAxiom (root, hls, opts = {}) {
 
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
-  if (! opts.axiom) return {fail: true, reason: 'no axiom specified'};
+  const axiomList = opts.axioms ? [... opts.axioms] : opts.axiom ? [opts.axiom] : [... allAxiomsMap.keys()];
 
-  const [vars, assumptions, conclusions] = allAxiomsMap.get(opts.axiom);
-  
-  /*
-    Find all ways to match
-    froms -> assumptions,
-    tos -> conclusions,
-  */
+  const matchList = [];    // Collect all matching cases.
 
-  // Allows partial matching, but avoid cases where there are more selected than required.
-  if (froms.length > assumptions.length || tos.length > conclusions.length) {
-    return {fail: true, reason: 'Type mismatch'};
-  }
+  for (const axiom of axiomList) {
+    const [vars, assumptions, conclusions] = allAxiomsMap.get(axiom);
 
-  // Finds all ways to pair pattern and statement.
+    // TODO1020 continue here.
+    
+    /*
+      Find all ways to match
+      froms -> assumptions,
+      tos -> conclusions,
+    */
 
-  const fromsMatch = tmFindMatches(assumptions, froms);
-  const tosMatch = tmFindMatches(conclusions, tos);
-
-  // For each pair, attempt to find a match for the block.
-  for (const fm of fromsMatch) for (const tm of tosMatch) {
-    // A list of {slot, sexpWithPath}
-    const pairs = fm.concat(tm);
-
-    const pattern = pairs.map((x) => x.slot);
-    const content = pairs.map((x) => x.sexpWithPath.sexp);
-
-    const match = simpleMatch(pattern, content);
-    // Extend map by using generated statement names.
-    const [matchMap, generatedSyms] = extendMatchMap(match.map, vars, [
-      froms, tos, assumptions, conclusions,
-    ]);
-
-    if (match.success) {
-      // console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
-
-      const newNodeName = gensyms(
-        /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
-        /*count*/ 1,
-        /*prefix*/ '#',
-        /*suffix*/ '',
-      ) [0];
-
-      const newNode = [
-        'node', newNodeName, replaceAll(assumptions, matchMap),
-        replaceAll(conclusions, matchMap),
-        // Fixed: Justification should be a list.
-        [axiomName], [] /*subs*/,
-      ];
-
-      const links = [];
-      for (const matchPair of fm.concat(tm)) {
-        const previousPort = [... matchPair.sexpWithPath.path];
-        const outOrIn = previousPort.pop();
-        const portName = previousPort.pop();
-        if (outOrIn === 'out') {
-          links.push(['link', portName, newNodeName, matchPair.sexpWithPath.sexp]);
-        } else {
-          links.push(['link', newNodeName, portName, matchPair.sexpWithPath.sexp]);
-        }
-      }
-
-      const thisAns = {
-        map: matchMap,
-        rule: axiomName,
-        ins: newNode[Ins],
-        outs: newNode[Outs],
-        subnode,
-        addnodes: [
-          newNode,
-          ... links,
-        ],
-        hls,
-        args: generatedSyms,
-      };
-      ans.push(thisAns);
+    // Allows partial matching, but avoid cases where there are more selected than required.
+    if (froms.length > assumptions.length || tos.length > conclusions.length) {
+      return {fail: true, reason: 'Type mismatch'};
     }
+
+    // Finds all ways to pair pattern and statement.
+
+    const fromsMatch = tmFindMatches(assumptions, froms);
+    const tosMatch = tmFindMatches(conclusions, tos);
+
+    // For each pair, attempt to find a match for the block.
+    for (const fm of fromsMatch) for (const tm of tosMatch) {
+      // A list of {slot, sexpWithPath}
+      const pairs = fm.concat(tm);
+
+      const pattern = pairs.map((x) => x.slot);
+      const content = pairs.map((x) => x.sexpWithPath.sexp);
+
+      const match = simpleMatch(pattern, content);
+      // Extend map by using generated statement names.
+      const [matchMap, generatedSyms] = extendMatchMap(match.map, vars, [
+        froms, tos, assumptions, conclusions,
+      ]);
+
+      if (match.success) {
+        // console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
+
+        const newNodeName = gensyms(
+          /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
+          /*count*/ 1,
+          /*prefix*/ '#',
+          /*suffix*/ '',
+        ) [0];
+
+        const newNode = [
+          'node', newNodeName, replaceAll(assumptions, matchMap),
+          replaceAll(conclusions, matchMap),
+          // Fixed: Justification should be a list.
+          [axiomName], [] /*subs*/,
+        ];
+
+        const links = [];
+        for (const matchPair of fm.concat(tm)) {
+          const previousPort = [... matchPair.sexpWithPath.path];
+          const outOrIn = previousPort.pop();
+          const portName = previousPort.pop();
+          if (outOrIn === 'out') {
+            links.push(['link', portName, newNodeName, matchPair.sexpWithPath.sexp]);
+          } else {
+            links.push(['link', newNodeName, portName, matchPair.sexpWithPath.sexp]);
+          }
+        }
+
+        const thisAns = {
+          map: matchMap,
+          rule: axiomName,
+          ins: newNode[Ins],
+          outs: newNode[Outs],
+          subnode,
+          addnodes: [
+            newNode,
+            ... links,
+          ],
+          hls,
+          args: generatedSyms,
+        };
+        matchList.push(thisAns);
+      }
+    }
+
   }
 }
 
