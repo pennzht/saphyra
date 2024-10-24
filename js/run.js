@@ -94,6 +94,16 @@ function updateState() {
           selection.appendChild(radioButton);
           selection.appendChild(radioLabel);
         }
+      } else if (argType === 'stmt') {
+        // Input box
+        const inputField = elem('input', {type: 'text', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
+        const inputLabel = elem('label', {'for': inputField.getAttribute('id')}, [text(arg + ' ')]);
+        const dispBack = elem('div', {style: 'display:inline-block;'});
+        selection.appendChild(inputLabel);
+        selection.appendChild(inputField);
+        selection.appendChild(dispBack);
+
+        inputField.oninput = (e) => {dispBack.innerHTML = ''; dispBack.appendChild(infixFormat(infixParse(inputField.value)));}
       } else {
         // Input box
         const inputField = elem('input', {type: 'text', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
