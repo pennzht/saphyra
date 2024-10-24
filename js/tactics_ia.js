@@ -663,10 +663,15 @@ function tacticImportStmt (root, hls, opts = {}) {
 
   console.log('new root is', newRoot);
 
+  const newHls = [];
+  for (const f of froms) for (const n of nodes) {
+    newHls.push ({path: n.concat(['^a', 'out']), sexp: f.sexp});
+  }
+
   return {
     success: true,
     newRoot,
-    newHls: [],
+    newHls,
   };
 
   ////////////////////////////////////////////////////////////////
