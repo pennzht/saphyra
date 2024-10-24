@@ -139,7 +139,8 @@ function updateState() {
 
       if (applicationResult.success) {
         setCurrentRootNode(applicationResult.newRoot);
-        state.highlighted = new Set(applicationResult.newHls.map ((hl) => str([hl.path, hl.sexp])));
+        console.log(applicationResult.newHls);
+        state.highlighted = new Set(applicationResult.newHls.map ((hl) => str(hl.path) + ' ' + str(hl.sexp)));
         updateState();
       }
     };
