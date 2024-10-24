@@ -38,6 +38,7 @@ function runTacticRules () {
   const matchingRules = [];
 
   for (const key of /*Object.keys(tacticRules)*/ [
+    'axiom',
     'add-node-input',
     'add-node-output',
     'add-join',
@@ -75,16 +76,10 @@ function tacticAxiom (root, hls, opts = {}) {
 
     // TODO1020 continue here.
     
-    /*
-      Find all ways to match
-      froms -> assumptions,
-      tos -> conclusions,
-    */
+    // Find all ways to match froms -> assumptions, tos -> conclusions.
 
     // Allows partial matching, but avoid cases where there are more selected than required.
-    if (froms.length > assumptions.length || tos.length > conclusions.length) {
-      return {fail: true, reason: 'Type mismatch'};
-    }
+    if (froms.length > assumptions.length || tos.length > conclusions.length) { continue; }
 
     // Finds all ways to pair pattern and statement.
 
@@ -100,26 +95,20 @@ function tacticAxiom (root, hls, opts = {}) {
       const content = pairs.map((x) => x.sexpWithPath.sexp);
 
       const match = simpleMatch(pattern, content);
-      // Extend map by using generated statement names.
-      const [matchMap, generatedSyms] = extendMatchMap(match.map, vars, [
-        froms, tos, assumptions, conclusions,
-      ]);
 
       if (match.success) {
-        // console.log('subnode is', findSubnodeByPath(getCurrentRootNode(), subnode),);
+        // Extend map by using generated statement names.
+        const [matchMap, generatedSyms] = extendMatchMap(match.map, vars, [
+          froms, tos, assumptions, conclusions,
+        ]);
 
-        const newNodeName = gensyms(
-          /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
-          /*count*/ 1,
-          /*prefix*/ '#',
-          /*suffix*/ '',
-        ) [0];
+        const [newNodeName] = genNodeNames (findSubnodeByPath(root, subnode));
 
         const newNode = [
           'node', newNodeName, replaceAll(assumptions, matchMap),
           replaceAll(conclusions, matchMap),
           // Fixed: Justification should be a list.
-          [axiomName], [] /*subs*/,
+          [axiom], [] /*subs*/,
         ];
 
         const links = [];
@@ -136,21 +125,33 @@ function tacticAxiom (root, hls, opts = {}) {
 
         const thisAns = {
           map: matchMap,
-          rule: axiomName,
+          extraArgs: generatedSyms,
+
+          axiom,
           ins: newNode[Ins],
           outs: newNode[Outs],
+
           subnode,
           addnodes: [
             newNode,
             ... links,
           ],
-          hls,
-          args: generatedSyms,
+          // new highlights: ?
         };
         matchList.push(thisAns);
       }
     }
+  }
 
+  if (matchList.length === 1) {
+    const ans = {success: true, matchList};
+    for (const x of Object.keys(matchList[0])) {
+      ans[x] = matchList[0][x];
+    }
+  } else if (matchList.length > 1) {
+    return {listen: true, matchList};
+  } else {
+    return {fail: true, reason: 'No matches found'};
   }
 }
 

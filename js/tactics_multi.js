@@ -55,7 +55,7 @@ function extendMatchMap(map, vars, avoids) {
 
 // Finds the "innermost" subnode from a list of paths.
 function findSubnodeFromPorts(nodesAndPorts) {
-  let ans = [];
+  let ans = ['#root'];    // Use root as default.
 
   for (const label of nodesAndPorts) {
     const trimlabel = [...label];
@@ -86,7 +86,7 @@ function findSubnodeByPath(node, path) {
 // Updates a module by adding elements into a subnode.
 function addToSubnode(node, path, newNodes) {
   // Debugging info
-  console.log("node is", node, "path is", path);
+  // console.log("node is", node, "path is", path);
 
   if (path.length <= 1) {
     if (node[Label] === path[0]) return [
