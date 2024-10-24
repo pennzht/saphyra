@@ -24,6 +24,8 @@ tacticRules = {
   'add-node-output': tacticAddNodeOutput,
   'rename-node': tacticRenameNode,
   'add-comment': tacticAddComment,
+  'use-forall': tacticUseForall,
+  'use-exists': tacticUseExists,
   'script': tacticScript,
 };
 
@@ -46,6 +48,8 @@ function runTacticRules () {
     'import-stmt',
     'impl-intro',
     'forall-intro',
+    'use-forall',
+    'use-exists',
     'axiom',
   ]) {
     const fn = tacticRules[key];
@@ -146,11 +150,11 @@ function tacticAxiom (root, hls, opts = {}) {
         const newHls = [
           ... [...highlightInputs].map((sexp) => ({
             path: [...subnode, newNodeName, 'in'],
-            sexp,
+            sexp: parseOne(sexp),
           })),
           ... [...highlightOutputs].map((sexp) => ({
             path: [...subnode, newNodeName, 'out'],
-            sexp,
+            sexp: parseOne(sexp),
           })),
         ];
 
@@ -216,9 +220,34 @@ function tacticAxiomCommit (matchObject, extraArgs) {
 
   // new highlights
 
-  for (const hl of matchObject.newHls) hl.sexp = str(replaceAll(parseOne(hl.sexp), rplcment));
+  for (const hl of matchObject.newHls) hl.sexp = replaceAll(hl.sexp, rplcment);
+
+  matchObject.success = true;
 
   return matchObject;
+}
+
+function tacticUseForall (root, hls, opts = {}) {
+  if (! opts.value) return {listen: true, requestArgs: {value: 'stmt'}};
+
+  const mr = tacticAxiom (root, hls, {axiom: 'forall-elim'});
+
+  if (mr.fail) return mr;
+
+  const holeName = mr.extraArgs[0];
+  tacticAxiomCommit (mr, {[holeName]: opts.value});
+
+  console.log (mr.newRoot, mr.newHls);
+
+  const betaReduced = tacticBetaEquiv (mr.newRoot, mr.newHls);
+
+  console.log ('beta reduced is', betaReduced);
+
+  return betaReduced;
+}
+
+function tacticUseExists (root, hls, opts = {}) {
+  return {fail: true};
 }
 
 function tacticImplIntro (root, hls, opts = {}) {
@@ -441,6 +470,9 @@ function tacticBetaEquiv (root, hls, opts = {}) {
   }
 
   const reduced = lambdaFullReduce(stmt);
+
+  console.log('statement is', stmt);
+  console.log('reduced is', reduced);
 
   if (eq (reduced, stmt)) return {fail: true, reason: 'no operation'};
 
