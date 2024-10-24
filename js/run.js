@@ -154,6 +154,81 @@ function updateState() {
     $('display').appendChild(ruleElement);
   }
 
+
+    // Set local storage.
+    /*
+  localStorage.setItem('state',
+                       JSON.stringify({
+                         tabs: [...state.tabs],
+                         currentTab: state.currentTab,
+                         highlighted: [...state.highlighted],
+                       })
+                      );
+    */
+
+  // Update div.
+  $('tab-display').innerHTML = '';
+  for (const [tabName, _] of state.tabs.entries()) {
+    const classes = tabName === state.currentTab ? 'tab selected' : 'tab';
+    const newTab = elem('div', {class: classes}, [
+      text(tabName),
+    ]);
+    newTab.onclick = (event) => {
+      state.currentTab = tabName;
+      console.log('switching to tab', tabName);
+      clearTransientState();
+      updateState();
+    }
+
+    $('tab-display').appendChild(newTab);
+  }
+
+  // Add new tab.
+  const addNewTabButton = elem('div', {class: 'tab', style: 'background-color: #eaeaea;'}, [text('+ Workspace')]);;
+  addNewTabButton.onclick = () => {
+    const tabName = gensyms([... state.tabs.keys()], 1, 'space_')[0];
+    state.tabs.set(tabName, tabInit(parseOne(emptyNode)));
+    state.currentTab = tabName;
+    clearTransientState();
+    updateState();
+  };
+  $('tab-display').appendChild(addNewTabButton);
+
+  const currentTabObj = state.tabs.get(state.currentTab);
+  const currentCode = currentTabObj[currentTabObj[0]];
+  execute(currentCode);
+
+  $('step-history').innerHTML = '';
+
+  const undoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('←')]);
+  undoButton.onclick = () => {
+    tabBack(currentTabObj);
+    clearTransientState();
+    updateState();
+  }
+  $('step-history').appendChild(undoButton);
+
+  const redoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('→')]);
+  redoButton.onclick = () => {
+    tabForward(currentTabObj);
+    clearTransientState();
+    updateState();
+  }
+  $('step-history').appendChild(redoButton);
+
+  for (let i = 1; i < currentTabObj.length; i++) {
+    const isCurrent = (i === currentTabObj[0]);
+    const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, [text('.')]);
+    stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; clearTransientState(); updateState();};
+    $('step-history').appendChild(stepControlBlock);
+  }
+
+  return;
+
+  ////////////////////////////////////////////////////////////////
+  // Below is legacy.                                           //
+  ////////////////////////////////////////////////////////////////
+
   // Find all matches for tactics.
   const allMatches = tacticsMultiMatchAll();
   // Sort by priority.
@@ -339,74 +414,6 @@ function updateState() {
         console.log('add-comment run', pprint(newRoot));
       }
     }
-  }
-
-    // Set local storage.
-    /*
-  localStorage.setItem('state',
-                       JSON.stringify({
-                         tabs: [...state.tabs],
-                         currentTab: state.currentTab,
-                         highlighted: [...state.highlighted],
-                       })
-                      );
-    */
-
-  // Update div.
-  $('tab-display').innerHTML = '';
-  for (const [tabName, _] of state.tabs.entries()) {
-    const classes = tabName === state.currentTab ? 'tab selected' : 'tab';
-    const newTab = elem('div', {class: classes}, [
-      text(tabName),
-    ]);
-    newTab.onclick = (event) => {
-      state.currentTab = tabName;
-      console.log('switching to tab', tabName);
-      clearTransientState();
-      updateState();
-    }
-
-    $('tab-display').appendChild(newTab);
-  }
-
-  // Add new tab.
-  const addNewTabButton = elem('div', {class: 'tab', style: 'background-color: #eaeaea;'}, [text('+ Workspace')]);;
-  addNewTabButton.onclick = () => {
-    const tabName = gensyms([... state.tabs.keys()], 1, 'space_')[0];
-    state.tabs.set(tabName, tabInit(parseOne(emptyNode)));
-    state.currentTab = tabName;
-    clearTransientState();
-    updateState();
-  };
-  $('tab-display').appendChild(addNewTabButton);
-
-  const currentTabObj = state.tabs.get(state.currentTab);
-  const currentCode = currentTabObj[currentTabObj[0]];
-  execute(currentCode);
-
-  $('step-history').innerHTML = '';
-
-  const undoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('←')]);
-  undoButton.onclick = () => {
-    tabBack(currentTabObj);
-    clearTransientState();
-    updateState();
-  }
-  $('step-history').appendChild(undoButton);
-
-  const redoButton = elem('div', {class: 'step-control-block', style: 'color: black;'}, [text('→')]);
-  redoButton.onclick = () => {
-    tabForward(currentTabObj);
-    clearTransientState();
-    updateState();
-  }
-  $('step-history').appendChild(redoButton);
-
-  for (let i = 1; i < currentTabObj.length; i++) {
-    const isCurrent = (i === currentTabObj[0]);
-    const stepControlBlock = elem('div', {class: 'step-control-block' + (isCurrent ? ' current-step' : '')}, [text('.')]);
-    stepControlBlock.onclick = () => {currentTabObj[0] = i + 0; clearTransientState(); updateState();};
-    $('step-history').appendChild(stepControlBlock);
   }
 }
 
