@@ -38,6 +38,7 @@ function runTacticRules () {
   const matchingRules = [];
 
   for (const key of /*Object.keys(tacticRules)*/ [
+    'add-node-input',
     'add-node-output',
     'add-join',
   ]) {
@@ -677,8 +678,8 @@ function tacticAddNodeInput (root, hls, opts = {}) {
     actions: nodes.map ((node) => 
       ({type: 'add-to-node', subnode: node, newInputs: [opts.stmt]})
     ),
-    newRoot: applyIOToSubnodes(root, nodes, /*rule*/null, [], [opts.stmt], /*newLabel*/null),
-    newHls: hls,
+    newRoot: applyIOToSubnodes(root, nodes, /*rule*/null, [opts.stmt], [], /*newLabel*/null),
+    newHls: nodes.map((node) => ({path: node.concat(['^a', 'out']), sexp: opts.stmt})),
   };
 }
 

@@ -82,6 +82,9 @@ function updateState() {
   for (const mr of matchingRules) {
     if (mr.fail) continue;
     const ruleElement = elem('div');
+
+    ruleElement.appendChild (elem ('div', {}, [text('Rule: ' + mr.rule)]));
+
     for (const arg of Object.keys(mr.requestArgs || {})) {
       const selection = elem('div');
       const argType = mr.requestArgs[arg];
