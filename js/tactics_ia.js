@@ -37,9 +37,10 @@ function runTacticRules () {
 
   const matchingRules = [];
 
-  for (const key of /*Object.keys(tacticRules)*/ ['replace-sub']) {
+  for (const key of /*Object.keys(tacticRules)*/ ['add-node-output']) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
+    ans.rule = key;  // Just in case
     matchingRules.push(ans);
     console.log ('Run result', key);
     console.log (JSON.stringify (ans, null, 2));
@@ -671,6 +672,8 @@ function tacticAddNodeInput (root, hls, opts = {}) {
     actions: nodes.map ((node) => 
       ({type: 'add-to-node', subnode: node, newInputs: [opts.stmt]})
     ),
+    newRoot: applyIOToSubnodes(root, nodes, /*rule*/null, [], [opts.stmt], /*newLabel*/null),
+    newHls: hls,
   };
 }
 
@@ -699,6 +702,8 @@ function tacticAddNodeOutput (root, hls, opts = {}) {
     actions: nodes.map ((node) => 
       ({type: 'add-to-node', subnode: node, newOutputs: [opts.stmt]})
     ),
+    newRoot: applyIOToSubnodes(root, nodes, /*rule*/null, [], [opts.stmt], /*newLabel*/null),
+    newHls: nodes.map((node) => ({path: node, sexp: opts.stmt})),
   };
 }
 
