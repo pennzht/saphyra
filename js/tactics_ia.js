@@ -37,7 +37,10 @@ function runTacticRules () {
 
   const matchingRules = [];
 
-  for (const key of /*Object.keys(tacticRules)*/ ['add-node-output']) {
+  for (const key of /*Object.keys(tacticRules)*/ [
+    'add-node-output',
+    'add-join',
+  ]) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
     ans.rule = key;  // Just in case
@@ -568,34 +571,30 @@ function tacticAddJoin (root, hls, opts = {}) {
     return {fail: true, reason: 'too few froms/tos'};
   }
 
-    const newNodeName = gensyms(
-      /*avoid*/ findSubnodeByPath(getCurrentRootNode(), subnode),
-      /*count*/ 1,
-      /*prefix*/ '#',
-      /*suffix*/ '',
-    ) [0];
+  const [newNodeName] = genNodeNames(findSubnodeByPath(root, subnode));
 
-    const newNode = [
-      'node', newNodeName,
-      /*ins*/ froms.map ((a) => a.sexp),
-      /*outs*/ tos.map ((a) => a.sexp),
-      ['join'], [] /*subs*/,
-    ];
+  const newNode = [
+    'node', newNodeName,
+    /*ins*/ froms.map ((a) => a.sexp),
+    /*outs*/ tos.map ((a) => a.sexp),
+    ['join'], [] /*subs*/,
+  ];
 
-    const getNodeName = (path) => {
-      if (['in', 'out'].includes(path[path.length - 1])) {
-        return path[path.length - 2];
-      } else return path[path.length - 1];
-    };
-    const fromLinks = froms.map ((a) => ['link', getNodeName(a.path), newNodeName, a.sexp]);
-    const toLinks = tos.map ((a) => ['link', newNodeName, getNodeName(a.path), a.sexp]);
+  const getNodeName = (path) => {
+    if (['in', 'out'].includes(path[path.length - 1])) {
+      return path[path.length - 2];
+    } else return path[path.length - 1];
+  };
+  const fromLinks = froms.map ((a) => ['link', getNodeName(a.path), newNodeName, a.sexp]);
+  const toLinks = tos.map ((a) => ['link', newNodeName, getNodeName(a.path), a.sexp]);
 
-    const addnodes = [newNode, ...fromLinks, ...toLinks];
+  const newNodes = [newNode, ...fromLinks, ...toLinks];
 
   return {
     success: true,
-    actions: [{type: 'add-to-node', subnode, added: addnodes}],
-    newHls: 0  /* TODO - add newHls */
+    actions: [{type: 'add-to-node', subnode, added: newNodes}],
+    newRoot: addToSubnode(root, subnode, newNodes),
+    newHls: [],  /* TODO - add newHls */
   };
 }
 
