@@ -703,6 +703,18 @@ function sexpWalk(sexp) {
   return pushTo;
 }
 
+function isPrefix (prefix, path) {
+  if (!(prefix.length <= path.length)) return false;
+
+  for (let i = 0; i < prefix.length; i++) {
+    if (prefix[i] !== path[i]) return false;
+  }
+
+  return true;
+}
+
+function isProperPrefix (prefix, path) { return prefix.length < path.length && isPrefix(prefix, path); }
+
 // Returns {success: true, map: map:{_A => ..., _B => ...}}
 if (false) {
   console.log (

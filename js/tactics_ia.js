@@ -41,6 +41,7 @@ function runTacticRules () {
     'add-node-input',
     'add-node-output',
     'add-join',
+    'import-stmt',
   ]) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
@@ -617,9 +618,60 @@ function tacticImportStmt (root, hls, opts = {}) {
   //     sees if the node path is between from.path[:-2] and nodes[0].path
   // And if yes, add this stmt as ^a, and add a link (in parent).
 
-  // TODO1020 - don't make a full copy. Make recursive.
-  const node = parseOne(str(getCurrentRootNode()));
+  const transformRoot = (node, path, recur) => {
+    // First, decide whether this node is affected.
+    if (! nodes.some ((n) => isPrefix(path, n))) return node;
 
+    const children = [];
+    for (const child of (node[Subs] || [])) {
+      // Process child and add to children.
+      if (child[0] !== 'node') {children.push(child); continue;}
+      path.push(child[Label]);
+      const childTr = recur (child, path, recur);
+      children.push(childTr);
+      path.pop();
+    }
+
+    // See if anything is needed for this.
+
+    const newInputs = [... node[Ins]];
+
+    for (const f of froms) {
+      // Do we need to add input to this node?
+      const fromParent = f.path.slice(0, f.path.length - 2);
+      if (isProperPrefix(fromParent, path)) newInputs.push(f.sexp);
+
+      // Do we need to add a link?
+      if (isPrefix(fromParent, path)) {
+        const upperLink = eq (fromParent, path) ? f.path.at(-2) : '^a';
+
+        // Determine which nodes need this link.
+        for (const n of nodes) {
+          const nshort = n.slice(0, path.length + 1);
+          if (isProperPrefix (path, nshort)) {
+            const lowerLink = nshort.at(path.length);  // nshort.at(-1);
+            children.push (['link', upperLink, lowerLink, f.sexp]);
+          }
+        }
+      }
+    }
+
+    return ['node', node[Label], newInputs, node[Outs], node[Just], children, node.slice(6)];
+  };
+
+  const newRoot = transformRoot (root, [root[Label]], transformRoot);
+
+  console.log('new root is', newRoot);
+
+  return {
+    success: true,
+    newRoot,
+    newHls: [],
+  };
+
+  ////////////////////////////////////////////////////////////////
+
+  /*
   for (const from of froms) {
     const path = from.path, stmt = from.sexp;
     const targetNode = nodes[0].path;
@@ -641,11 +693,11 @@ function tacticImportStmt (root, hls, opts = {}) {
 
         // If also not last: add link
         if (length < targetNode.length) {
-          n[Subs].push(['link', '^a', targetNode[length]/*next index*/, stmt]);
+          n[Subs].push(['link', '^a', targetNode[length] next index, stmt]);
         }
       } else {
         // Add special link for first.
-        n[Subs].push(['link', theoremIndex, targetNode[length]/*next index*/, stmt]);
+        n[Subs].push(['link', theoremIndex, targetNode[length] next index, stmt]);
       }
     }
   }
@@ -654,6 +706,7 @@ function tacticImportStmt (root, hls, opts = {}) {
     rule: 'import-stmt',
     newRoot: node,
   });
+  */
 }
 
 function tacticAddNodeInput (root, hls, opts = {}) {
