@@ -39,11 +39,12 @@ function runTacticRules () {
   const matchingRules = [];
 
   for (const key of /*Object.keys(tacticRules)*/ [
-    'axiom',
     'add-node-input',
     'add-node-output',
     'add-join',
     'import-stmt',
+    'impl-intro',
+    'axiom',
   ]) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
@@ -225,7 +226,7 @@ function tacticImplIntro (root, hls, opts = {}) {
     return {fail: true, reason: 'arg diff'};
   }
 
-  const newSym = '#' + Math.random();
+  const [newSym] = genNodeNames (findSubnodeByPath (root, subnode));
 
   const [_arrow, a, b] = tos[0].sexp;
 
@@ -248,14 +249,21 @@ function tacticImplIntro (root, hls, opts = {}) {
   const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], newSym, a.sexp]);
   const linksOut = tos.map((a) => ['link', newSym, a.path[a.path.length-2], a.sexp]);
 
+  const addedNodes = [implIntroNode, ...linksIn, ...linksOut];
+
+  const newHls = [];
+  for (const sexp of froms.map ((f) => f.sexp).concat([a])) {
+    newHls.push ({path: [...subnode, newSym, '#0', '^a', 'out'], sexp});
+  }
+  newHls.push ({path: [...subnode, newSym, '#0', '^c', 'in'], sexp: b});
+
   return {
     success: true,
     actions: [
-      {type: 'add-to-node', subnode, added: [implIntroNode, ...linksIn, ...linksOut]}
+      {type: 'add-to-node', subnode, added: addedNodes},
     ],
-    newHls: froms.map((f) => f.sexp).concat([a]).map((stmt) =>
-      [[...subnode, newSym, '#0', '^a', 'out'], stmt])
-      .concat([[...subnode, newSym, '#0', '^c', 'in'], b]),
+    newRoot: addToSubnode (root, subnode, addedNodes),
+    newHls,
   };
 }
 
