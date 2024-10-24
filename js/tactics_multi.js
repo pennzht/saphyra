@@ -441,3 +441,9 @@ function parseHls (root, hls) {
 
   return [froms, tos, nodePaths, subnode];
 }
+
+function genNodeNames (node, count = 1) {
+  // Generates a new node name that is not used in a sub of this node.
+  const subNames = node[Subs].filter((n) => n[0] === 'node').map((n) => n[Label]);
+  return gensyms (/*avoid*/ subNames, count, '#');
+}
