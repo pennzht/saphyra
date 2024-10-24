@@ -44,6 +44,7 @@ function runTacticRules () {
     'add-join',
     'import-stmt',
     'impl-intro',
+    'forall-intro',
     'axiom',
   ]) {
     const fn = tacticRules[key];
@@ -227,7 +228,6 @@ function tacticImplIntro (root, hls, opts = {}) {
   }
 
   const [newSym] = genNodeNames (findSubnodeByPath (root, subnode));
-
   const [_arrow, a, b] = tos[0].sexp;
 
   // Construct an impl-intro node.
@@ -274,18 +274,13 @@ function tacticForallIntro (root, hls, opts = {}) {
     return {fail: true, reason: 'arg diff'};
   }
 
-  const m = simpleMatch(
-    ['forall', '_P'], tos[0].sexp
-  );
+  const [newSym] = genNodeNames (findSubnodeByPath (root, subnode));
 
-  if (! m.success) {
-    return {fail: true, reason: 'not a forall stmt'};
-  }
+  const m = simpleMatch( ['forall', '_P'], tos[0].sexp );
+  if (! m.success) return {fail: true, reason: 'not a forall stmt'};
 
   const p = m.map.get('_P');
   const lamMatch = simpleMatch([':', '_v', '_body'], p);
-
-  const twoLevel = lamMatch.success;
 
   const joinNode = [
     'node', '#0',
@@ -294,7 +289,9 @@ function tacticForallIntro (root, hls, opts = {}) {
     ['join'],
     [],
   ];
-  
+
+  let resolvedStmt = joinNode[Outs][0];
+
   if (lamMatch.success) {
     const v = lamMatch.map.get('_v');
     const [n, typ] = nameAndTypeString(v);
@@ -307,33 +304,48 @@ function tacticForallIntro (root, hls, opts = {}) {
       v2 = gensyms (avoids, 1, n, ':'+typ)[0];
     } // otherwise, v2 = v.
 
+    // If given, use it.
+    if (opts.varName) v2 = opts.varName;
+
     // Replaces out with actual variable.
     joinNode[Outs][0] = [p, v2];
 
     // Adds beta-replaced, then link.
     const beta = lambdaFullReduce([p, v2]);
+    resolvedStmt = beta;
     joinNode[Subs].push(['node', '#b', [beta], [[p, v2]], ['beta-equiv'], []]);
     joinNode[Subs].push(['link', '#b', '^c', [p, v2]]);
   }
 
   const innerNode = [
-    'node', '#'+Math.random(),
+    'node', newSym,
     froms.map((a) => a.sexp),
     tos.map((a) => a.sexp),
     ['forall-intro'],
     // Subs: [join].
     [joinNode],
   ];
+
+  const newHls = froms.map ((a) => ({path: [...subnode, innerNode[Label], joinNode[Label], '^a', 'out'], sexp: a.sexp}));
+  if (lamMatch.success) {
+    newHls.push ({path: [...subnode, innerNode[Label], joinNode[Label], '#b', 'in'], sexp: resolvedStmt});
+  } else {
+    newHls.push ({path: [...subnode, innerNode[Label], joinNode[Label], '^c', 'in'], sexp: resolvedStmt});
+  }
+
   const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
   const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
+
+  const addedNodes = [innerNode, ...linksIn, ...linksOut];
 
   return {
     success: true,
     actions: [
-      {type: 'add-to-node', subnode, added: [innerNode, ...linksIn, ...linksOut]}
+      {type: 'add-to-node', subnode, added: addedNodes}
     ],
-    newHls: [], /* TODO - add new highlights*/
-    requestArgs: {varName: 'string'},
+    newRoot: addToSubnode (root, subnode, addedNodes),
+    newHls,
+    requestArgs: {varName: 'stmt'},
   };
 }
 
