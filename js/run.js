@@ -74,7 +74,6 @@ function updateState() {
   // Prints state for debugging.
   console.log('Current state is', state);
 
-  // TODO1022 - add interactivity for actions.
   const matchingRules = runTacticRules ();
 
   $('display').innerHTML = '';
@@ -84,6 +83,15 @@ function updateState() {
     const ruleElement = elem('div');
 
     ruleElement.appendChild (elem ('div', {}, [text('Rule: ' + mr.rule)]));
+
+    if (mr.rule === 'axiom') {
+      ruleElement.appendChild (elem('div', {}, [text('Axiom: ' + mr.axiom)]));
+      const newDiv = elem('div');
+      for (const i of mr.ins) newDiv.appendChild(infixFormat(i, /*wrap*/true));
+      newDiv.appendChild(text('→'));
+      for (const o of mr.outs) newDiv.appendChild(infixFormat(o, /*wrap*/true));
+      ruleElement.appendChild(newDiv);
+    }
 
     for (const arg of Object.keys(mr.requestArgs || {})) {
       const selection = elem('div');

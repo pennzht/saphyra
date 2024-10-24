@@ -46,6 +46,15 @@ function runTacticRules () {
   ]) {
     const fn = tacticRules[key];
     const ans = fn (root, hls);
+
+    // Special case for axiom multiple results.
+
+    if (key === 'axiom' && ans.matchList) {
+      // Multiple matches found.
+      for (const x of ans.matchList) matchingRules.push(x);
+      continue;
+    }
+
     ans.rule = key;  // Just in case
     matchingRules.push(ans);
     console.log ('Run result', key);
@@ -141,9 +150,14 @@ function tacticAxiom (root, hls, opts = {}) {
           })),
         ];
 
+        const requestArgs = {};
+        for (const sym of generatedSyms) requestArgs[sym] = 'sexp';
+
         const thisAns = {
+          rule: 'axiom',
           map: matchMap,
           extraArgs: generatedSyms,
+          requestArgs,
 
           axiom,
           ins: newNode[Ins],
@@ -157,16 +171,26 @@ function tacticAxiom (root, hls, opts = {}) {
           ],
           // new highlights: ?
         };
+
+        if (generatedSyms.length <= 0) {
+          thisAns.success = true;
+        } else {
+          thisAns.listen = true;
+        }
+
         matchList.push(thisAns);
       }
     }
   }
 
   if (matchList.length === 1) {
+    return matchList[0];
+    /*
     const ans = {success: true, matchList};
     for (const x of Object.keys(matchList[0])) {
       ans[x] = matchList[0][x];
     }
+    */
   } else if (matchList.length > 1) {
     return {listen: true, matchList};
   } else {
