@@ -129,15 +129,26 @@ function updateState() {
     submitButton.onclick = () => {
       const inputs = ruleElement.querySelectorAll('input');
       const selectedArgs = mr.rule === 'axiom' ? mr : {rule: mr.rule};
-      const axiomReplacements = {};
+
+      if (mr.rule === 'axiom') {
+        // Try apply. Otherwise, replace and apply.
+        if (mr.success) {
+          setCurrentRootNode(mr.newRoot);
+          state.highlighted = new Set(mr.newHls.map ((hl) => str(hl.path) + ' ' + str(hl.sexp)));
+          updateState();
+        } else {
+          const axiomReplacements = {};
+          for (const input of inputs) axiomReplacements[input.dataset.group] = infixParse(input.value);
+          tacticAxiomCommit (mr, axiomReplacements);
+          setCurrentRootNode(mr.newRoot);
+          state.highlighted = new Set(mr.newHls.map ((hl) => str(hl.path) + ' ' + str(hl.sexp)));
+          updateState();
+        }
+        return;
+      }
 
       for (const input of inputs) {
         if (input.getAttribute('type') === 'button') continue;
-
-        if (mr.rule === 'axiom') {
-          axiomReplacements[input.dataset.group] = infixParse(input.value);
-          continue;
-        }
 
         if (input.dataset.type == 'oneof') {
           if (input.checked) selectedArgs[input.dataset.group] = input.getAttribute('value');
@@ -147,9 +158,7 @@ function updateState() {
           selectedArgs[input.dataset.group] = input.value;
         }
       }
-      console.log(JSON.stringify(selectedArgs, axiomReplacements, null, 2));
-
-      // TODO1020 - continue here
+      console.log(JSON.stringify(selectedArgs, null, 2));
 
       const applicationResult = tacticApplyRule (getCurrentRootNode(), [...state.highlighted].map(parse).map((pair) => {
         return ({

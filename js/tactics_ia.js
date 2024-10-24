@@ -138,7 +138,7 @@ function tacticAxiom (root, hls, opts = {}) {
         const highlightOutputs = new Set(newNode[Outs].map(str));
 
         for (const f of froms) highlightInputs.delete(str(f.sexp));
-        for (const t of tos) highlightInputs.delete(str(t.sexp));
+        for (const t of tos) highlightOutputs.delete(str(t.sexp));
 
         const newHls = [
           ... [...highlightInputs].map((sexp) => ({
@@ -170,6 +170,7 @@ function tacticAxiom (root, hls, opts = {}) {
             newNode,
             ... links,
           ],
+          root,
           newRoot: addToSubnode (root, subnode, [newNode, ...links]),
         };
 
@@ -208,6 +209,11 @@ function tacticAxiomCommit (matchObject, extraArgs) {
   matchObject.ins = replaceAll (matchObject.ins, rplcment);
   matchObject.outs = replaceAll (matchObject.outs, rplcment);
   matchObject.addnodes = replaceAll (matchObject.addnodes, rplcment);
+  matchObject.newRoot = addToSubnode (matchObject.root, matchObject.subnode, matchObject.addnodes);
+
+  // new highlights
+
+  for (const hl of matchObject.newHls) hl.sexp = str(replaceAll(parseOne(hl.sexp), rplcment));
 
   return matchObject;
 }
