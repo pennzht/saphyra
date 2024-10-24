@@ -608,49 +608,52 @@ function tacticAddJoin (root, hls, opts = {}) {
 function tacticImportStmt (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
-  // need: froms > 0, nodes > 0
-  if (froms.length > 0 && nodes.length === 1) {
-    // Goes to 'subnode', and for every subnode of it,
-    //     sees if the node path is between from.path[:-2] and nodes[0].path
-    // And if yes, add this stmt as ^a, and add a link (in parent).
+  if (froms.length <= 0 || nodes.length <= 0) {
+    // No statements to import, or nowhere to import it to.
+    return {fail: true, reason: 'No input or no node provided.'};
+  }
 
-    const node = parseOne(str(getCurrentRootNode()));
+  // Goes to 'subnode', and for every subnode of it,
+  //     sees if the node path is between from.path[:-2] and nodes[0].path
+  // And if yes, add this stmt as ^a, and add a link (in parent).
 
-    for (const from of froms) {
-      const path = from.path, stmt = from.sexp;
-      const targetNode = nodes[0].path;
+  // TODO1020 - don't make a full copy. Make recursive.
+  const node = parseOne(str(getCurrentRootNode()));
 
-      const theoremParentPath = path.slice(0, path.length - 2);
-      const theoremIndex = path[path.length - 2];
+  for (const from of froms) {
+    const path = from.path, stmt = from.sexp;
+    const targetNode = nodes[0].path;
 
-      for (let length = theoremParentPath.length;
-           length <= targetNode.length;
-           length++) {
-        const currentPath = targetNode.slice(0, length);
-        console.log('import-stmt, at', currentPath);
+    const theoremParentPath = path.slice(0, path.length - 2);
+    const theoremIndex = path[path.length - 2];
 
-        const n = findSubnodeByPath (node, currentPath);
+    for (let length = theoremParentPath.length;
+         length <= targetNode.length;
+         length++) {
+      const currentPath = targetNode.slice(0, length);
+      console.log('import-stmt, at', currentPath);
 
-        // If not first: add input.
-        if (length > theoremParentPath.length) {
-          n[Ins].push(stmt);
+      const n = findSubnodeByPath (node, currentPath);
 
-          // If also not last: add link
-          if (length < targetNode.length) {
-            n[Subs].push(['link', '^a', targetNode[length]/*next index*/, stmt]);
-          }
-        } else {
-          // Add special link for first.
-          n[Subs].push(['link', theoremIndex, targetNode[length]/*next index*/, stmt]);
+      // If not first: add input.
+      if (length > theoremParentPath.length) {
+        n[Ins].push(stmt);
+
+        // If also not last: add link
+        if (length < targetNode.length) {
+          n[Subs].push(['link', '^a', targetNode[length]/*next index*/, stmt]);
         }
+      } else {
+        // Add special link for first.
+        n[Subs].push(['link', theoremIndex, targetNode[length]/*next index*/, stmt]);
       }
     }
-
-    ans.push({
-      rule: 'import-stmt',
-      newRoot: node,
-    });
   }
+
+  ans.push({
+    rule: 'import-stmt',
+    newRoot: node,
+  });
 }
 
 function tacticAddNodeInput (root, hls, opts = {}) {
