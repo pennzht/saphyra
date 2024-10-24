@@ -42,6 +42,7 @@ function runTacticRules () {
     'add-node-input',
     'add-node-output',
     'add-join',
+    'beta-equiv',
     'import-stmt',
     'impl-intro',
     'forall-intro',
@@ -420,9 +421,9 @@ function tacticBetaEquiv (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
   // need: froms + tos = 1
-  if (froms.length + tos.length !== 1) {
-    return {fail: true, reason: 'arg diff'};
-  }
+  if (froms.length + tos.length !== 1) return {fail: true, reason: 'arg diff'};
+
+  const [newSym] = genNodeNames (findSubnodeByPath (root, subnode));
 
   let downward, stmt, parentNode, port;
   if (froms.length > 0) {
@@ -441,12 +442,10 @@ function tacticBetaEquiv (root, hls, opts = {}) {
 
   const reduced = lambdaFullReduce(stmt);
 
-  if (eq (reduced, stmt)) {
-    return {fail: true, reason: 'no operation'};
-  }
+  if (eq (reduced, stmt)) return {fail: true, reason: 'no operation'};
 
   const newNode = [
-    'node', '#'+Math.random(),
+    'node', newSym,
     /*ins*/ [downward ? stmt : reduced],
     /*outs*/ [downward ? reduced : stmt],
     /*justification*/ ['beta-equiv'],
@@ -459,16 +458,19 @@ function tacticBetaEquiv (root, hls, opts = {}) {
     downward ? newNode[Label] : port,
     stmt,
   ];
-  
+
+  const newHls = [{
+    path: [...subnode, newNode[Label], downward ? 'out' : 'in'],
+    sexp: reduced,
+  }];
+
   return {
     success: true,
     actions: [
       {type: 'add-to-node', subnode, added: [newNode, link]}
     ],
-    newHls: [
-      [...subnode, newNode[Label], downward ? 'out' : 'in'],
-      stmt,
-    ],
+    newRoot: addToSubnode (root, subnode, [newNode, link]),
+    newHls,
   };
 }
 
