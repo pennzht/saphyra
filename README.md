@@ -3,6 +3,8 @@ Saphyra
 
 Beautiful mathematics at your fingertips.
 
+![Screenshot](https://mage-of-the-east.com/saphyra/docs/img/proofnode-1.png)
+
 Overview
 ---
 
