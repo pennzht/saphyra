@@ -17,7 +17,7 @@ Visit [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) to explo
 Foundations
 ---
 
-Currently Saphyra is built on a foundation of higher-order logic and peano arithmetic, but it can be adjusted (in the future) to use other rulesets, such as set theory. The axioms can be found in [axioms.js](https://github.com/pennzht/saphyra/blob/main/js/axioms.js).
+Currently Saphyra is built on a foundation of higher-order logic and Peano arithmetic, but it can be adjusted to use other rulesets, such as set theory. The axioms can be found in [axioms.js](https://github.com/pennzht/saphyra/blob/main/js/axioms.js).
 
 Each proof or collection of proofs is a __node__. A node may have inputs, outputs, and subnodes, representing a conditional truth that if all inputs hold, and if all subnodes are valid, then all outputs hold. In a sense, a node is similar to a sequent, and subnodes are other sequents which the parent node depends on. Unlike a sequent, a node's outputs are conjunctive instead of disjunctive.
 
