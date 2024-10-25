@@ -609,10 +609,71 @@ function tacticReplaceSub (root, hls, opts = {}) {
     };
   }
 
-  // Test only.
+  // readyToApply
+  {
+    opts.vars = opts.vars || [];  // Empty var application
+    opts.occurrenceIndex = parseInt(opts.occurrenceIndex || '0', 10);  // Apply to first if unspecified.
+    
+    // Replace values with infix-parse, allowing _x to be interpreted as _x:O and similar
+    for (const elem of opts.vars) {
+      elem[0] = infixParse(str(elem[0]));
+      elem[1] = infixParse(str(elem[1]));
+    }
 
-  console.log ('opts are', opts);
-  return {listen: true};
+    console.log ('opts are', opts);
+
+    // Find which theorem it is.
+    const [_type, axiomNameOrPath, freeVarsList, lhs, rhs] = namedTargets.get(opts.axiomOrTheorem);
+    const fromSexp = opts.inverse ? rhs : lhs;
+    const toSexp = opts.inverse ? lhs : rhs;
+
+    const freeVars = new Set(freeVarsList);
+    // use replaceAll(sexp, map)
+    const fromSexpRepl = replaceAll(fromSexp, new Map(opts.vars));
+    const toSexpRepl = replaceAll(toSexp, new Map(opts.vars));
+
+    for (const [a, b] of opts.vars.entries()) freeVars.delete(a);
+    const replaceableVars = [... freeVars];
+
+    console.log ('Replaceable vars are', replaceableVars);
+
+    // Walk the tree for matchings
+    
+    let matchingIndex = 0;
+
+    for (const [indices, subsexp] of sexpWalk(stmt)) {
+      const m = simpleMatch(fromSexpRepl, subsexp, replaceableVars);
+      if (m.success) {
+
+        // Only use the [occurrenceIndex]th index.
+        if (matchingIndex !== opts.occurrenceIndex) {
+          matchingIndex ++; continue;
+        }
+
+        const matchingMap = m.map;
+        for (const [a, b] of opts.vars) {matchingMap.set(a, b);}
+
+        const fromSexpFinal = replaceAll(fromSexp, matchingMap);
+        const toSexpFinal = replaceAll(toSexp, matchingMap);
+
+        const finalVars = freeVarsList.map ((fv) => matchingMap.get(fv));
+
+        console.log (`replacing ${str(fromSexpFinal)} with ${str(toSexpFinal)} at ${indices} with maps ${str([...matchingMap])}`);
+
+        const stmtType = typeToString (getType (fromSexpFinal));
+        const [lambdaHoleVar] = gensyms(stmt, 1, '_lh', ':' + stmtType);
+
+        const lambdaHole = replaceByPath(stmt, indices, lambdaHoleVar);
+        const newStmt = replaceByPath(stmt, indices, toSexpFinal);
+
+        console.log (`lambdaHole = ${str(lambdaHole)}; newStmt = ${str(newStmt)}.`);
+
+        // TODO1020 - add new nodes.
+
+        return {listen: true, reason: 'test-only'};
+      }
+    }
+  } // closes readyToApply
 }
 
 // Previous version of `tacticReplaceSub`.
