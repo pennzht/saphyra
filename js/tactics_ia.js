@@ -666,11 +666,90 @@ function tacticReplaceSub (root, hls, opts = {}) {
         const lambdaHole = replaceByPath(stmt, indices, lambdaHoleVar);
         const newStmt = replaceByPath(stmt, indices, toSexpFinal);
 
+        const lambda = [':', lambdaHoleVar, lambdaHole];
+
+        const newStmtRedux = [lambda, toSexpFinal];
+        const oldStmtRedux = [lambda, fromSexpFinal];
+
+        const equalityNode = ['=', newStmtRedux, oldStmtRedux];
+        const termEqualityNode = ['=', toSexpFinal, fromSexpFinal];
+
         console.log (`lambdaHole = ${str(lambdaHole)}; newStmt = ${str(newStmt)}.`);
 
-        // TODO1020 - add new nodes.
+        // Compose nodes
 
-        return {listen: true, reason: 'test-only'};
+        const joinRoot = tacticAddJoin(root, hls, {folded: true});
+        const joinNodePath = joinRoot.newNodePath;
+
+        // Add new output to node
+
+        const expandedLambda = tacticAddNodeInput (
+          joinRoot.newRoot,
+          [{path: joinNodePath, sexp: '--fullnode--'}],
+          {stmt:newStmt},
+        );
+
+        // Link it up.
+
+        let newRoot = expandedLambda.newRoot;
+        let exposedPath = null;
+
+        if (_type === 'axiom') {
+          // TODO1020 - add =-sym IF AND ONLY IF not reversed.
+
+          const addNodes = [
+            ['node', '#ax', [], [termEqualityNode], [axiomNameOrPath], []],
+          ];
+          exposedPath = [...joinNodePath, '#ax', 'out'];
+
+          if (! opts.inverse) {
+            // Add sym.
+            const flippedEqualityNode = ['=', fromSexpFinal, toSexpFinal];
+            addNodes[0][Outs] = [flippedEqualityNode];
+            addNodes.push (['node', '#sym', [flippedEqualityNode], [termEqualityNode], ['=-sym'], []]);
+            addNodes.push (['link', '#ax', '#sym', flippedEqualityNode]);
+            exposedPath = [...joinNodePath, '#sym', 'out'];
+          }
+
+          newRoot = addToSubnode (newRoot, joinNodePath, addNodes);
+        } else {
+          
+        }
+
+        const eqDim = tacticAxiom (
+          newRoot,
+          [{path: exposedPath, sexp: termEqualityNode}],
+          {axiom: '=-elim'}
+        );
+        tacticAxiomCommit (eqDim, {'_?P0': lambda});
+
+        newRoot = eqDim.newRoot;
+
+        // eqDim now contains two unsimplified beta reduxes.
+        const [upperReduxHl] = eqDim.newHls.filter ((a) => a.path.at(-1) === 'in');
+        const [lowerReduxHl] = eqDim.newHls.filter ((a) => a.path.at(-1) === 'out');
+
+        const addingUpperBeta = tacticBetaEquiv (newRoot, [upperReduxHl]);
+
+        newRoot = addingUpperBeta.newRoot;
+        const [upperStmtHl] = addingUpperBeta.newHls;
+
+        const addingLowerBeta = tacticBetaEquiv (newRoot, [lowerReduxHl]);
+
+        newRoot = addingLowerBeta.newRoot;
+        const [lowerStmtHl] = addingLowerBeta.newHls;
+
+        // Link resolved statements.
+
+        newRoot = addToSubnode (newRoot, joinNodePath, [
+          ['link', '^a', upperStmtHl.path.at(-2), upperStmtHl.sexp],
+          ['link', lowerStmtHl.path.at(-2), '^c', lowerStmtHl.sexp],
+        ]);
+
+        expandedLambda.newRoot = newRoot;
+        expandedLambda.newHls = froms.concat([{path: joinNodePath.concat(['in']), sexp: newStmt}]);
+
+        return expandedLambda;
       }
     }
   } // closes readyToApply
@@ -865,7 +944,8 @@ function tacticAddJoin (root, hls, opts = {}) {
     'node', newNodeName,
     /*ins*/ froms.map ((a) => a.sexp),
     /*outs*/ tos.map ((a) => a.sexp),
-    ['join'], [] /*subs*/,
+    opts.folded ? ['join', 'folded'] : ['join'],
+    [] /*subs*/,
   ];
 
   const getNodeName = (path) => {
@@ -887,6 +967,8 @@ function tacticAddJoin (root, hls, opts = {}) {
   return {
     success: true,
     actions: [{type: 'add-to-node', subnode, added: newNodes}],
+    newNodeName,
+    newNodePath: [...subnode, newNodeName],
     newRoot: addToSubnode(root, subnode, newNodes),
     newHls,
   };
