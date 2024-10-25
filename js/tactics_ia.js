@@ -44,6 +44,7 @@ function runTacticRules () {
     'add-node-input',
     'add-node-output',
     'add-join',
+    'replace-sub',
     'beta-equiv',
     'import-stmt',
     'impl-intro',
@@ -590,10 +591,28 @@ function tacticReplaceSub (root, hls, opts = {}) {
     }
   }  
 
-  // A list of matching results.
-  const matchingResults = [];
+  // don't match results directly; but provide args so users can apply them.
 
-  // TODO1020 - don't match results directly; but provide args so users can apply them.
+  if (! opts.axiomOrTheorem) {
+    return {
+      listen: true,
+      rule: 'replace-sub',
+      targetNode, stmt,
+      fromNodes: froms.map((a) => a.path),
+      namedTargets: [... namedTargets],
+      requestArgs: {
+        axiomOrTheorem: ['oneof', ... namedTargets.keys()],
+        inverse: 'bool',
+        vars: 'sexp',
+        occurrenceIndex: 'int',
+      },
+    };
+  }
+
+  // Test only.
+
+  console.log ('opts are', opts);
+  return {listen: true};
 }
 
 // Previous version of `tacticReplaceSub`.

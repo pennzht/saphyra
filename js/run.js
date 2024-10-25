@@ -115,6 +115,17 @@ function updateState() {
         selection.appendChild(dispBack);
 
         inputField.oninput = (e) => {dispBack.innerHTML = ''; dispBack.appendChild(infixFormat(infixParse(inputField.value)));}
+      } else if (argType === 'sexp') {
+        // Input box
+        const inputField = elem('input', {type: 'text', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
+        const inputLabel = elem('label', {'for': inputField.getAttribute('id')}, [text(arg + ' ')]);
+        selection.appendChild(inputLabel);
+        selection.appendChild(inputField);
+      } else if (argType === 'bool') {
+        const inputField = elem('input', {type: 'checkbox', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
+        const inputLabel = elem('label', {'for': inputField.getAttribute('id')}, [text(arg + ' ')]);
+        selection.appendChild(inputLabel);
+        selection.appendChild(inputField);
       } else {
         // Input box
         const inputField = elem('input', {type: 'text', id: 'mr-' + mr.rule + ':' + arg, 'data-group': arg, 'data-type': argType});
@@ -157,6 +168,13 @@ function updateState() {
             // nonempty
             selectedArgs[input.dataset.group] = infixParse(input.value);
           } // otherwise, don't set value
+        } else if (input.dataset.type == 'sexp') {
+          if (input.value.trim()) {
+            // nonempty
+            selectedArgs[input.dataset.group] = parse(input.value);
+          } // otherwise, don't set value
+        } else if (input.dataset.type == 'bool') {
+          selectedArgs[input.dataset.group] = input.checked;
         } else {
           selectedArgs[input.dataset.group] = input.value;
         }
