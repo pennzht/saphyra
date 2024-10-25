@@ -22,6 +22,7 @@ tacticRules = {
   'import-stmt': tacticImportStmt,
   'add-node-input': tacticAddNodeInput,
   'add-node-output': tacticAddNodeOutput,
+  'add-node-helper': tacticAddNodeHelper,
   'rename-node': tacticRenameNode,
   'add-comment': tacticAddComment,
   'use-forall': tacticUseForall,
@@ -43,6 +44,7 @@ function runTacticRules () {
   for (const key of /*Object.keys(tacticRules)*/ [
     'add-node-input',
     'add-node-output',
+    'add-node-helper',
     'add-join',
     'replace-sub',
     'beta-equiv',
@@ -1189,6 +1191,8 @@ function tacticAddNodeHelper (root, hls, opts = {}) {
     };
   }
 
+  const stmt = opts.stmt;
+
   const newNodeName = gensyms(
     /*avoid*/ findSubnodeByPath(root, nodes[0]),
     /*count*/ 1,
@@ -1203,6 +1207,8 @@ function tacticAddNodeHelper (root, hls, opts = {}) {
     actions: nodes.map ((node) => 
       ({type: 'add-to-node', subnode: node, added: [idBlock]})
     ),
+    newRoot: addToSubnode (root, subnode, [idBlock]),
+    newHls: [{path: [...subnode, newNodeName], stmt: stmt}],
   };
 }
 
