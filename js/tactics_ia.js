@@ -529,21 +529,80 @@ function tacticBetaEquiv (root, hls, opts = {}) {
 }
 
 function tacticReplaceSub (root, hls, opts = {}) {
+  // Current implementation of tactic replace-sub.
+  
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
+  if (tos.length !== 1) return {fail: true, reason: 'arg diff'};
 
-  if (tos.length !== 1) {
-    return {fail: true, reason: 'arg diff'};
-  }
-
-  // <skip> find accessible stmts at each level
-  //     - add to toposort: list descendants of a special node
-  //     - see also: findMatchingPaths in tactics_multi.js
-  //     - use only chosen "in" stmts + axioms
   // For now: only consider upwards-reasoning (start from goal)
   // opts.rule: [axiom axiom-name] or [path [...path]]
   // opts.direction: -> / <-
   // opts.vars: Map([varname, varreplace])
   // opts.occurrenceIndex: 0, 1, 2, 3, ... ("replace the Nth index of ... with these vars")
+
+  const target = tos[0];
+  const stmt = target.sexp;
+  const targetNode = subnode;  // Since we're handling only one node now, the node is the subnode.
+
+  // Name available targets. Equational only.
+  const namedTargets = new Map();  // targetName => [axiom axiom-name ∀-vars lhs rhs] or [path [...path] ∀-vars lhs rhs]
+  if ('List named targets') {
+    for (const [axiomName, [vars, ins, outs]] of allAxiomsMap.entries()) {
+      if (! (ins.length === 0 && outs.length === 1 && outs[0][0] === '=')) continue;
+
+      // Skips trivial axiom (for now).
+      if (axiomName === '=-intro') continue;
+
+      namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2]]);
+    }
+
+    // Give a name to each listed input.
+
+    for (const condition of froms) {
+      // Checks if `condition` is a universal equality; skips if it isn't one.
+      const vars = [];
+      let body = condition.sexp;
+      while (body[0] === 'forall') {
+        const match = simpleMatch (['forall', [':', '_var', '_body']], body);
+        if (! match.success) break;
+
+        vars.push (match.map.get('_var'));
+        body = match.map.get('_body');
+      }
+
+      if (body[0] !== '=') continue;
+
+      const [_eq, lhs, rhs] = body;
+
+      let ruleName = condition.path.at(-2);
+      // Gensym in namedTargets.
+      if (namedTargets.has(ruleName)) {
+        // Create new name
+        ruleName = gensyms (
+          /*avoid*/ [...namedTargets.keys()],
+          /*count*/ 1,
+          /*prefix*/ ruleName + '_',  /*suffix = ''*/
+        );
+      }
+
+      // Add to named targets
+      namedTargets.set(ruleName, ['path', condition.path, vars, lhs, rhs]);
+    }
+  }  
+
+  // A list of matching results.
+  const matchingResults = [];
+
+  // TODO1020 - don't match results directly; but provide args so users can apply them.
+}
+
+// Previous version of `tacticReplaceSub`.
+function tacticReplaceSubOutdated (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (tos.length !== 1) {
+    return {fail: true, reason: 'arg diff'};
+  }
 
   const target = tos[0];
   const stmt = target.sexp;
