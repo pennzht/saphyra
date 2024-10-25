@@ -48,6 +48,7 @@ function runTacticRules () {
     'import-stmt',
     'impl-intro',
     'forall-intro',
+    'exists-elim',
     'use-forall',
     'use-exists',
     'axiom',
@@ -386,15 +387,13 @@ function tacticExistsElim (root, hls, opts = {}) {
     return {fail: true, reason: 'too few froms'};
   }
 
-  const m = simpleMatch(
-    ['exists', '_P'], froms[0].sexp
-  );
+  const [newSym] = genNodeNames (findSubnodeByPath (root, subnode));
 
-  if (! m.success) {
-    return {fail: true, reason: 'not an exists stmt'};
-  }
+  const m = simpleMatch( ['exists', '_P'], froms[0].sexp );
+  if (! m.success) return {fail: true, reason: 'not an exists stmt'};
 
   const p = m.map.get('_P');
+  const lamMatch = simpleMatch([':', '_v', '_body'], p);
 
   const joinNode = [
     'node', '#0',
@@ -404,7 +403,8 @@ function tacticExistsElim (root, hls, opts = {}) {
     [],
   ];
   
-  const lamMatch = simpleMatch([':', '_v', '_body'], p);
+  let resolvedStmt = joinNode[Ins][0];
+
   if (lamMatch.success) {
     const v = lamMatch.map.get('_v');
     const [n, typ] = nameAndTypeString(v);
@@ -417,33 +417,55 @@ function tacticExistsElim (root, hls, opts = {}) {
       v2 = gensyms (avoids, 1, n, ':'+typ)[0];
     } // otherwise, v2 = v.
 
+    // If given, use it.
+    if (opts.varName) v2 = opts.varName;
+
     // Replaces out with actual variable.
     joinNode[Ins][0] = [p, v2];
 
     // Adds beta-replaced, then link.
     const beta = lambdaFullReduce([p, v2]);
+    resolvedStmt = beta;
     joinNode[Subs].push(['node', '#b', [[p, v2]], [beta], ['beta-equiv'], []]);
     joinNode[Subs].push(['link', '^a', '#b', [p, v2]]);
   }
 
   const innerNode = [
-    'node', '#'+Math.random(),
+    'node', newSym,
     froms.map((a) => a.sexp),
     tos.map((a) => a.sexp),
     ['exists-elim'],
     // Subs: [join].
     [joinNode],
   ];
+
+  const newHls = froms.slice(1).map ((a) => ({path: [...subnode, innerNode[Label], joinNode[Label], '^a', 'out'], sexp: a.sexp}));
+  if (lamMatch.success) {
+    newHls.push ({path: [...subnode, innerNode[Label], joinNode[Label], '#b', 'out'], sexp: resolvedStmt});
+  } else {
+    newHls.push ({path: [...subnode, innerNode[Label], joinNode[Label], '^a', 'out'], sexp: resolvedStmt});
+  }
+
   const linksIn = froms.map((a) => ['link', a.path[a.path.length-2], innerNode[Label], a.sexp]);
   const linksOut = tos.map((a) => ['link', innerNode[Label], a.path[a.path.length-2], a.sexp]);
-  ans.push ({
+
+  const addedNodes = [innerNode, ...linksIn, ...linksOut];
+
+  return {
+    success: true,
+    newRoot: addToSubnode (root, subnode, addedNodes),
+    newHls,
+    requestArgs: {varName: 'stmt'},
+  };
+
+  /* ans.push ({
     rule: 'exists-elim',
     ins: innerNode[Ins],
     outs: innerNode[Outs],
     subnode,
     addnodes: [innerNode, ...linksIn, ...linksOut],
     args: ['_?P0'],
-  });
+  }); */
 }
 
 function tacticBetaEquiv (root, hls, opts = {}) {

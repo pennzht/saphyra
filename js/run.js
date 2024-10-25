@@ -153,7 +153,10 @@ function updateState() {
         if (input.dataset.type == 'oneof') {
           if (input.checked) selectedArgs[input.dataset.group] = input.getAttribute('value');
         } else if (input.dataset.type == 'stmt') {
-          selectedArgs[input.dataset.group] = infixParse(input.value);
+          if (input.value.trim()) {
+            // nonempty
+            selectedArgs[input.dataset.group] = infixParse(input.value);
+          } // otherwise, don't set value
         } else {
           selectedArgs[input.dataset.group] = input.value;
         }
