@@ -14,6 +14,8 @@ Saphyra aims to be simple and user-friendly. As of October 25, 2024, the proof r
 
 Visit [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) to explore the current proof repository.
 
+The [source code](https://github.com/pennzht/saphyra) is available on GitHub.
+
 Foundations
 ---
 
