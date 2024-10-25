@@ -486,8 +486,12 @@ window.onload = (e) => {
     state.highlighted = new Set(recState.highlighted);
   }
     */
+
+  // Recover state from repo_20241025.
+
+  setEditorState(repo_20241025);
   
-  updateState();
+  // updateState();
   
   const sampleCode = parseOne(sampleTreeDeriv7);
   
