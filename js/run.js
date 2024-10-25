@@ -517,6 +517,31 @@ $('command').onchange = $('command').oninput = (e) => {
 function execute(code) {
   try {
     const module = verifyNode (code);
+
+    // Filter out bad ones
+    /*
+    r = getCurrentRootNode();
+    n = verifyNode(getCurrentRootNode());
+    subs = n[Subs];
+    bad = subs.filter((a) => a[0] === 'node' && a[6] !== '#good');
+    badLabels = bad.map((a) => a[Label]);
+    badStmts = bad.map((a) => a[Outs][0]);
+
+    isIn = (a, b) => b.some ((x) => eq(a, x));
+
+    goodSubs = r[Subs].filter((a) => ! (
+      (a[0] === 'node' && isIn (a[Label], badLabels) ) ||
+        (a[0] === 'link' && isIn (a[1], badLabels))
+    ));
+    goodStmts = r[Outs].filter((a) => ! isIn(a, badStmts));
+
+    console.log('good subs', goodSubs);
+    console.log('good stmts', goodStmts);
+
+    r[Subs] = goodSubs;
+    r[Outs] = goodStmts;
+    */
+
     $('visual').innerHTML = '';
     $('visual').appendChild(dispNode (module));
     $('output').innerText = '';
