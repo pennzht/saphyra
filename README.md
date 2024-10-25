@@ -12,7 +12,7 @@ __Saphyra__ /səˈfaɪ.ɹə/ is a proof assistant under active development, a pe
 
 Saphyra aims to be simple and user-friendly. As of October 25, 2024, the proof repository has __67__ tautologies and __17__ natural number theorems verified. Tactics exist for each axiom, and also for rewriting equations based on proven statements.
 
-Visit [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) to explore the current proof repository.
+Visit [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) to explore the current proof repository. Loading may take a few seconds.
 
 Foundations
 ---
