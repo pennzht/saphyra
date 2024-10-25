@@ -546,7 +546,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
   const targetNode = subnode;  // Since we're handling only one node now, the node is the subnode.
 
   // Name available targets. Equational only.
-  const namedTargets = new Map();  // targetName => [axiom axiom-name ∀-vars lhs rhs] or [path [...path] ∀-vars lhs rhs]
+  const namedTargets = new Map();  // targetName => [axiom axiom-name ∀-vars lhs rhs] or [path [...path] ∀-vars lhs rhs original-stmt(for theorems)]
   if ('List named targets') {
     for (const [axiomName, [vars, ins, outs]] of allAxiomsMap.entries()) {
       if (! (ins.length === 0 && outs.length === 1 && outs[0][0] === '=')) continue;
@@ -554,7 +554,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
       // Skips trivial axiom (for now).
       if (axiomName === '=-intro') continue;
 
-      namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2]]);
+      namedTargets.set(axiomName, ['axiom', axiomName, vars, outs[0][1], outs[0][2], null]);
     }
 
     // Give a name to each listed input.
@@ -587,7 +587,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
       }
 
       // Add to named targets
-      namedTargets.set(ruleName, ['path', condition.path, vars, lhs, rhs]);
+      namedTargets.set(ruleName, ['path', condition.path, vars, lhs, rhs, condition.sexp]);
     }
   }  
 
@@ -623,7 +623,7 @@ function tacticReplaceSub (root, hls, opts = {}) {
     console.log ('opts are', opts);
 
     // Find which theorem it is.
-    const [_type, axiomNameOrPath, freeVarsList, lhs, rhs] = namedTargets.get(opts.axiomOrTheorem);
+    const [_type, axiomNameOrPath, freeVarsList, lhs, rhs, originalTheorem] = namedTargets.get(opts.axiomOrTheorem);
     const fromSexp = opts.inverse ? rhs : lhs;
     const toSexp = opts.inverse ? lhs : rhs;
 
@@ -713,7 +713,34 @@ function tacticReplaceSub (root, hls, opts = {}) {
 
           newRoot = addToSubnode (newRoot, joinNodePath, addNodes);
         } else {
+          // Reduce with matching cases.
+
+          const innerHl = {path: [...joinNodePath, '^a', 'out'], sexp: originalTheorem};
+          let subRoot = newRoot, subHls = [innerHl];
+
+          for (const elem of freeVarsList) {
+            const byValue = matchingMap.get(elem);
+            const used = tacticUseForall (subRoot, subHls, {value: byValue});
+            subRoot = used.newRoot;
+            subHls = used.newHls;
+            console.log ('used status', used);
+          }
           
+          newRoot = subRoot;
+          exposedPath = subHls[0].path;
+          lastEq = subHls[0].sexp;
+
+          if (! opts.inverse) {
+            // Add sym.
+            const [_eq, a, b] = lastEq;
+            const flippedEqualityNode = ['=', b, a];
+            const addNodes = [];
+            addNodes.push (['node', '#sym', [lastEq], [flippedEqualityNode], ['=-sym'], []]);
+            addNodes.push (['link', exposedPath.at(-2), '#sym', lastEq]);
+            exposedPath = [...joinNodePath, '#sym', 'out'];
+
+            newRoot = addToSubnode (newRoot, joinNodePath, addNodes);
+          }
         }
 
         const eqDim = tacticAxiom (
