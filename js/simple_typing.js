@@ -10,15 +10,13 @@ builtinSymbols = new Map([
   ['true', 'P'],
   [false, 'P'],
   [true, 'P'],
-  ['forall', '<<OP>P>'],
-  ['exists', '<<OP>P>'],
   ['O', 'O'],
   ['S', '<OO>'],
   ['+', '<OOO>'],
   ['*', '<OOO>'],
   ['^', '<OOO>'],
 ])
-// = is polymorphic; needs by-case judgment.
+// =, ∀, ∃ are polymorphic; needs per-case judgment.
 
 function typeString (atom) {
   if (! isAtomic(atom)) return null;
@@ -104,6 +102,12 @@ function getType (sexp) {
     return valid ? argsType : null;
   }
 
+  if (head === 'forall' || head === 'exists' || head === 'exists1') {
+    if (argsType.length !== 1) return null;
+    if (argsType[0].length !== 2) return null;
+    return argsType[0].at(-1);
+  }
+
   // headType = [...argsType, returnType]
 
   const valid = isList(headType) && eq(argsType, headType.slice(0, headType.length-1));
@@ -119,4 +123,10 @@ if (false) {
   console.log(`Type 1 ${str(getType(parseOne("([: _x:P [: _y:O _z:P]] false)")))}`);  // [O P]
   console.log(`Type 2 ${str(getType(parseOne("[: _x:O (+ _x:O _x:O)]")))}`);  // [O O]
   console.log(`Type 3 ${str(getType(parseOne("[: _x:P (= _x:P _x:P)]")))}`);  // [P P]
+}
+
+if (! 'debug') {
+  console.log(`Type 4 ${str(getType(parseOne("(-> _x:P _x:P)")))}`);
+  console.log(`Type 4 ${str(getType(parseOne("[: _x:P (-> _x:P _x:P)]")))}`);
+  console.log(`Type 4 ${str(getType(parseOne("[forall [: _x:P (-> _x:P _x:P)]]")))}`);
 }
