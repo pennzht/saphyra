@@ -19,11 +19,12 @@ PRECE = new Map([
   [':', 20],            // [var] => [term]
   ['forall', 20],       // forall [var] => [term], forall [lambda]
   ['exists', 20],       // exists [var] => [term], forall [lambda]
+  ['exists1', 20],
 ]);
 
 function _normalizeSymbol (symbol) {
   if (isList(symbol)) return symbol;
-  const found = {'=>': ':', '\u21a6': ':', '∀': 'forall', '∃': 'exists'}[symbol];
+  const found = {'=>': ':', '\u21a6': ':', '∀': 'forall', '∃': 'exists', '∃!': 'exists1'}[symbol];
   if (found) return found;
 
   if (symbol.startsWith('_') && ! symbol.includes(':')) {
@@ -213,6 +214,18 @@ function _infixFormatP (obj, parent, prefix, whichSub /*L, R, null*/) {
       return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
         needParens ? text('(') : text(''),
         text('∃ '),
+        _infixFormatP(lam, 'exists', [...pf, 1], 'R'),
+        needParens ? text(')') : text(''),
+      ])
+    }
+
+    match = simpleMatch(['exists1', '_lambda'], obj);
+    if (match.success) {
+      const lam = match.map.get('_lambda');
+
+      return elem('span', {'data-sexp': str(obj), 'data-relpos': str(pf)}, [
+        needParens ? text('(') : text(''),
+        text('∃! '),
         _infixFormatP(lam, 'exists', [...pf, 1], 'R'),
         needParens ? text(')') : text(''),
       ])
