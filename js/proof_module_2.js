@@ -100,7 +100,7 @@ function verifyNode (node) {
 
     // Check if all ins and outs are valid, well-typed statements.
     const invalidStmts = [].concat(ins).concat(outs).filter(
-      (stmt) => getType(stmt) !== 'P'
+      (stmt) => ! isValidStmt(stmt)
     );
 
     if (invalidStmts.length > 0) {
@@ -369,6 +369,19 @@ function verifyNode (node) {
     }
   } catch (e) {
     throw e;
+  }
+}
+
+/// Checks if a statement is well-typed.
+
+function isValidStmt (stmt) {
+  const m = simpleMatch (['def', '_A'], stmt);
+  if (m.success) {
+    // Atom defined.
+    const atom = m.map.get('_A');
+    return isAtomic(atom) && ! isVar(atom);
+  } else {
+    return getType(stmt) === 'P';
   }
 }
 
