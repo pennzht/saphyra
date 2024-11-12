@@ -97,12 +97,32 @@ allRules = `
 (^-O [_a:O     ] [] [(= (^ _a:O O) (S O))])
 
 (^-S [_a:O _b:O] [] [(= (^ _a:O (S _b:O)) (* _a:O (^ _a:O _b:O)))])
+
+(exists1-O
+  [_P]
+  []
+  [[=
+    (exists1 _P)
+    ((: _P0:<OP> (exists [: _v0:O (forall [: _v:O [= (= _v0:O _v:O) (_P0:<OP> _v:O)]])])) _P)
+  ]]
+)
+
+(exists1-P
+  [_P]
+  []
+  [[=
+    (exists1 _P)
+    ((: _P0:<PP> (exists [: _v0:P (forall [: _v:P [= (= _v0:P _v:P) (_P0:<PP> _v:P)]])])) _P)
+  ]]
+)
 `;
 
-/*
+// TODO - fix "exists1" typing issue. _v0 and _v need types, and we need better type inference.
+
+/* ================================================================
     The following temporary axioms are removed.
     They were used for an outdated `tauto` tactic.
-*/
+================================================================ */
 
 _removedAxioms = `
 (and-negate-1
