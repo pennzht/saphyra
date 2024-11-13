@@ -259,6 +259,8 @@ function tacticUseExists (root, hls, opts = {}) {
 function tacticDef (root, hls, opts = {}) {
   const [froms, tos, nodes, subnode] = parseHls(root, hls);
 
+  const [newNodeName] = genNodeNames(findSubnodeByPath(root, subnode));
+
   if (nodes.length !== 1) {
     return {fail: true, reason: 'node count ≠ 1'};
   }
@@ -279,11 +281,29 @@ function tacticDef (root, hls, opts = {}) {
   const judgment = judgeDefiningRule (equality);
   console.log ('judgment result', judgment);
 
-  if (judgment.success) {
-    // ...
-  } else {
+  if (! judgment.success) {
     return {fail: true, reason: 'definition invalid', judgment};
   }
+
+  // Construct definition statement
+  const node = [
+    'node',
+    newNodeName,
+    /*ins*/ judgment.prereqs.map ((sym) => ['def', sym]),
+    /*outs*/ [['def', judgment.functionSymbol], equality],
+    /*justification*/ ['def', judgment.functionSymbol],
+    /*subs*/ [],
+  ];
+
+  return {
+    success: true,
+    actions: [
+      {type: 'add-to-node', subnode, added: [node]},
+    ],
+    newRoot: addToSubnode (root, subnode, [node]),
+    newHls: [],
+    // newHls: [{path: [...subnode, newNodeName], stmt: stmt}],
+  };
 }
 
 function tacticImplIntro (root, hls, opts = {}) {

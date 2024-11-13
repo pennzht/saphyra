@@ -520,7 +520,7 @@ $('command').onchange = $('command').oninput = (e) => {
 
 function execute(code) {
   try {
-    const module = verifyNode (code);
+    const module = verifyNodeWithDefs (code);
 
     // Filter out bad ones
     /*

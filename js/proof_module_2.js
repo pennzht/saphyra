@@ -26,6 +26,42 @@ allAxiomsMap = new Map(allAxioms.map (
   (line) => [line[0], line.slice(1)],  // name => [vars, ins, outs]
 ));
 
+/// Verifies a node, together with checking validity of defs.
+function verifyNodeWithDefs (node) {
+  const n = verifyNode (node);
+  if (n[AdditionalInfo].startsWith ('#err')) {
+    return n;
+  }
+
+  // Collect definitions
+  const defs = collectDefs (n, []);
+  const defSet = new Set();
+  for (const d of defs) {
+    if (defSet.has (d)) {
+      n[AdditionalInfo] = '#err/redefined_' + d;
+      return n;
+    }
+    defSet.add(d);
+  }
+
+  return n;
+}
+
+function collectDefs (node, arr) {
+  if (node[Just][0] === 'def') {
+    arr.push (node[Just][1]);
+    return arr;
+  }
+
+  for (const sub of (node[Subs] || [])) {
+    if (sub[0] === 'node') {
+      collectDefs (sub, arr);
+    }
+  }
+
+  return arr;
+}
+
 /// Verifies a node.
 function verifyNode (node) {
   try {
