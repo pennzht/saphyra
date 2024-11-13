@@ -256,6 +256,17 @@ function verifyNode (node) {
       );
 
       return nodeProper.concat([valid ? good : '#err/beta-equiv']);
+    } else if (rule === 'def') {
+      // TODO1113 - Definition rule.
+      //
+      //
+      //
+      //
+      //
+      //
+      //
+      //
+      //
     } else if (rule === 'join') {
       const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
       const links = subsVerified.filter((x) => x[0] === 'link');

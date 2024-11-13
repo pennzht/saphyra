@@ -16,7 +16,7 @@ builtinSymbols = new Map([
   ['*', '<OOO>'],
   ['^', '<OOO>'],
 ])
-// =, ∀, ∃ are polymorphic; needs per-case judgment.
+// :, =, ∀, ∃ are polymorphic; needs per-case judgment.
 
 function typeString (atom) {
   if (! isAtomic(atom)) return null;
