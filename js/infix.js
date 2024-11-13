@@ -42,7 +42,7 @@ function _normalizeSymbol (symbol) {
 }
 
 function getAssociativity (operator) {
-  if (['^', 'forall', 'exists', ':', '->', 'S', 'not'].includes(operator)) return 'R';
+  if (['^', 'forall', 'exists', 'exists1', ':', '->', 'S', 'not'].includes(operator)) return 'R';
   return 'L';
 }
 
