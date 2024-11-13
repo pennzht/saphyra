@@ -27,6 +27,7 @@ tacticRules = {
   'add-comment': tacticAddComment,
   'use-forall': tacticUseForall,
   'use-exists': tacticUseExists,
+  'def': tacticDef,
   'script': tacticScript,
 };
 
@@ -46,6 +47,7 @@ function runTacticRules () {
     'add-node-output',
     'add-node-helper',
     'add-join',
+    'def',
     'replace-sub',
     'beta-equiv',
     'import-stmt',
@@ -252,6 +254,36 @@ function tacticUseForall (root, hls, opts = {}) {
 
 function tacticUseExists (root, hls, opts = {}) {
   return {fail: true};
+}
+
+function tacticDef (root, hls, opts = {}) {
+  const [froms, tos, nodes, subnode] = parseHls(root, hls);
+
+  if (nodes.length !== 1) {
+    return {fail: true, reason: 'node count ≠ 1'};
+  }
+
+  if (! opts.lhs || ! opts.rhs) {
+    return {listen: true, requestArgs: {lhs: 'stmt', rhs: 'stmt'}};
+  }
+
+  // LHS and RHS given.
+  const [functionSymbol, ...vars] = opts.lhs;
+
+  // Construct pStmt
+  let equality = ['=', opts.lhs, opts.rhs];
+  for (let i = vars.length - 1; i >= 0; i--) {
+    equality = ['forall', [':', vars[i], equality]];
+  }
+
+  const judgment = judgeDefiningRule (equality);
+  console.log ('judgment result', judgment);
+
+  if (judgment.success) {
+    // ...
+  } else {
+    return {fail: true, reason: 'definition invalid', judgment};
+  }
 }
 
 function tacticImplIntro (root, hls, opts = {}) {
