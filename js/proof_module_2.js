@@ -257,16 +257,33 @@ function verifyNode (node) {
 
       return nodeProper.concat([valid ? good : '#err/beta-equiv']);
     } else if (rule === 'def') {
-      // TODO1113 - Definition rule.
-      //
-      //
-      //
-      //
-      //
-      //
-      //
-      //
-      //
+      // Definition statement
+      // justNormalized == ['def', _functionSymbol]
+      const functionSymbol = args[0];
+
+      const inDefs = ins.filter ((a) => a[0] === 'def').map ((a) => a[1]);
+      const outDefs = outs.filter ((a) => a[0] === 'def').map ((a) => a[1]);
+      
+      if (outs.filter ((a) => a[0] !== 'def').length !== 1) {
+        return nodeProper.concat (['#err/incorrect-number-of-outs']);
+      }
+
+      const pStmt = outs.filter ((a) => a[0] !== 'def') [0];
+
+      const judgment = judgeDefiningRule (pStmt);
+      if (! judgment.success) {
+        return nodeProper.concat ([judgment.reason]);
+      }
+
+      if (judgment.functionSymbol !== functionSymbol || ! eq (outDefs, [functionSymbol])) {
+        return nodeProper.concat (['#err/function-symbol-inconsistent']);
+      }
+
+      if (! ( judgment.prereqs.every ((s) => inDefs.includes (s)) )) {
+        return nodeProper.concat (['#err/some-prereqs-missing']);
+      }
+
+      return nodeProper.concat ([good]);
     } else if (rule === 'join') {
       const nodes = subsVerified.filter((x) => x[0] === 'node' && isAtomic(x[Label]));
       const links = subsVerified.filter((x) => x[0] === 'link');

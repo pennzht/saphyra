@@ -8,7 +8,7 @@
 
 function judgeDefiningRule (
   pStmt,  // property statement
-  eStmt = null,  // existential statement
+  eStmt = null,  // existential statement: TODO
 ) {
   let functionSymbol = null;
   
@@ -72,16 +72,20 @@ function judgeDefiningRule (
   return {success: true, reason: '#good', functionSymbol, prereqs: consts};
 }
 
-function generateDefinition (
+/* function generateDefinition (
   inputVars,
   outputExpr,
 ) {
   // TODO1113
   //
   //
-}
+} */
 
 if ('debug') {
+  console.log ('is good definition', judgeDefiningRule (parseOne (
+    '[forall [: _x:O [= (comp:<OOO> _x:O _y:O) (* (S _x:O) (S _y:O))]]]'
+  )));
+
   console.log ('is good definition', judgeDefiningRule (parseOne (
     '[forall [: _x:O [forall [: _y:O [= (comp:<OOO> _x:O _y:O) (* (S _x:O) (S _y:O))]]]]]'
   )));
