@@ -70,6 +70,7 @@ function setCurrentRootNode(newRoot) {
 
 function clearTransientState() {
   state.highlighted = new Set();
+  state.currentFocus = ['#root']; // For now, just use root.
 }
 
 /// Shows current state on page.
