@@ -49,6 +49,9 @@ state = {
     ['empty', tabInit(parseOne(emptyNode))]   // Initial page, empty.
   ]),
   currentTab: 'empty',
+  currentFocus: ['#root'],  // Current focus, in current tab.
+  // After every change, only verify `currentFocus`.
+  // To check entire tree, zoom out to `#root`.
 
   // A state for highlighted NODES and PORTS. Example:
   // {[#root ^c in], [#root]}
@@ -292,7 +295,7 @@ function updateState() {
 
   for (const m of allMatches) {
     let inputButton;
-    
+
     // A text input for anything.
     let userInput = elem('span');
 
@@ -426,7 +429,7 @@ function updateState() {
         updateState();
       } else if (['add-node-input', 'add-node-output', 'rename-node'].includes(m.rule)) {
         const input = userInput.value;
-        
+
         // Special case: add node input, &c.
         const newRoot = applyIOToSubnodes(
           getCurrentRootNode(),
@@ -473,9 +476,9 @@ window.onload = (e) => {
     (-> _M (-> _N (and _M (or _Q _N))))
   `))));
   state.tabs.set('tautology_2', tabInit(parseOne(tauto10)));
-  
+
   state.currentTab = 'empty';
-  
+
     // Recover state from state.
     /*
   if(window.localStorage && localStorage.getItem('state')) {
@@ -490,15 +493,15 @@ window.onload = (e) => {
   // Recover state from repo_20241025.
 
   setEditorState(repo_20241025);
-  
+
   // updateState();
-  
+
   const sampleCode = parseOne(sampleTreeDeriv7);
-  
+
   const pprinted = pprint(sampleCode);
   console.log(pprinted);
   console.log(eq(parseOne(pprinted), sampleCode ));
-  
+
   // Add Exporting/importing.
   $('export-editor-button').onclick = (e) => {
     exportState('file');
@@ -572,4 +575,3 @@ function execute(code) {
 }
 
 console.log('New version as of Sep.');
-
