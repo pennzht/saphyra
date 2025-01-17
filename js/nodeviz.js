@@ -118,6 +118,12 @@ function dispNode(node, pathPrefix = null) {
       e.stopPropagation();
     };
 
+    let focusButton = elem('span', {style: 'color:#0074eb;'}, ['\u25c9']);
+    focusButton.onclick = () => {
+      state.currentFocus = prefix;
+      updateState();
+    };
+
     // Default case.
     return elem('node', {
       'data-fulltrace': str(prefix),
@@ -128,6 +134,7 @@ function dispNode(node, pathPrefix = null) {
       text('→'),
       elem('div', {class: 'stmt-group', 'data-trace': 'out'}, outs.map((a) => infixFormat(a, true))),
       dispSexp(justification),
+      focusButton,
       elem('hr', {class: 'node-separator'}),
       subsElement,
     ]);
@@ -258,7 +265,7 @@ function dispStmt(obj, prefix=null) {
     }
 
     // Default.
-    
+
     const subobjs = [];
     for (let i = 0; i < obj.length; i++) {
       subobj = dispStmt(obj[i], [...pf, i]);
