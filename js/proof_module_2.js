@@ -30,9 +30,9 @@ allAxiomsMap = new Map(allAxioms.map (
 function verifyNodeWithDefs (node) {
   const n = verifyNode (node);
 
-  // An error occurred here earlier. Keep an eye out.
-  if (! n[AdditionalInfo]) {
-    console.log('Additional info not defined: ', n);
+  if (n[0].startsWith('#err')) {
+    console.log('Verifying node ends with error', n);
+    return n;
   }
 
   if (n[AdditionalInfo].startsWith ('#err')) {
