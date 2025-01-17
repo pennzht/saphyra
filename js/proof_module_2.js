@@ -29,6 +29,12 @@ allAxiomsMap = new Map(allAxioms.map (
 /// Verifies a node, together with checking validity of defs.
 function verifyNodeWithDefs (node) {
   const n = verifyNode (node);
+
+  // An error occurred here earlier. Keep an eye out.
+  if (! n[AdditionalInfo]) {
+    console.log('Additional info not defined: ', n);
+  }
+
   if (n[AdditionalInfo].startsWith ('#err')) {
     return n;
   }
@@ -299,7 +305,7 @@ function verifyNode (node) {
 
       const inDefs = ins.filter ((a) => a[0] === 'def').map ((a) => a[1]);
       const outDefs = outs.filter ((a) => a[0] === 'def').map ((a) => a[1]);
-      
+
       if (outs.filter ((a) => a[0] !== 'def').length !== 1) {
         return nodeProper.concat (['#err/incorrect-number-of-outs']);
       }

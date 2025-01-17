@@ -73,6 +73,7 @@ function clearTransientState() {
 }
 
 /// Shows current state on page.
+/// This is the MAIN_LOOP of the program.
 function updateState() {
   // Prints state for debugging.
   console.log('Current state is', state);
@@ -246,8 +247,9 @@ function updateState() {
   $('tab-display').appendChild(addNewTabButton);
 
   const currentTabObj = state.tabs.get(state.currentTab);
-  const currentCode = currentTabObj[currentTabObj[0]];
-  execute(currentCode);
+  const currentRoot = currentTabObj[currentTabObj[0]];
+  const currentFocus = findSubnodeByPath(currentRoot, state.currentFocus);
+  execute(currentFocus);
 
   $('step-history').innerHTML = '';
 
@@ -279,6 +281,8 @@ function updateState() {
   ////////////////////////////////////////////////////////////////
   // Below is legacy.                                           //
   ////////////////////////////////////////////////////////////////
+
+  {
 
   // Find all matches for tactics.
   const allMatches = tacticsMultiMatchAll();
@@ -466,6 +470,8 @@ function updateState() {
       }
     }
   }
+
+  }
 }
 
 window.onload = (e) => {
@@ -550,7 +556,9 @@ function execute(code) {
     */
 
     $('visual').innerHTML = '';
-    $('visual').appendChild(dispNode (module));
+    // Provide current prefix to dispNode, so that `data-fulltrace` is accurate
+    const currentPrefix = state.currentFocus.slice(0, state.currentFocus.length - 1);
+    $('visual').appendChild(dispNode (module, currentPrefix));
     $('output').innerText = '';
 
     // TODO - depending on current tab root node + `state.highlighted`,
