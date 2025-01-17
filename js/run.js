@@ -555,11 +555,13 @@ function execute(code) {
     r[Outs] = goodStmts;
     */
 
-    $('visual').innerHTML = '';
+    $('node-display').innerHTML = '';
     // Provide current prefix to dispNode, so that `data-fulltrace` is accurate
     const currentPrefix = state.currentFocus.slice(0, state.currentFocus.length - 1);
-    $('visual').appendChild(dispNode (module, currentPrefix));
+    $('node-display').appendChild(dispNode (module, currentPrefix));
     $('output').innerText = '';
+
+    $('breadcrumbs').innerHTML = state.currentFocus.join(' / ');
 
     // TODO - depending on current tab root node + `state.highlighted`,
     //     find corresponding rules and display them in $('display').
