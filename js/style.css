@@ -187,3 +187,6 @@ summary:hover {
     margin: 0;
 }
 
+#breadcrumbs {
+    padding: 0.5em;
+}

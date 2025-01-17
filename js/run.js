@@ -249,7 +249,7 @@ function updateState() {
   const currentTabObj = state.tabs.get(state.currentTab);
   const currentRoot = currentTabObj[currentTabObj[0]];
   const currentFocus = findSubnodeByPath(currentRoot, state.currentFocus);
-  execute(currentFocus);
+  execute(currentFocus);  // Only current focus is being executed.
 
   $('step-history').innerHTML = '';
 
