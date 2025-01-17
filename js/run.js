@@ -561,7 +561,7 @@ function execute(code) {
     $('node-display').appendChild(dispNode (module, currentPrefix));
     $('output').innerText = '';
 
-    $('breadcrumbs').innerHTML = state.currentFocus.join(' / ');
+    showBreadcrumbs();
 
     // TODO - depending on current tab root node + `state.highlighted`,
     //     find corresponding rules and display them in $('display').
@@ -581,6 +581,22 @@ function execute(code) {
     } else {
       throw e;
     }
+  }
+}
+
+function showBreadcrumbs() {
+  const bc = $('breadcrumbs');
+  bc.innerHTML = '';
+  const focus = state.currentFocus;
+  for (let index = 0; index < focus.length; index++) {
+    const prefix = focus.slice(0, index + 1);
+    const piece = elem('div', {style: 'display:inline-block;cursor:zoom-out;'}, [focus[index]]);
+    piece.onclick = () => {
+      state.currentFocus = prefix;
+      updateState();
+    }
+    bc.appendChild(piece);
+    if(index < focus.length - 1) bc.appendChild(text(' / '));
   }
 }
 

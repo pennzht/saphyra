@@ -118,7 +118,8 @@ function dispNode(node, pathPrefix = null) {
       e.stopPropagation();
     };
 
-    let focusButton = elem('span', {style: 'color:#0074eb;'}, ['\u25c9']);
+    // Fisheye symbol
+    let focusButton = elem('span', {style: 'color:#0074eb;cursor:zoom-in;'}, ['\u25c9']);
     focusButton.onclick = () => {
       state.currentFocus = prefix;
       updateState();
