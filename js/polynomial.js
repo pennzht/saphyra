@@ -56,25 +56,35 @@ function addCombine (e) {
         return [1n, a];
     }
 
-    function alike (a, b) {
-        let [cA, tA] = coeffTerm(a);
-        let [cB, tB] = coeffTerm(b);
-        return eq (tA, tB);
-    }
-
-    function mergeTerms (a, b) {
-        let [cA, tA] = coeffTerm(a);
-        let [cB, tB] = coeffTerm(b);
-        return ['*', (cA + cB), tA];
-    }
+    let coeffs = {};
+    let partInst = {};
 
     for (const p of e.slice(1)) {
-        if (parts.length > 0 && alike (parts.at(-1), p)) {
-            parts.push (mergeTerms(parts.pop(), p));
-        } else parts.push(p);
+        const [c, t] = coeffTerm (p);
+        const s = str(t);
+        if (partInst[s]) {
+            coeffs[s] += c;
+        } else {
+            partInst[s] = t;
+            coeffs[s] = c;
+        }
     }
 
-    return ['+', ...parts];
+    const ans = ['+'];
+    const keys = Object.keys(partInst);
+    keys.sort();
+    for (const s of keys) {
+        const c = coeffs[s], t = partInst[s];
+        if (eq (t, 1n)) {
+            ans.push (c);
+        } else if (c === 1n) {
+            ans.push (t);
+        } else {
+            ans.push (['*', c, t]);
+        }
+    }
+
+    return ans;
 }
 
 function sortTerms (arr) {
