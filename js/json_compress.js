@@ -30,7 +30,8 @@ function jsonCompress (obj) {
     throw new Error ('Unrecognized literal type');
   }
 
-  const table = new Map();
+  const table = new Map();    // symbol -> object
+  const revTable = new Map();    // object -> symbol
   const trie = {};    // Finds a symbol based on value.
   const latest = {label: 0};
 
@@ -50,7 +51,9 @@ function jsonCompress (obj) {
   }
 
   function encode (obj) {
-    if (isLiteral(obj)) {
+    if (revTable.has(obj)) {
+      return revTable.get(obj);
+    } else if (isLiteral(obj)) {
       const lit = makeLiteral(obj);
       if (trie[lit]) {
         return trie[lit];
@@ -61,10 +64,12 @@ function jsonCompress (obj) {
           _gensym();
           trie[lit] = sym;
           table.set(sym, lit);
+          revTable.set(lit, sym);
           return sym;
         } else {
           trie[lit] = lit;
           table.set(lit, lit);
+          revTable.set(lit, lit);
           return lit;
         }
       }
@@ -85,6 +90,7 @@ function jsonCompress (obj) {
       } else {
         ptr['!e'] = _gensym();
         table.set(ptr['!e'], def);
+        revTable.set(obj, ptr['!e']);
         return ptr['!e'];
       }
     } else {
@@ -110,6 +116,7 @@ function jsonCompress (obj) {
       } else {
         ptr['!e'] = _gensym();
         table.set(ptr['!e'], def);
+        revTable.set(obj, ptr['!e']);
         return ptr['!e'];
       }
     }
