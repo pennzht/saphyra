@@ -68,8 +68,33 @@ function collectDefs (node, arr) {
   return arr;
 }
 
-/// Verifies a node, returning a new node with [6] on each subnode => additionalInfo
+/*
+    A global cache storing verified nodes.
+    Because it depends on the content of the node only, there is no need to distinguish by workspaces.
+*/
+VerifyNodeCache = new Map();
+
+CACHE_ON = true;
+
 function verifyNode (node) {
+  if (CACHE_ON) {
+    // Use caching
+    if (VerifyNodeCache.has (node)) {
+      console.log ('Cache hit');
+      return VerifyNodeCache.get (node);
+    } else {
+      console.log ('Cache missed');
+      const verifyNodeResult = verifyNodeUncached (node);
+      VerifyNodeCache.set (node, verifyNodeResult);
+      return verifyNodeResult;
+    }
+  } else {
+    return verifyNodeUncached (node);
+  }
+}
+
+/// Verifies a node, returning a new node with [6] on each subnode => additionalInfo
+function verifyNodeUncached (node) {
   try {
     if (! isList(node)) {
       return ['#err/node-is-not-list', node];
