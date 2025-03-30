@@ -68,7 +68,7 @@ function collectDefs (node, arr) {
   return arr;
 }
 
-/// Verifies a node.
+/// Verifies a node, returning a new node with [6] on each subnode => additionalInfo
 function verifyNode (node) {
   try {
     if (! isList(node)) {
