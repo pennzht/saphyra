@@ -247,6 +247,11 @@ function updateState() {
   };
   $('tab-display').appendChild(addNewTabButton);
 
+  // Prints stats about current root.
+  const rootTheoremCount = getCurrentRootNode()[Subs].filter ((n) => n[0] == 'node').length;
+
+  $('theorem-count').innerText = `${rootTheoremCount} top-level theorems.`;
+
   const currentTabObj = state.tabs.get(state.currentTab);
   const currentRoot = currentTabObj[currentTabObj[0]];
   const currentFocus = findSubnodeByPath(currentRoot, state.currentFocus);
