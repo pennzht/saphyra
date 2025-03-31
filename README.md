@@ -14,6 +14,8 @@ On __April 1, 2025__, the following theorem was successfully formalized in Saphy
 
 The theorem and its proof can be viewed on [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) as the statement: `∀ n ↦ (r2denom:<OP> @ n) -> false` which can be read as “no natural number can be a denominator of √2”.
 
+Please allow a few seconds for the theorem repository to load.
+
 Overview
 ---
 
