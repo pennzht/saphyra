@@ -47,6 +47,7 @@ Roadmap
 Prof. Freek Wiedijk maintains a list of [100 theorems and their formalizations](https://www.cs.ru.nl/~freek/100/). This is a good measure of both the maturity of a proof assistant and the maturity of formal methods as a field.
 
 The following 15 theorems were originally planned for March 31, 2025, but only the first one was completed. I do plan to continue working on the remaining ones.
+
 [x] Irrationality of √2
 [ ] Infinitude of primes
 [ ] Divisibility by 3 rule
