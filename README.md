@@ -10,7 +10,7 @@ Update
 
 On __April 1, 2025__, the following theorem was successfully formalized in Saphyra:
 
-[x] √2 is irrational
+- [x] √2 is irrational
 
 The theorem and its proof can be viewed on [Saphyra Web](https://mage-of-the-east.com/saphyra/js/start.html) as the statement: `∀ n ↦ (r2denom:<OP> @ n) -> false` which can be read as “no natural number can be a denominator of √2”.
 
@@ -48,21 +48,21 @@ Prof. Freek Wiedijk maintains a list of [100 theorems and their formalizations](
 
 The following 15 theorems were originally planned for March 31, 2025, but only the first one was completed. I do plan to continue working on the remaining ones.
 
-[x] Irrationality of √2
-[ ] Infinitude of primes
-[ ] Divisibility by 3 rule
-[ ] The Fundamental Theorem of Arithmetic
-[ ] The Number of Subsets of a Set
-[ ] Wilson’s Theorem
-[ ] Euler’s Generalization of Fermat’s Little Theorem
-[ ] The Denumerability of the Rational Numbers
-[ ] The Binomial Theorem
-[ ] Konigsberg Bridges Problem
-[ ] Sum of a Geometric Series
-[ ] The Cauchy-Schwarz Inequality
-[ ] The Intermediate Value Theorem
-[ ] Principle of Inclusion/Exclusion
-[ ] Schroeder-Bernstein Theorem
+- [x] Irrationality of √2
+- [ ] Infinitude of primes
+- [ ] Divisibility by 3 rule
+- [ ] The Fundamental Theorem of Arithmetic
+- [ ] The Number of Subsets of a Set
+- [ ] Wilson’s Theorem
+- [ ] Euler’s Generalization of Fermat’s Little Theorem
+- [ ] The Denumerability of the Rational Numbers
+- [ ] The Binomial Theorem
+- [ ] Konigsberg Bridges Problem
+- [ ] Sum of a Geometric Series
+- [ ] The Cauchy-Schwarz Inequality
+- [ ] The Intermediate Value Theorem
+- [ ] Principle of Inclusion/Exclusion
+- [ ] Schroeder-Bernstein Theorem
 
 2024 Spring Report
 ---
