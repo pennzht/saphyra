@@ -66,6 +66,16 @@ The following 15 theorems were originally planned for March 31, 2025, but only t
 - [ ] Principle of Inclusion/Exclusion
 - [ ] Schroeder-Bernstein Theorem
 
+2025 Spring Report
+---
+
+[2025 Spring Report](https://saphyra.blue/blue-cools)
+
+2024 Fall Report
+---
+
+[2024 Fall Report](https://saphyra.blue/blue-october)
+
 2024 Spring Report
 ---
 
