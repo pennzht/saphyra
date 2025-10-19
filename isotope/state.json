@@ -1,11 +1,11 @@
 {
   "validState": true,
   "center": [
-    -1148.0568970115369,
-    -337.6853301272138
+    -205.01565481437603,
+    -194.98047632688682
   ],
   "scale": 0.8408964152537118,
-  "nextCardNumber": 59,
+  "nextCardNumber": 60,
   "cards": [
     [
       "card-1",
@@ -46,7 +46,7 @@
           490,
           390
         ],
-        "content": "// js\n\nlet ans = 0;\n\nfor (let i = 0; i < 10 ** 8.1; i++) {\n  ans += Math.sin(i);\n}\n\nreturn ans;"
+        "content": "//! card-59\n// The above directive forms a link to card-59, so that whenever this card changes, it will be rerun, and all results will be pushed to card-59\n\nlet ans = 0;\n\nfor (let i = 0; i < 10 ** 2; i++) {\n  ans += Math.sin(i);\n  ans += Math.cos(i);\n}\n\nreturn ans;\n"
       }
     ],
     [
@@ -283,6 +283,21 @@
           90
         ],
         "content": "card-58 created. abc def",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-59",
+      {
+        "location": [
+          -495,
+          -95
+        ],
+        "size": [
+          490,
+          190
+        ],
+        "content": "-0.015412853068737312",
         "isHtml": false
       }
     ]

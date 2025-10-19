@@ -141,6 +141,14 @@ function updateUi(options) {
     cardContent.value = card.content;
     cardContent.oninput = cardContent.onchange = (e) => {
       state.cards.get(cardId).content = e.target.value;
+      // live-update using directive header
+      if (e.target.value.startsWith('//!')) {
+        let directive = removePrefix(e.target.value.split('\n')[0], '//!').trim();
+
+        if (state.cards.has(directive)) {
+          playCardInWorker(e, /*givenCardId=*/ cardId, /*targetCardId=*/ directive);
+        }
+      }
     };
     /*
     // NOTE: we are no longer using the default resizing for card content.
@@ -152,7 +160,6 @@ function updateUi(options) {
     if (opt.fromLoad) {
       cardContent.style.width = state.cards.get(cardId).size[0] + 'px';
       cardContent.style.height = state.cards.get(cardId).size[1] - (cardHolder.offsetHeight || 30) + 'px';
-
     }
   }
 
@@ -215,9 +222,9 @@ function getLowerLeft (cardId) {
   return [x, y + h + 10];  // Adding gap
 }
 
-function playCardInWorker(e) {
+function playCardInWorker(e, givenCardId=null, targetCardId=null) {
   e.stopPropagation();
-  const cardId = e.target.dataset.cardId;
+  const cardId = givenCardId || e.target.dataset.cardId;
 
   const data = state.cards.get(cardId).content;
 
@@ -234,10 +241,16 @@ function playCardInWorker(e) {
     console.log('started worker at', stringUrl(workerData));
     state.workers.set(cardId, worker);
     worker.onmessage = (e) => {
-      addCard ({
-        content: JSON.stringify (e.data),
-        location: getLowerLeft (cardId),
-      });
+      const result = e.data;
+
+      if (targetCardId) {
+        state.cards.get(targetCardId).content = JSON.stringify(result);
+      } else {
+        addCard ({
+          content: JSON.stringify (e.data),
+          location: getLowerLeft (cardId),
+        });
+      }
       state.workers.delete(cardId);
       updateUi();
     };
