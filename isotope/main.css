@@ -1,0 +1,69 @@
+* {
+  /* font-family: "Linux Biolinum", "Inter UI", "Inter", sans-serif; */
+  font-family: "IBM Plex Mono", monospace;
+  user-select: none;
+}
+
+body {
+  overflow-y: hidden;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: 20px;
+}
+
+#toolbar, #mainsvg {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.tb-button {
+    display: inline-block;
+    padding: 0 0.25em;
+    cursor: pointer;
+}
+
+.tb-button:hover {
+    color: blue;
+}
+
+svg {
+  width: 100vw;
+  height: 100vh;
+}
+
+.inner:hover {
+  background-color: #009eff33;
+}
+
+.holder {
+  cursor: grab;
+  color: #0452b1;
+  background-color: #d3d6e4;
+  height: 30px;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.holder-button {
+    padding: 0.125em;
+    cursor: pointer;
+}
+
+.holder-button:hover {
+    color: orange;
+}
+
+.add-elem {
+  cursor: pointer;
+}
+
+div {
+  color: gray;
+}
+
+textarea{
+  border: 0;
+  resize: none;   /* hides resizing handle; resizing is done in js */
+}

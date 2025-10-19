@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Isotope</title>
+    <link rel="stylesheet" type="text/css"
+          href="main.css" />
+
+    <meta charset="utf-8">
+
+    <!-- dependencies -->
+    <!-- to be added -->
+
+    <!-- main -->
+    <script src="sword.js" defer=""></script>
+    <script src="balanced_list.js" defer=""></script>
+    <script src="lisp.js" defer=""></script>
+    <script src="lisp_worker_const.js" defer=""></script>
+    <script src="defaultstate.js" defer=""></script>
+    <script src="main.js" defer=""></script>
+
+  </head>
+  <body>
+    <svg id="mainsvg" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+      <rect id="background" x="0" y="0" style="fill:#0000ff11;" onmousedown="registerDrag(event)" />
+
+        <!--
+        Object structure:
+        foreignObject.card {x, y, width, height, id=card-1} >
+          div {xmlns=xhtml} >
+            div.inner >
+              div.holder {id=card-1-holder} "Card"
+              div.card-content {id=card-1-content} "Content"
+        -->
+
+    </svg>
+
+    <div id="toolbar">
+      Toolbar
+      <div id="tb-add" class="tb-button">Add</div>
+      <div id="tb-save" class="tb-button">Save(LS)</div>
+      <div id="tb-saveserver" class="tb-button">Save(Server)</div>
+      <div id="tb-saveclip" class="tb-button">Save(Clipboard)</div>
+      <div id="tb-load" class="tb-button">Load(LS)</div>
+      <div id="tb-loadserver" class="tb-button">Load(Server)</div>
+      <div id="tb-align" class="tb-button">Align</div>
+      <div id="tb-tasklist" style="display:inline-block;"></div>
+    </div>
+
+  </body>
+</html>
+

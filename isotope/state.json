@@ -1,0 +1,297 @@
+{
+  "validState": true,
+  "center": [
+    -1148.0568970115369,
+    -337.6853301272138
+  ],
+  "scale": 0.8408964152537118,
+  "nextCardNumber": 59,
+  "cards": [
+    [
+      "card-1",
+      {
+        "location": [
+          -1195,
+          -895
+        ],
+        "size": [
+          590,
+          390
+        ],
+        "content": "// Cloner\n\nconst newCard = addCard({content: state.cards.get('card-1').content})\n\nstate.cards.get(newCard).size = \n[... state.cards.get('card-1').size]\n\nupdateUi({fromLoad: true})\n"
+      }
+    ],
+    [
+      "card-7",
+      {
+        "location": [
+          -1395,
+          -495
+        ],
+        "size": [
+          390,
+          290
+        ],
+        "content": "Welcome to isotope-canvas!\n\n(Version 2025-10-19)"
+      }
+    ],
+    [
+      "card-12",
+      {
+        "location": [
+          -495,
+          -495
+        ],
+        "size": [
+          490,
+          390
+        ],
+        "content": "// js\n\nlet ans = 0;\n\nfor (let i = 0; i < 10 ** 8.1; i++) {\n  ans += Math.sin(i);\n}\n\nreturn ans;"
+      }
+    ],
+    [
+      "card-19",
+      {
+        "location": [
+          5,
+          -495
+        ],
+        "size": [
+          190,
+          190
+        ],
+        "content": "[\n (: [a b] [] @ (+ a b))\n 3 4\n]"
+      }
+    ],
+    [
+      "card-23",
+      {
+        "location": [
+          -1395,
+          -195
+        ],
+        "size": [
+          490,
+          390
+        ],
+        "content": "(do\n  [set F (: [n] @ (if (> n 0) (* n [fn (- n 1)]) 1 ))]\n  [F 5])\n"
+      }
+    ],
+    [
+      "card-25",
+      {
+        "location": [
+          5,
+          -295
+        ],
+        "size": [
+          290,
+          190
+        ],
+        "content": "(match [list: 3 (^ 3 1) (+ 1 2)]\n   [(list: a a a) (' allequal)]\n   [(list: a b a) (' symmetric)]\n   [(list: a b c) (' three)]\n   [(list: a (spread x)) x]\n   [_ (' usual)]\n)"
+      }
+    ],
+    [
+      "card-29",
+      {
+        "location": [
+          5,
+          -95
+        ],
+        "size": [
+          290,
+          190
+        ],
+        "content": "(' [html \n  (div [] @\n    (div [] @ abc) (div [] @ def)\n  )\n])",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-33",
+      {
+        "location": [
+          5,
+          105
+        ],
+        "size": [
+          190,
+          90
+        ],
+        "content": "[html [div [] [[div [] [abc]] [div [] [def]]]]]",
+        "isHtml": true
+      }
+    ],
+    [
+      "card-34",
+      {
+        "location": [
+          305,
+          -95
+        ],
+        "size": [
+          290,
+          190
+        ],
+        "content": "(' [html\n  (ol [] @ (li [] @ Hello) (li [] @ World))\n])",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-35",
+      {
+        "location": [
+          305,
+          105
+        ],
+        "size": [
+          190,
+          90
+        ],
+        "content": "[html [ol [] [[li [] [Hello]] [li [] [World]]]]]",
+        "isHtml": true
+      }
+    ],
+    [
+      "card-36",
+      {
+        "location": [
+          305,
+          -795
+        ],
+        "size": [
+          490,
+          290
+        ],
+        "content": "(do\n  (set A (list: 1 2 3 4 5))\n  (set dvs (map [: (e) @ (list: (' div) () (list: e))] A))\n  (set div (list: (' div) [] dvs))\n  (set html (list: (' html) div))\n)\n",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-37",
+      {
+        "location": [
+          705,
+          -195
+        ],
+        "size": [
+          390,
+          390
+        ],
+        "content": "[html [div [] [[div [] [1]] [div [] [2]] [div [] [3]] [div [] [4]] [div [] [5]]]]]",
+        "isHtml": true
+      }
+    ],
+    [
+      "card-38",
+      {
+        "location": [
+          805,
+          -395
+        ],
+        "size": [
+          390,
+          190
+        ],
+        "content": "// js\n\nstate.cards.get('card-37').size = [400, 400];\nupdateUi();",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-41",
+      {
+        "location": [
+          1205,
+          -395
+        ],
+        "size": [
+          290,
+          190
+        ],
+        "content": "(if 1 {abc} {def{ghi}})",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-44",
+      {
+        "location": [
+          1205,
+          -195
+        ],
+        "size": [
+          490,
+          190
+        ],
+        "content": "[' (html\n\n[div (onclick {addCard(); updateUi();}) @ {This is a button that creates a new card.}]\n\n)]\n\n",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-46",
+      {
+        "location": [
+          1205,
+          5
+        ],
+        "size": [
+          190,
+          90
+        ],
+        "content": "[html [div [onclick {addCard(); updateUi();}] [{This is a button that creates a new card.}]]]",
+        "isHtml": true
+      }
+    ],
+    [
+      "card-54",
+      {
+        "location": [
+          1805,
+          -395
+        ],
+        "size": [
+          390,
+          290
+        ],
+        "content": "[' (html\n\n[div (onclick {state.center=[... state.cards.get('card-38').location]; updateUi();}) @ {This button brings you to card-38.}]\n\n)]\n\n",
+        "isHtml": false
+      }
+    ],
+    [
+      "card-57",
+      {
+        "location": [
+          1805,
+          -95
+        ],
+        "size": [
+          190,
+          90
+        ],
+        "content": "[html [div [onclick {state.center=[... state.cards.get('card-38').location]; updateUi();}] [{This button brings you to card-38.}]]]",
+        "isHtml": true
+      }
+    ],
+    [
+      "card-58",
+      {
+        "location": [
+          1805,
+          205
+        ],
+        "size": [
+          190,
+          90
+        ],
+        "content": "card-58 created. abc def",
+        "isHtml": false
+      }
+    ]
+  ],
+  "dragId": null,
+  "dragAnchor": null,
+  "dragHome": null,
+  "workers": {},
+  "nextWorkerNumber": 32,
+  "dragMode": null,
+  "dragSnap": true
+}
